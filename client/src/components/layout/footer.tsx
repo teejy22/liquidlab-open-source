@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { Github, Twitter, MessageCircle } from "lucide-react";
+import logoImage from "@assets/Trade_1752276632533.png";
 
 export default function Footer() {
   return (
@@ -8,10 +9,11 @@ export default function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
             <div className="flex items-center mb-4">
-              <div className="text-2xl font-bold">
-                LIQUID<span className="text-liquid-green">LAB</span>
-              </div>
-              <div className="ml-2 w-6 h-6 bg-liquid-green rounded transform rotate-45"></div>
+              <img 
+                src={logoImage} 
+                alt="LiquidLab Logo" 
+                className="h-8 w-auto"
+              />
             </div>
             <p className="text-gray-400 mb-4">
               Build professional trading platforms on Hyperliquid with zero coding required.
@@ -33,19 +35,13 @@ export default function Footer() {
             <h4 className="font-semibold mb-4">Product</h4>
             <ul className="space-y-2 text-gray-400">
               <li>
-                <Link href="/templates">
-                  <a className="hover:text-liquid-green transition-colors">Templates</a>
-                </Link>
+                <Link href="/templates" className="hover:text-liquid-green transition-colors">Templates</Link>
               </li>
               <li>
-                <Link href="/builder">
-                  <a className="hover:text-liquid-green transition-colors">Builder</a>
-                </Link>
+                <Link href="/builder" className="hover:text-liquid-green transition-colors">Builder</Link>
               </li>
               <li>
-                <Link href="/analytics">
-                  <a className="hover:text-liquid-green transition-colors">Analytics</a>
-                </Link>
+                <Link href="/analytics" className="hover:text-liquid-green transition-colors">Analytics</Link>
               </li>
               <li>
                 <a href="#" className="hover:text-liquid-green transition-colors">Integrations</a>

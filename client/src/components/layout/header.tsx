@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { walletService } from "@/lib/wallet";
 import { WalletState } from "@/types";
 import { Wallet, Menu, X } from "lucide-react";
+import logoImage from "@assets/Trade_1752276632533.png";
 
 export default function Header() {
   const [location] = useLocation();
@@ -39,10 +40,11 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <div className="text-2xl font-bold text-liquid-dark">
-              LIQUID<span className="text-liquid-green">LAB</span>
-            </div>
-            <div className="ml-2 w-6 h-6 bg-liquid-green rounded transform rotate-45"></div>
+            <img 
+              src={logoImage} 
+              alt="LiquidLab Logo" 
+              className="h-8 w-auto"
+            />
           </Link>
           
           {/* Desktop Navigation */}
