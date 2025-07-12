@@ -35,14 +35,17 @@ export default function Home() {
                   <button 
                     className="px-8 py-4 rounded-lg font-semibold transition-colors text-lg shadow-lg"
                     style={{ 
-                      backgroundColor: '#00D084', 
-                      color: 'white' 
+                      backgroundColor: 'white', 
+                      color: '#00D084', 
+                      border: '2px solid #00D084' 
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#00B876';
+                      e.currentTarget.style.backgroundColor = '#00D084';
+                      e.currentTarget.style.color = 'white';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '#00D084';
+                      e.currentTarget.style.backgroundColor = 'white';
+                      e.currentTarget.style.color = '#00D084';
                     }}
                   >
                     Start Building Free
@@ -288,14 +291,17 @@ export default function Home() {
               <button 
                 className="px-8 py-4 rounded-lg font-semibold transition-colors text-lg shadow-lg"
                 style={{ 
-                  backgroundColor: '#00D084', 
-                  color: 'white' 
+                  backgroundColor: 'white', 
+                  color: '#00D084', 
+                  border: '2px solid #00D084' 
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#00B876';
+                  e.currentTarget.style.backgroundColor = '#00D084';
+                  e.currentTarget.style.color = 'white';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#00D084';
+                  e.currentTarget.style.backgroundColor = 'white';
+                  e.currentTarget.style.color = '#00D084';
                 }}
               >
                 Start Building Free
