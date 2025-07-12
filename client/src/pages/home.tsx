@@ -32,12 +32,12 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/builder">
-                  <Button className="bg-white text-liquid-green px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-lg">
+                  <Button className="bg-liquid-green text-white px-8 py-4 rounded-lg font-semibold hover:bg-liquid-accent transition-colors text-lg shadow-lg">
                     Start Building Free
                   </Button>
                 </Link>
                 <Link href="/templates">
-                  <Button variant="outline" className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-liquid-green transition-colors text-lg">
+                  <Button variant="outline" className="border-2 border-liquid-green bg-white text-liquid-green px-8 py-4 rounded-lg font-semibold hover:bg-liquid-green hover:text-white transition-colors text-lg shadow-lg">
                     View Templates
                   </Button>
                 </Link>
@@ -258,11 +258,11 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/builder">
-              <Button className="bg-white text-liquid-green px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-lg">
+              <Button className="bg-liquid-green text-white px-8 py-4 rounded-lg font-semibold hover:bg-liquid-accent transition-colors text-lg shadow-lg">
                 Start Building Free
               </Button>
             </Link>
-            <Button variant="outline" className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-liquid-green transition-colors text-lg">
+            <Button variant="outline" className="border-2 border-liquid-green bg-white text-liquid-green px-8 py-4 rounded-lg font-semibold hover:bg-liquid-green hover:text-white transition-colors text-lg shadow-lg">
               Book a Demo
             </Button>
           </div>
