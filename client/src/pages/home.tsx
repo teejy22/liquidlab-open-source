@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import TradingBackground from "@/components/ui/trading-background";
+
 import { 
   TrendingUp, 
   Users, 
@@ -21,9 +21,7 @@ export default function Home() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="gradient-bg text-white py-16 lg:py-24">
-        <TradingBackground />
-        <div className="trading-grid"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-4xl lg:text-6xl font-bold mb-6 leading-tight">
@@ -285,9 +283,7 @@ export default function Home() {
 
       {/* CTA Section */}
       <section className="py-16 gradient-bg text-white">
-        <TradingBackground />
-        <div className="trading-grid"></div>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl lg:text-4xl font-bold mb-4">
             Ready to Build Your Trading Empire?
           </h2>
