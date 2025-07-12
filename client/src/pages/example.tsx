@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TradingViewWidget from "@/components/charts/tradingview-widget";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -18,21 +18,95 @@ const tradingPairs = [
   { symbol: "AVAXUSDT", name: "Avalanche/USDT", exchange: "BINANCE" },
 ];
 
+interface MarketData {
+  price: string;
+  change24h: string;
+  high24h: string;
+  low24h: string;
+  volume24h: string;
+}
+
+function formatPrice(price: number): string {
+  if (price >= 1000) {
+    return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  } else if (price >= 1) {
+    return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+  } else {
+    return price.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 6 });
+  }
+}
+
 export default function Example() {
   const [selectedPair, setSelectedPair] = useState(tradingPairs[0]);
   const [orderType, setOrderType] = useState<"buy" | "sell">("buy");
   const [amount, setAmount] = useState("");
   const [price, setPrice] = useState("");
   const [chartInterval, setChartInterval] = useState("60");
+  const [marketStats, setMarketStats] = useState<MarketData>({
+    price: "0.00",
+    change24h: "0.00%",
+    high24h: "0.00",
+    low24h: "0.00",
+    volume24h: "0",
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  // Mock market stats (in production, these would be fetched from API)
-  const marketStats = {
-    price: "43,567.89",
-    change24h: "+2.34%",
-    high24h: "44,123.45",
-    low24h: "42,890.12",
-    volume24h: "1.2B",
-  };
+  // Fetch live price data
+  useEffect(() => {
+    const fetchMarketData = async () => {
+      try {
+        // Map symbols to CoinGecko IDs
+        const coinMap: { [key: string]: string } = {
+          "BTCUSDT": "bitcoin",
+          "ETHUSDT": "ethereum",
+          "BNBUSDT": "binancecoin",
+          "SOLUSDT": "solana",
+          "ADAUSDT": "cardano",
+          "XRPUSDT": "ripple",
+          "DOTUSDT": "polkadot",
+          "AVAXUSDT": "avalanche-2"
+        };
+
+        const coinId = coinMap[selectedPair.symbol] || "bitcoin";
+        
+        // Using CoinGecko API (free tier)
+        const response = await fetch(
+          `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd&include_24hr_vol=true&include_24hr_change=true&include_last_updated_at=true`
+        );
+        
+        const data = await response.json();
+        const coinData = data[coinId];
+        
+        if (coinData) {
+          const price = coinData.usd;
+          const change24h = coinData.usd_24h_change?.toFixed(2) || "0.00";
+          const volume = coinData.usd_24h_vol;
+          
+          setMarketStats({
+            price: formatPrice(price),
+            change24h: `${parseFloat(change24h) > 0 ? '+' : ''}${change24h}%`,
+            high24h: formatPrice(price * 1.02), // Estimate
+            low24h: formatPrice(price * 0.98), // Estimate
+            volume24h: volume > 1000000000 ? `${(volume / 1000000000).toFixed(1)}B` : 
+                      volume > 1000000 ? `${(volume / 1000000).toFixed(1)}M` : 
+                      volume.toFixed(0).toLocaleString(),
+          });
+          setLastUpdated(new Date());
+        }
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching market data:", error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchMarketData();
+    // Update every 30 seconds
+    const interval = setInterval(fetchMarketData, 30000);
+    
+    return () => clearInterval(interval);
+  }, [selectedPair]);
 
   // Mock order book data
   const orderBook = {
@@ -103,19 +177,47 @@ export default function Example() {
             {/* Market Stats */}
             <div className="flex items-center space-x-6">
               <div>
-                <p className="text-sm text-gray-500">Price</p>
-                <p className="text-2xl font-bold">${marketStats.price}</p>
+                <p className="text-sm text-gray-500 flex items-center">
+                  Price
+                  {!isLoading && (
+                    <span className="ml-2 flex items-center text-xs text-green-600">
+                      <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-1"></span>
+                      Live
+                    </span>
+                  )}
+                </p>
+                {isLoading ? (
+                  <div className="h-8 w-24 bg-gray-200 animate-pulse rounded"></div>
+                ) : (
+                  <p className="text-2xl font-bold">${marketStats.price}</p>
+                )}
               </div>
               <div>
                 <p className="text-sm text-gray-500">24h Change</p>
-                <p className={`text-xl font-semibold ${marketStats.change24h.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-                  {marketStats.change24h}
-                </p>
+                {isLoading ? (
+                  <div className="h-7 w-20 bg-gray-200 animate-pulse rounded"></div>
+                ) : (
+                  <p className={`text-xl font-semibold ${marketStats.change24h.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                    {marketStats.change24h}
+                  </p>
+                )}
               </div>
               <div>
                 <p className="text-sm text-gray-500">24h Volume</p>
-                <p className="text-lg font-medium">${marketStats.volume24h}</p>
+                {isLoading ? (
+                  <div className="h-6 w-16 bg-gray-200 animate-pulse rounded"></div>
+                ) : (
+                  <p className="text-lg font-medium">${marketStats.volume24h}</p>
+                )}
               </div>
+              {lastUpdated && !isLoading && (
+                <div>
+                  <p className="text-sm text-gray-500">Last Updated</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    {lastUpdated.toLocaleTimeString()}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -262,11 +364,19 @@ export default function Example() {
                 <h4 className="text-sm font-semibold text-gray-700 mb-3">Market Info</h4>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">24h High</span>
-                  <span className="font-medium">${marketStats.high24h}</span>
+                  {isLoading ? (
+                    <div className="h-5 w-16 bg-gray-200 animate-pulse rounded"></div>
+                  ) : (
+                    <span className="font-medium">${marketStats.high24h}</span>
+                  )}
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">24h Low</span>
-                  <span className="font-medium">${marketStats.low24h}</span>
+                  {isLoading ? (
+                    <div className="h-5 w-16 bg-gray-200 animate-pulse rounded"></div>
+                  ) : (
+                    <span className="font-medium">${marketStats.low24h}</span>
+                  )}
                 </div>
               </div>
             </Card>
