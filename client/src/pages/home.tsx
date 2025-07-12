@@ -32,7 +32,19 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/builder">
-                  <button className="bg-green-500 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-600 transition-colors text-lg shadow-lg">
+                  <button 
+                    className="px-8 py-4 rounded-lg font-semibold transition-colors text-lg shadow-lg"
+                    style={{ 
+                      backgroundColor: '#00D084', 
+                      color: 'white' 
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#00B876';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#00D084';
+                    }}
+                  >
                     Start Building Free
                   </button>
                 </Link>
@@ -273,7 +285,19 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/builder">
-              <button className="bg-green-500 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-600 transition-colors text-lg shadow-lg">
+              <button 
+                className="px-8 py-4 rounded-lg font-semibold transition-colors text-lg shadow-lg"
+                style={{ 
+                  backgroundColor: '#00D084', 
+                  color: 'white' 
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#00B876';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#00D084';
+                }}
+              >
                 Start Building Free
               </button>
             </Link>
