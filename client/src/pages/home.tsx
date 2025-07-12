@@ -99,7 +99,34 @@ export default function Home() {
                         <h3 className="text-white font-semibold">BTC/USD</h3>
                         <div className="text-green-400 font-mono">$67,845.23</div>
                       </div>
-                      <div className="h-32 bg-gradient-to-r from-green-400 to-blue-400 rounded opacity-50"></div>
+                      <div className="h-32 bg-gradient-to-r from-green-400 to-blue-400 rounded relative overflow-hidden">
+                        {/* Price Chart Lines */}
+                        <div className="absolute inset-0 p-2">
+                          <svg width="100%" height="100%" viewBox="0 0 200 100" className="opacity-70">
+                            <polyline
+                              points="10,80 30,70 50,85 70,60 90,65 110,45 130,40 150,55 170,35 190,25"
+                              fill="none"
+                              stroke="white"
+                              strokeWidth="2"
+                              className="animate-pulse"
+                            />
+                            <polyline
+                              points="10,90 30,85 50,75 70,80 90,70 110,65 130,60 150,50 170,45 190,40"
+                              fill="none"
+                              stroke="rgba(255,255,255,0.5)"
+                              strokeWidth="1"
+                            />
+                            {/* Price points */}
+                            <circle cx="190" cy="25" r="3" fill="white" className="animate-pulse" />
+                            <circle cx="170" cy="35" r="2" fill="rgba(255,255,255,0.8)" />
+                            <circle cx="150" cy="55" r="2" fill="rgba(255,255,255,0.8)" />
+                          </svg>
+                        </div>
+                        {/* Price trend indicator */}
+                        <div className="absolute top-2 right-2 text-white text-xs font-mono">
+                          +2.34%
+                        </div>
+                      </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <Button className="bg-green-500 text-white hover:bg-green-600">Buy</Button>
