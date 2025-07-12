@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import TradingBackground from "@/components/ui/trading-background";
 import { 
   TrendingUp, 
   Users, 
@@ -20,7 +21,9 @@ export default function Home() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="gradient-bg text-white py-16 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <TradingBackground />
+        <div className="trading-grid"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-4xl lg:text-6xl font-bold mb-6 leading-tight">
@@ -89,21 +92,24 @@ export default function Home() {
             </div>
             <div className="lg:block hidden">
               {/* Trading Platform Preview */}
-              <Card className="transform rotate-3 hover:rotate-0 transition-transform shadow-2xl">
-                <CardContent className="p-6">
-                  <div className="bg-gray-900 rounded-lg p-4 mb-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-white font-semibold">BTC/USD</h3>
-                      <div className="text-green-400 font-mono">$67,845.23</div>
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-liquid-green to-liquid-accent rounded-xl blur-xl opacity-20"></div>
+                <Card className="transform rotate-3 hover:rotate-0 transition-transform shadow-2xl relative backdrop-blur-sm bg-white/90">
+                  <CardContent className="p-6">
+                    <div className="bg-gray-900 rounded-lg p-4 mb-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-white font-semibold">BTC/USD</h3>
+                        <div className="text-green-400 font-mono">$67,845.23</div>
+                      </div>
+                      <div className="h-32 bg-gradient-to-r from-green-400 to-blue-400 rounded opacity-50"></div>
                     </div>
-                    <div className="h-32 bg-gradient-to-r from-green-400 to-blue-400 rounded opacity-50"></div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Button className="bg-green-500 text-white hover:bg-green-600">Buy</Button>
-                    <Button className="bg-red-500 text-white hover:bg-red-600">Sell</Button>
-                  </div>
-                </CardContent>
-              </Card>
+                    <div className="grid grid-cols-2 gap-4">
+                      <Button className="bg-green-500 text-white hover:bg-green-600">Buy</Button>
+                      <Button className="bg-red-500 text-white hover:bg-red-600">Sell</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         </div>
@@ -279,7 +285,9 @@ export default function Home() {
 
       {/* CTA Section */}
       <section className="py-16 gradient-bg text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <TradingBackground />
+        <div className="trading-grid"></div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <h2 className="text-3xl lg:text-4xl font-bold mb-4">
             Ready to Build Your Trading Empire?
           </h2>
