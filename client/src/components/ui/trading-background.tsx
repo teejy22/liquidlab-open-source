@@ -24,7 +24,7 @@ export default function TradingBackground() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       // Draw subtle grid lines
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
       ctx.lineWidth = 1;
       
       // Vertical lines
@@ -44,8 +44,8 @@ export default function TradingBackground() {
       }
 
       // Draw floating trading symbols
-      ctx.font = '14px monospace';
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.font = '16px monospace';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
       
       const symbols = ['ETH', 'BTC', 'SOL', 'USDC', 'AVAX', 'DOT'];
       const time = Date.now() * 0.001;
@@ -57,7 +57,7 @@ export default function TradingBackground() {
       });
 
       // Draw price lines
-      ctx.strokeStyle = 'rgba(0, 208, 132, 0.1)';
+      ctx.strokeStyle = 'rgba(0, 208, 132, 0.2)';
       ctx.lineWidth = 2;
       
       for (let i = 0; i < 5; i++) {
@@ -86,7 +86,7 @@ export default function TradingBackground() {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 pointer-events-none"
-      style={{ opacity: 0.3 }}
+      style={{ opacity: 0.8 }}
     />
   );
 }
