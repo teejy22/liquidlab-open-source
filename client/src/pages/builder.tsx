@@ -204,7 +204,7 @@ export default function Builder() {
                   
                   <TabsContent value="templates" className="space-y-4">
                     <p className="text-sm text-gray-600 mb-4">
-                      Select a template to preview it with live data
+                      Select a template to preview it
                     </p>
                     
                     <RadioGroup 
@@ -253,10 +253,10 @@ export default function Builder() {
                     <div className="mt-6 p-4 bg-liquid-green/10 rounded-lg">
                       <div className="flex items-center mb-2">
                         <TrendingUp className="w-5 h-5 mr-2 text-liquid-green" />
-                        <h4 className="font-semibold text-sm">Live Market Data</h4>
+                        <h4 className="font-semibold text-sm">Market Data</h4>
                       </div>
                       <p className="text-xs text-gray-600">
-                        All templates include real-time TradingView charts and live market data from major exchanges
+                        All templates include TradingView charts and market data from major exchanges
                       </p>
                     </div>
                   </TabsContent>
@@ -307,16 +307,16 @@ export default function Builder() {
             </Card>
           </div>
 
-          {/* Live Preview Canvas */}
+          {/* Preview Canvas */}
           <div className="flex-1 min-w-0">
             <Card className="h-full">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <span>Live Preview</span>
+                    <span>Preview</span>
                     <Badge className="bg-liquid-green text-white">
-                      <Play className="w-3 h-3 mr-1" />
-                      Real-Time Data
+                      <Eye className="w-3 h-3 mr-1" />
+                      Template Preview
                     </Badge>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -417,7 +417,7 @@ export default function Builder() {
                               <div className="text-center">
                                 <BarChart3 className="w-16 h-16 mx-auto mb-2 opacity-50" />
                                 <p className="text-sm opacity-70">TradingView Chart</p>
-                                <p className="text-xs opacity-50 mt-2">Live data will be shown here</p>
+                                <p className="text-xs opacity-50 mt-2">Chart data will be shown here</p>
                               </div>
                             </div>
                           </div>
