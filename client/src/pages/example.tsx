@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "wouter";
 import TradingViewWidget from "@/components/charts/tradingview-widget";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -128,6 +129,36 @@ export default function Example() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Back to LiquidLab Navigation */}
+      <div className="bg-gray-900 text-white py-2 px-4 text-sm">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Link href="/" className="flex items-center space-x-2 hover:text-gray-300 transition-colors">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              <span>Back to LiquidLab</span>
+            </Link>
+            <span className="hidden sm:inline text-gray-600">|</span>
+            <span className="hidden sm:inline text-gray-400 text-xs">Powered by LiquidLab</span>
+          </div>
+          <div className="hidden md:flex items-center space-x-6">
+            <Link href="/builder" className="hover:text-gray-300 transition-colors">
+              Builder
+            </Link>
+            <Link href="/templates" className="hover:text-gray-300 transition-colors">
+              Templates
+            </Link>
+            <Link href="/pricing" className="hover:text-gray-300 transition-colors">
+              Pricing
+            </Link>
+            <Link href="/dashboard" className="hover:text-gray-300 transition-colors">
+              Dashboard
+            </Link>
+          </div>
+        </div>
+      </div>
+
       {/* MarketBeat-style Header */}
       <header className="bg-[#003366] text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

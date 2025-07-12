@@ -95,3 +95,33 @@ Preferred communication style: Simple, everyday language.
 - **REPL_ID**: Replit-specific environment detection
 
 The application uses a monorepo structure with shared types and schemas, enabling type safety between frontend and backend while maintaining clear separation of concerns.
+
+## Recent Changes (January 2025)
+
+### Example Trading Page Enhancements
+- **Position Details Section**: Added comprehensive leverage trading information including:
+  - Total collateral and free collateral amounts
+  - Unrealized PnL with percentage changes
+  - Margin ratio with visual progress bar
+  - Individual positions table with entry/mark/liquidation prices
+  - Mobile-responsive card layout for positions on smaller screens
+
+- **YouTube Video Integration**: Embedded compact MarketBeat video player in trading sidebar
+  - Space-efficient design with one main video and quick list
+  - Allows traders to watch market analysis while trading
+  - Positioned in right column alongside order placement
+
+- **Navigation Improvements**: Added LiquidLab navigation bar to example page
+  - Quick links back to main platform (Home, Builder, Templates, Pricing, Dashboard)
+  - "Powered by LiquidLab" branding with back arrow for easy return
+  - Mobile-friendly responsive design
+
+- **Price Display Fixes**: Resolved mobile spacing issues
+  - Asset selector now full width on mobile devices
+  - Chart time intervals wrap properly on small screens
+  - Responsive padding adjustments across all breakpoints
+
+- **Live Market Data**: Integrated CoinGecko API for real-time prices
+  - 30-second auto-refresh intervals
+  - Loading states and visual update indicators
+  - Proper error handling for API failures
