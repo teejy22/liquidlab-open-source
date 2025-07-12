@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Github, Twitter, MessageCircle } from "lucide-react";
-import logoImage from "@assets/Trade_1752276632533.png";
+import logoImage from "@assets/Trade (2)_1752280100968.png";
 
 export default function Footer() {
   return (

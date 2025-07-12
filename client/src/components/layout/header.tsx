@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { walletService } from "@/lib/wallet";
 import { WalletState } from "@/types";
 import { Wallet, Menu, X } from "lucide-react";
-import logoImage from "@assets/Trade_1752276632533.png";
+import logoImage from "@assets/Trade (2)_1752280100968.png";
 
 export default function Header() {
   const [location] = useLocation();
