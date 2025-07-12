@@ -89,6 +89,11 @@ export default function Header() {
             }`}>
               Builder
             </Link>
+            <Link href="/example" className={`font-medium transition-colors ${
+              isActive('/example') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
+            }`}>
+              Example
+            </Link>
             <Link href="/analytics" className={`font-medium transition-colors ${
               isActive('/analytics') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
             }`}>
@@ -165,6 +170,11 @@ export default function Header() {
                 isActive('/builder') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
               }`}>
                 Builder
+              </Link>
+              <Link href="/example" className={`block px-3 py-2 text-base font-medium transition-colors ${
+                isActive('/example') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
+              }`}>
+                Example
               </Link>
               <Link href="/analytics" className={`block px-3 py-2 text-base font-medium transition-colors ${
                 isActive('/analytics') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'

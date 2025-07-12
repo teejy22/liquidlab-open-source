@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -13,6 +13,7 @@ import Analytics from "@/pages/analytics";
 import Pricing from "@/pages/pricing";
 import Education from "@/pages/education";
 import ChartDemo from "@/pages/chart-demo";
+import Example from "@/pages/example";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -27,24 +28,34 @@ function Router() {
       <Route path="/pricing" component={Pricing} />
       <Route path="/education" component={Education} />
       <Route path="/chart-demo" component={ChartDemo} />
+      <Route path="/example" component={Example} />
       <Route component={NotFound} />
     </Switch>
+  );
+}
+
+function AppContent() {
+  const [location] = useLocation();
+  const hideHeaderFooter = location === '/example';
+
+  return (
+    <TooltipProvider>
+      <div className="min-h-screen flex flex-col">
+        {!hideHeaderFooter && <Header />}
+        <main className="flex-1">
+          <Router />
+        </main>
+        {!hideHeaderFooter && <Footer />}
+      </div>
+      <Toaster />
+    </TooltipProvider>
   );
 }
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <div className="min-h-screen flex flex-col">
-          <Header />
-          <main className="flex-1">
-            <Router />
-          </main>
-          <Footer />
-        </div>
-        <Toaster />
-      </TooltipProvider>
+      <AppContent />
     </QueryClientProvider>
   );
 }
