@@ -12,7 +12,7 @@ export default function Footer() {
               <img 
                 src={logoImage} 
                 alt="LiquidLab Logo" 
-                className="h-20 w-auto"
+                className="h-32 w-auto"
               />
             </div>
             <p className="text-gray-400 mb-4">
