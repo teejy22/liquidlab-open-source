@@ -37,7 +37,7 @@ export default function Home() {
                   </Button>
                 </Link>
                 <Link href="/templates">
-                  <Button variant="outline" className="border-2 border-liquid-green bg-white text-liquid-green px-8 py-4 rounded-lg font-semibold hover:bg-liquid-green hover:text-white transition-colors text-lg shadow-lg">
+                  <Button className="bg-white text-liquid-green border-2 border-liquid-green px-8 py-4 rounded-lg font-semibold hover:bg-liquid-green hover:text-white transition-colors text-lg shadow-lg">
                     View Templates
                   </Button>
                 </Link>
@@ -262,7 +262,7 @@ export default function Home() {
                 Start Building Free
               </Button>
             </Link>
-            <Button variant="outline" className="border-2 border-liquid-green bg-white text-liquid-green px-8 py-4 rounded-lg font-semibold hover:bg-liquid-green hover:text-white transition-colors text-lg shadow-lg">
+            <Button className="bg-white text-liquid-green border-2 border-liquid-green px-8 py-4 rounded-lg font-semibold hover:bg-liquid-green hover:text-white transition-colors text-lg shadow-lg">
               Book a Demo
             </Button>
           </div>
