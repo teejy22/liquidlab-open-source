@@ -229,14 +229,44 @@ export default function Pricing() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/builder">
-              <Button className="bg-white text-liquid-green hover:bg-gray-100 px-8 py-3 text-lg">
+              <button 
+                className="px-8 py-4 rounded-lg font-semibold transition-colors text-lg shadow-lg"
+                style={{ 
+                  backgroundColor: 'white', 
+                  color: '#00D084', 
+                  border: '2px solid #00D084' 
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#00D084';
+                  e.currentTarget.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'white';
+                  e.currentTarget.style.color = '#00D084';
+                }}
+              >
                 Start Free Trial
-              </Button>
+              </button>
             </Link>
             <Link href="/contact">
-              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-liquid-green px-8 py-3 text-lg">
+              <button 
+                className="px-8 py-4 rounded-lg font-semibold transition-colors text-lg shadow-lg"
+                style={{ 
+                  backgroundColor: 'transparent', 
+                  color: 'white', 
+                  border: '2px solid white' 
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'white';
+                  e.currentTarget.style.color = '#00D084';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = 'white';
+                }}
+              >
                 Contact Sales
-              </Button>
+              </button>
             </Link>
           </div>
         </div>
