@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TrendingUp, TrendingDown, DollarSign, Activity } from "lucide-react";
+import { TrendingUp, TrendingDown, DollarSign, Activity, ArrowUp, ArrowDown } from "lucide-react";
 
 const tradingPairs = [
   { symbol: "BTCUSDT", name: "Bitcoin/USDT", exchange: "BINANCE" },
@@ -23,14 +23,33 @@ export default function Example() {
   const [orderType, setOrderType] = useState<"buy" | "sell">("buy");
   const [amount, setAmount] = useState("");
   const [price, setPrice] = useState("");
+  const [chartInterval, setChartInterval] = useState("60");
 
-  // Mock market stats
+  // Mock market stats (in production, these would be fetched from API)
   const marketStats = {
     price: "43,567.89",
     change24h: "+2.34%",
     high24h: "44,123.45",
     low24h: "42,890.12",
     volume24h: "1.2B",
+  };
+
+  // Mock order book data
+  const orderBook = {
+    bids: [
+      { price: "43,565.00", amount: "0.2543", total: "11,078.59" },
+      { price: "43,564.50", amount: "0.1832", total: "7,981.01" },
+      { price: "43,564.00", amount: "0.5000", total: "21,782.00" },
+      { price: "43,563.50", amount: "0.3211", total: "13,988.56" },
+      { price: "43,563.00", amount: "0.1500", total: "6,534.45" },
+    ],
+    asks: [
+      { price: "43,567.50", amount: "0.1800", total: "7,842.15" },
+      { price: "43,568.00", amount: "0.2500", total: "10,892.00" },
+      { price: "43,568.50", amount: "0.4123", total: "17,971.19" },
+      { price: "43,569.00", amount: "0.3000", total: "13,070.70" },
+      { price: "43,569.50", amount: "0.2100", total: "9,149.60" },
+    ]
   };
 
   return (
@@ -105,14 +124,73 @@ export default function Example() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Chart Section - Takes up 3 columns */}
           <div className="lg:col-span-3">
-            <Card className="h-[600px] overflow-hidden">
-              <TradingViewWidget
-                symbol={`${selectedPair.exchange}:${selectedPair.symbol}`}
-                interval="60"
-                theme="light"
-                height={600}
-                className="w-full"
-              />
+            <Card className="p-4">
+              {/* Timeframe Selector */}
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Live Chart</h3>
+                <div className="flex space-x-2">
+                  <Button
+                    variant={chartInterval === "1" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setChartInterval("1")}
+                  >
+                    1m
+                  </Button>
+                  <Button
+                    variant={chartInterval === "5" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setChartInterval("5")}
+                  >
+                    5m
+                  </Button>
+                  <Button
+                    variant={chartInterval === "15" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setChartInterval("15")}
+                  >
+                    15m
+                  </Button>
+                  <Button
+                    variant={chartInterval === "60" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setChartInterval("60")}
+                  >
+                    1h
+                  </Button>
+                  <Button
+                    variant={chartInterval === "240" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setChartInterval("240")}
+                  >
+                    4h
+                  </Button>
+                  <Button
+                    variant={chartInterval === "D" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setChartInterval("D")}
+                  >
+                    1D
+                  </Button>
+                  <Button
+                    variant={chartInterval === "W" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setChartInterval("W")}
+                  >
+                    1W
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Chart Container */}
+              <div className="h-[550px] overflow-hidden rounded-lg border">
+                <TradingViewWidget
+                  symbol={`${selectedPair.exchange}:${selectedPair.symbol}`}
+                  interval={chartInterval}
+                  theme="light"
+                  height={550}
+                  className="w-full"
+                />
+              </div>
             </Card>
           </div>
 
@@ -193,6 +271,96 @@ export default function Example() {
               </div>
             </Card>
           </div>
+        </div>
+
+        {/* Order Book Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Order Book</h3>
+            <div className="grid grid-cols-2 gap-4">
+              {/* Bids */}
+              <div>
+                <h4 className="text-sm font-medium text-green-600 mb-2">Bids</h4>
+                <div className="space-y-1">
+                  {orderBook.bids.map((bid, index) => (
+                    <div key={index} className="flex justify-between text-xs">
+                      <span className="text-green-600">${bid.price}</span>
+                      <span className="text-gray-600">{bid.amount}</span>
+                      <span className="text-gray-500">${bid.total}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Asks */}
+              <div>
+                <h4 className="text-sm font-medium text-red-600 mb-2">Asks</h4>
+                <div className="space-y-1">
+                  {orderBook.asks.map((ask, index) => (
+                    <div key={index} className="flex justify-between text-xs">
+                      <span className="text-red-600">${ask.price}</span>
+                      <span className="text-gray-600">{ask.amount}</span>
+                      <span className="text-gray-500">${ask.total}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            {/* Spread Indicator */}
+            <div className="mt-4 pt-4 border-t text-center">
+              <p className="text-sm text-gray-600">
+                Spread: <span className="font-medium">$2.50</span> (0.006%)
+              </p>
+            </div>
+          </Card>
+
+          {/* Recent Trades */}
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Recent Trades</h3>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-green-600 flex items-center">
+                  <ArrowUp className="w-3 h-3 mr-1" />
+                  43,567.50
+                </span>
+                <span className="text-gray-600">0.1234 BTC</span>
+                <span className="text-gray-500">14:32:15</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-red-600 flex items-center">
+                  <ArrowDown className="w-3 h-3 mr-1" />
+                  43,567.00
+                </span>
+                <span className="text-gray-600">0.5000 BTC</span>
+                <span className="text-gray-500">14:32:12</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-green-600 flex items-center">
+                  <ArrowUp className="w-3 h-3 mr-1" />
+                  43,567.25
+                </span>
+                <span className="text-gray-600">0.2500 BTC</span>
+                <span className="text-gray-500">14:32:08</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-green-600 flex items-center">
+                  <ArrowUp className="w-3 h-3 mr-1" />
+                  43,566.75
+                </span>
+                <span className="text-gray-600">1.0000 BTC</span>
+                <span className="text-gray-500">14:32:05</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-red-600 flex items-center">
+                  <ArrowDown className="w-3 h-3 mr-1" />
+                  43,566.50
+                </span>
+                <span className="text-gray-600">0.3750 BTC</span>
+                <span className="text-gray-500">14:32:01</span>
+              </div>
+            </div>
+          </Card>
         </div>
 
         {/* Additional Info Cards */}
