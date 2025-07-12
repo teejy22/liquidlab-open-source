@@ -297,7 +297,63 @@ export default function Example() {
           </div>
 
           {/* Trading Panel - Takes up 1 column */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-6">
+            {/* Compact Video Player */}
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold flex items-center gap-2">
+                  <svg className="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M23 7l-7 5 7 5V7zm-4 12H5V5h14v5l5-4v12l-5-4v5z"/>
+                  </svg>
+                  Market Analysis
+                </h3>
+                <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">
+                  All Videos
+                </Button>
+              </div>
+              <div className="space-y-3">
+                <div className="relative aspect-video rounded-lg overflow-hidden bg-gray-100">
+                  <iframe
+                    src="https://www.youtube.com/embed/QMKJDGBQBBk"
+                    title="MarketBeat Daily Analysis"
+                    className="absolute inset-0 w-full h-full"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium line-clamp-1">Daily Market Outlook: Key Trading Levels</h4>
+                  <p className="text-xs text-gray-600">MarketBeat Live • 2 hours ago</p>
+                </div>
+              </div>
+              {/* Quick Video List */}
+              <div className="mt-3 pt-3 border-t space-y-2">
+                <div className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                  <div className="w-14 h-8 bg-gray-200 rounded flex-shrink-0 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium truncate">Technical Analysis: Support & Resistance</p>
+                    <p className="text-xs text-gray-500">5.2K views • 15 min</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                  <div className="w-14 h-8 bg-gray-200 rounded flex-shrink-0 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium truncate">Weekly Earnings Preview</p>
+                    <p className="text-xs text-gray-500">3.8K views • 12 min</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
             <Card className="p-4 sm:p-6 lg:p-8">
               <h3 className="text-lg font-semibold mb-6">Place Order</h3>
               
