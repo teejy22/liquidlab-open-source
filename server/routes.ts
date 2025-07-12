@@ -15,7 +15,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication routes
   app.post("/api/auth/signup", async (req, res) => {
     try {
-      const { username, email, address } = req.body;
+      const { username, email, password } = req.body;
       
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(email);
@@ -23,16 +23,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "User with this email already exists" });
       }
       
-      const existingAddress = await storage.getUserByAddress(address);
-      if (existingAddress) {
-        return res.status(400).json({ error: "User with this wallet address already exists" });
+      const existingUsername = await storage.getUserByUsername(username);
+      if (existingUsername) {
+        return res.status(400).json({ error: "Username already taken" });
       }
       
       // Create new user
       const userData = insertUserSchema.parse({
         username,
         email,
-        address,
+        password,
       });
       
       const user = await storage.createUser(userData);
@@ -45,7 +45,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           id: user.id,
           username: user.username,
           email: user.email,
-          address: user.address,
           builderCode: user.builderCode,
           referralCode: user.referralCode
         }
@@ -57,9 +56,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/auth/signin", async (req, res) => {
     try {
-      const { email, address } = req.body;
+      const { email, password } = req.body;
       
-      const user = await storage.authenticateUser(email, address);
+      const user = await storage.authenticateUser(email, password);
       if (!user) {
         return res.status(401).json({ error: "Invalid credentials" });
       }
@@ -69,7 +68,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           id: user.id,
           username: user.username,
           email: user.email,
-          address: user.address,
           builderCode: user.builderCode,
           referralCode: user.referralCode
         }
@@ -109,10 +107,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/users/:address", async (req, res) => {
+  app.get("/api/users/:id", async (req, res) => {
     try {
-      const { address } = req.params;
-      const user = await storage.getUserByAddress(address);
+      const { id } = req.params;
+      const user = await storage.getUser(parseInt(id));
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }

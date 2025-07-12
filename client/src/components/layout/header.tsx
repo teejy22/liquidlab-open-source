@@ -40,12 +40,13 @@ export default function Header() {
 
   const handleLogout = async () => {
     try {
-      await walletService.disconnectWallet();
       // Clear user session
       toast({
         title: "Logged out successfully",
         description: "You have been logged out of LiquidLab",
       });
+      // In a real app, you would call an API to invalidate the session
+      window.location.reload();
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -90,23 +91,10 @@ export default function Header() {
             </Link>
           </nav>
           
-          {/* Authentication & Wallet */}
+          {/* Authentication */}
           <div className="flex items-center space-x-4">
             {isAuthenticated ? (
               <>
-                {/* Wallet Info */}
-                {walletState.isConnected && (
-                  <div className="hidden md:flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-lg">
-                    <Wallet className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">
-                      {formatAddress(walletState.address!)}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {walletState.balance} ETH
-                    </span>
-                  </div>
-                )}
-                
                 {/* User Menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -125,24 +113,6 @@ export default function Header() {
               </>
             ) : (
               <>
-                {/* Wallet Connection for non-authenticated users */}
-                {walletState.isConnected ? (
-                  <div className="hidden md:flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-lg">
-                    <Wallet className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">
-                      {formatAddress(walletState.address!)}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {walletState.balance} ETH
-                    </span>
-                  </div>
-                ) : (
-                  <div className="hidden md:flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-lg">
-                    <Wallet className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm text-gray-600">Not Connected</span>
-                  </div>
-                )}
-                
                 {/* Auth Modal */}
                 <AuthModal>
                   <Button className="bg-liquid-green text-white hover:bg-liquid-accent transition-colors">

@@ -11,18 +11,17 @@ import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { walletService } from "@/lib/wallet";
-import { Wallet, Mail, User, Key } from "lucide-react";
+import { Mail, User, Key } from "lucide-react";
 
 const signUpSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
   email: z.string().email("Please enter a valid email address"),
-  address: z.string().min(1, "Wallet address is required"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 const signInSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  address: z.string().min(1, "Wallet address is required"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 type SignUpData = z.infer<typeof signUpSchema>;
@@ -35,8 +34,6 @@ interface AuthModalProps {
 
 export default function AuthModal({ children, onSuccess }: AuthModalProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isConnectingWallet, setIsConnectingWallet] = useState(false);
-  const [walletAddress, setWalletAddress] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -45,7 +42,7 @@ export default function AuthModal({ children, onSuccess }: AuthModalProps) {
     defaultValues: {
       username: "",
       email: "",
-      address: walletAddress,
+      password: "",
     },
   });
 
@@ -53,7 +50,7 @@ export default function AuthModal({ children, onSuccess }: AuthModalProps) {
     resolver: zodResolver(signInSchema),
     defaultValues: {
       email: "",
-      address: walletAddress,
+      password: "",
     },
   });
 
@@ -109,31 +106,7 @@ export default function AuthModal({ children, onSuccess }: AuthModalProps) {
     },
   });
 
-  const handleConnectWallet = async () => {
-    try {
-      setIsConnectingWallet(true);
-      const walletState = await walletService.connectWallet();
-      
-      if (walletState.address) {
-        setWalletAddress(walletState.address);
-        signUpForm.setValue("address", walletState.address);
-        signInForm.setValue("address", walletState.address);
-        
-        toast({
-          title: "Wallet connected",
-          description: `Connected to ${walletState.address.slice(0, 6)}...${walletState.address.slice(-4)}`,
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Wallet connection failed",
-        description: "Please try connecting your wallet again",
-        variant: "destructive",
-      });
-    } finally {
-      setIsConnectingWallet(false);
-    }
-  };
+
 
   const onSignUp = (data: SignUpData) => {
     signUpMutation.mutate(data);
@@ -171,23 +144,6 @@ export default function AuthModal({ children, onSuccess }: AuthModalProps) {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Wallet Connection */}
-                <div className="space-y-2">
-                  <Label>Wallet Connection</Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleConnectWallet}
-                    disabled={isConnectingWallet || !!walletAddress}
-                    className="w-full"
-                  >
-                    <Wallet className="w-4 h-4 mr-2" />
-                    {isConnectingWallet ? "Connecting..." : 
-                     walletAddress ? `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : 
-                     "Connect Wallet"}
-                  </Button>
-                </div>
-
                 <form onSubmit={signUpForm.handleSubmit(onSignUp)} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="username">Username</Label>
@@ -214,10 +170,23 @@ export default function AuthModal({ children, onSuccess }: AuthModalProps) {
                     )}
                   </div>
 
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      {...signUpForm.register("password")}
+                      placeholder="Enter your password"
+                    />
+                    {signUpForm.formState.errors.password && (
+                      <p className="text-sm text-red-600">{signUpForm.formState.errors.password.message}</p>
+                    )}
+                  </div>
+
                   <Button 
                     type="submit" 
                     className="w-full bg-liquid-green hover:bg-liquid-accent"
-                    disabled={signUpMutation.isPending || !walletAddress}
+                    disabled={signUpMutation.isPending}
                   >
                     {signUpMutation.isPending ? "Creating Account..." : "Create Account"}
                   </Button>
@@ -238,23 +207,6 @@ export default function AuthModal({ children, onSuccess }: AuthModalProps) {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Wallet Connection */}
-                <div className="space-y-2">
-                  <Label>Wallet Connection</Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleConnectWallet}
-                    disabled={isConnectingWallet || !!walletAddress}
-                    className="w-full"
-                  >
-                    <Wallet className="w-4 h-4 mr-2" />
-                    {isConnectingWallet ? "Connecting..." : 
-                     walletAddress ? `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : 
-                     "Connect Wallet"}
-                  </Button>
-                </div>
-
                 <form onSubmit={signInForm.handleSubmit(onSignIn)} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="signin-email">Email</Label>
@@ -269,10 +221,23 @@ export default function AuthModal({ children, onSuccess }: AuthModalProps) {
                     )}
                   </div>
 
+                  <div className="space-y-2">
+                    <Label htmlFor="signin-password">Password</Label>
+                    <Input
+                      id="signin-password"
+                      type="password"
+                      {...signInForm.register("password")}
+                      placeholder="Enter your password"
+                    />
+                    {signInForm.formState.errors.password && (
+                      <p className="text-sm text-red-600">{signInForm.formState.errors.password.message}</p>
+                    )}
+                  </div>
+
                   <Button 
                     type="submit" 
                     className="w-full bg-liquid-green hover:bg-liquid-accent"
-                    disabled={signInMutation.isPending || !walletAddress}
+                    disabled={signInMutation.isPending}
                   >
                     {signInMutation.isPending ? "Signing In..." : "Sign In"}
                   </Button>
