@@ -10,24 +10,31 @@ interface TradingViewWidgetProps {
 }
 
 export default function TradingViewWidget({
-  symbol = "HYPERLIQUID:BTCUSDT",
-  interval = "1D",
+  symbol = "BINANCE:BTCUSDT",
+  interval = "D",
   theme = "light",
   width = "100%",
   height = 400,
   className = ""
 }: TradingViewWidgetProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const widgetIdRef = useRef<string>(`tradingview_${Math.random().toString(36).substring(7)}`);
 
   useEffect(() => {
     if (!containerRef.current) return;
+
+    // Clean up any existing script
+    const existingScript = containerRef.current.querySelector('script');
+    if (existingScript) {
+      existingScript.remove();
+    }
 
     const script = document.createElement('script');
     script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
     script.type = 'text/javascript';
     script.async = true;
     script.innerHTML = JSON.stringify({
-      "autosize": true,
+      "autosize": false,
       "symbol": symbol,
       "interval": interval,
       "timezone": "Etc/UTC",
@@ -36,30 +43,21 @@ export default function TradingViewWidget({
       "locale": "en",
       "enable_publishing": false,
       "allow_symbol_change": true,
-      "calendar": true,
-      "support_host": "https://www.tradingview.com",
-      "width": width,
-      "height": height,
-      "hide_top_toolbar": false,
-      "hide_legend": false,
-      "save_image": false,
-      "backgroundColor": theme === 'dark' ? "rgba(19, 23, 34, 1)" : "rgba(255, 255, 255, 1)",
-      "gridColor": theme === 'dark' ? "rgba(42, 46, 57, 1)" : "rgba(233, 233, 234, 1)",
-      "details": true,
-      "hotlist": true,
-      "studies": [
-        "Volume@tv-basicstudies",
-        "MASimple@tv-basicstudies",
-        "RSI@tv-basicstudies"
-      ],
-      "show_popup_button": true,
-      "popup_width": "1000",
-      "popup_height": "650",
-      "container_id": "tradingview_widget"
+      "hide_side_toolbar": false,
+      "studies": [],
+      "show_popup_button": false,
+      "container_id": widgetIdRef.current
     });
 
-    // Clear any existing content
+    // Create a div for the widget
+    const widgetDiv = document.createElement('div');
+    widgetDiv.id = widgetIdRef.current;
+    widgetDiv.style.width = typeof width === 'number' ? `${width}px` : width;
+    widgetDiv.style.height = typeof height === 'number' ? `${height}px` : height;
+    
+    // Clear container and add elements
     containerRef.current.innerHTML = '';
+    containerRef.current.appendChild(widgetDiv);
     containerRef.current.appendChild(script);
 
     return () => {
@@ -70,19 +68,17 @@ export default function TradingViewWidget({
   }, [symbol, interval, theme, width, height]);
 
   return (
-    <div className={`tradingview-widget-container ${className}`}>
+    <div className={`tradingview-widget-container h-full ${className}`}>
       <div 
         ref={containerRef}
-        id="tradingview_widget"
-        style={{ width, height }}
-        className="border rounded-lg overflow-hidden"
+        className="h-full border rounded-lg overflow-hidden bg-gray-50"
       />
-      <div className="tradingview-widget-copyright">
+      <div className="tradingview-widget-copyright mt-1">
         <a 
           href="https://www.tradingview.com/" 
           rel="noopener nofollow" 
           target="_blank"
-          className="text-xs text-gray-500 hover:text-liquid-green"
+          className="text-xs text-gray-400 hover:text-liquid-green"
         >
           Track all markets on TradingView
         </a>

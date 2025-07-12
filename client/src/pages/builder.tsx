@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import LiveComponentRenderer from "@/components/builder/live-component-renderer";
 import { 
   BarChart3, 
@@ -15,10 +16,13 @@ import {
   Settings,
   Eye,
   Save,
-  Files,
   Play,
   Zap,
-  TrendingUp
+  TrendingUp,
+  Layout,
+  Monitor,
+  Smartphone,
+  Check
 } from "lucide-react";
 
 interface ComponentConfig {
@@ -28,52 +32,10 @@ interface ComponentConfig {
   icon: any;
   color: string;
   description: string;
-}
+  settings?: any;
+};
 
-const availableComponents: ComponentConfig[] = [
-  {
-    id: 'tradingview-chart',
-    type: 'tradingview-chart',
-    name: 'TradingView Chart',
-    icon: BarChart3,
-    color: 'border-liquid-green',
-    description: 'Advanced charting widget'
-  },
-  {
-    id: 'orderbook',
-    type: 'orderbook',
-    name: 'Order Book',
-    icon: List,
-    color: 'border-blue-500',
-    description: 'Live bid/ask display'
-  },
-  {
-    id: 'trade-form',
-    type: 'trade-form',
-    name: 'Trade Form',
-    icon: ArrowUpDown,
-    color: 'border-purple-500',
-    description: 'Buy/sell interface'
-  },
-  {
-    id: 'portfolio',
-    type: 'portfolio',
-    name: 'Portfolio',
-    icon: Wallet,
-    color: 'border-orange-500',
-    description: 'Account balance & positions'
-  },
-  {
-    id: 'market-data',
-    type: 'market-data',
-    name: 'Market Data',
-    icon: PieChart,
-    color: 'border-red-500',
-    description: 'Price tickers & stats'
-  }
-];
-
-const demoLayouts = [
+const templateLayouts = [
   {
     id: 'professional',
     name: 'Professional Trader',
@@ -86,7 +48,7 @@ const demoLayouts = [
         icon: BarChart3,
         color: 'border-liquid-green',
         description: 'BTC/USD 1H Chart',
-        settings: { symbol: 'BINANCE:BTCUSDT', interval: '1h', theme: 'light' }
+        settings: { symbol: 'BINANCE:BTCUSDT', interval: '60', theme: 'light' }
       },
       {
         id: 'orderbook-1',
@@ -112,15 +74,15 @@ const demoLayouts = [
         name: 'Trade Form',
         icon: ArrowUpDown,
         color: 'border-purple-500',
-        description: 'Buy/sell interface',
-        settings: {}
+        description: 'Quick buy/sell',
+        settings: { defaultPair: 'BTC/USD' }
       }
     ]
   },
   {
     id: 'minimal',
     name: 'Minimal Setup',
-    description: 'Clean interface focused on charts and trading',
+    description: 'Clean and simple with chart and trading interface',
     components: [
       {
         id: 'chart-2',
@@ -128,8 +90,8 @@ const demoLayouts = [
         name: 'TradingView Chart',
         icon: BarChart3,
         color: 'border-liquid-green',
-        description: 'ETH/USD 4H Chart',
-        settings: { symbol: 'BINANCE:ETHUSDT', interval: '4h', theme: 'light' }
+        description: 'ETH/USD Daily Chart',
+        settings: { symbol: 'BINANCE:ETHUSDT', interval: 'D', theme: 'light' }
       },
       {
         id: 'trade-form-2',
@@ -137,42 +99,42 @@ const demoLayouts = [
         name: 'Trade Form',
         icon: ArrowUpDown,
         color: 'border-purple-500',
-        description: 'Quick trading',
-        settings: {}
+        description: 'Trade interface',
+        settings: { defaultPair: 'ETH/USD' }
       }
     ]
   },
   {
     id: 'multi-chart',
     name: 'Multi-Chart Analysis',
-    description: 'Multiple timeframes and pairs for advanced analysis',
+    description: 'Multiple timeframe analysis with different chart views',
     components: [
       {
         id: 'chart-3',
         type: 'tradingview-chart',
-        name: 'BTC Chart',
+        name: 'TradingView Chart',
         icon: BarChart3,
         color: 'border-liquid-green',
-        description: 'BTC/USD 1D',
-        settings: { symbol: 'BINANCE:BTCUSDT', interval: '1D', theme: 'light' }
+        description: 'BTC 15m Chart',
+        settings: { symbol: 'BINANCE:BTCUSDT', interval: '15', theme: 'light' }
       },
       {
         id: 'chart-4',
         type: 'tradingview-chart',
-        name: 'ETH Chart',
+        name: 'TradingView Chart',
         icon: BarChart3,
         color: 'border-liquid-green',
-        description: 'ETH/USD 1D',
-        settings: { symbol: 'BINANCE:ETHUSDT', interval: '1D', theme: 'light' }
+        description: 'BTC 1H Chart',
+        settings: { symbol: 'BINANCE:BTCUSDT', interval: '60', theme: 'light' }
       },
       {
-        id: 'market-data-1',
-        type: 'market-data',
-        name: 'Market Data',
-        icon: PieChart,
-        color: 'border-red-500',
-        description: 'Top movers',
-        settings: { symbols: ['BTC/USD', 'ETH/USD', 'SOL/USD'] }
+        id: 'chart-5',
+        type: 'tradingview-chart',
+        name: 'TradingView Chart',
+        icon: BarChart3,
+        color: 'border-liquid-green',
+        description: 'BTC Daily Chart',
+        settings: { symbol: 'BINANCE:BTCUSDT', interval: 'D', theme: 'light' }
       }
     ]
   }
@@ -180,44 +142,26 @@ const demoLayouts = [
 
 export default function Builder() {
   const { templateId } = useParams();
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('professional');
   const [selectedComponents, setSelectedComponents] = useState<ComponentConfig[]>([]);
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
-  const [isDemoMode, setIsDemoMode] = useState(false);
 
-  const handleAddComponent = (component: ComponentConfig) => {
-    setSelectedComponents(prev => [...prev, { ...component, id: `${component.type}-${Date.now()}` }]);
+  // Load template components when template changes
+  const handleSelectTemplate = (templateId: string) => {
+    setSelectedTemplate(templateId);
+    const template = templateLayouts.find(t => t.id === templateId);
+    if (template) {
+      setSelectedComponents(template.components);
+    }
   };
 
-  const handleRemoveComponent = (id: string) => {
-    setSelectedComponents(prev => prev.filter(comp => comp.id !== id));
-  };
-
-  const handleLoadDemoLayout = (layout: typeof demoLayouts[0]) => {
-    setSelectedComponents(layout.components);
-    setIsDemoMode(true);
-  };
-
-  const renderComponentPreview = (component: ComponentConfig) => {
-    const IconComponent = component.icon;
-    
-    return (
-      <div key={component.id} className={`bg-white rounded-lg p-4 border-2 ${component.color} relative group shadow-sm`}>
-        <div className="text-center text-gray-500 py-4">
-          <IconComponent className={`text-2xl mx-auto mb-2 ${component.color.replace('border-', 'text-')}`} />
-          <div className="text-sm font-medium">{component.name}</div>
-          <div className="text-xs text-gray-400 mt-1">{component.description}</div>
-        </div>
-        <Button
-          variant="destructive"
-          size="sm"
-          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-          onClick={() => handleRemoveComponent(component.id)}
-        >
-          ×
-        </Button>
-      </div>
-    );
-  };
+  // Initialize with first template
+  useEffect(() => {
+    const template = templateLayouts[0];
+    if (template) {
+      setSelectedComponents(template.components);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -226,108 +170,95 @@ export default function Builder() {
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Platform Builder</h1>
             <p className="text-gray-600">
-              {templateId ? `Building from template ${templateId}` : 'Create your custom trading platform'}
+              Choose a template and customize your trading platform
             </p>
           </div>
           <div className="flex items-center space-x-4">
             <Button variant="outline">
               <Save className="w-4 h-4 mr-2" />
-              Save Draft
-            </Button>
-            <Button variant="outline">
-              <Eye className="w-4 h-4 mr-2" />
-              Preview
+              Save Platform
             </Button>
             <Button className="bg-liquid-green text-white hover:bg-liquid-accent">
-              <Files className="w-4 h-4 mr-2" />
-              Files
+              <Eye className="w-4 h-4 mr-2" />
+              Publish
             </Button>
           </div>
         </div>
 
         <div className="flex gap-6">
-          {/* Compact Sidebar */}
-          <div className="w-80 flex-shrink-0">
+          {/* Template Selection Sidebar */}
+          <div className="w-96 flex-shrink-0">
             <Card className="h-full">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm flex items-center">
-                  <Settings className="w-4 h-4 mr-2" />
-                  Builder Tools
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Layout className="w-5 h-5 mr-2" />
+                  Templates
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-4 pt-2">
-                <Tabs defaultValue="components" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3 mb-4">
-                    <TabsTrigger value="components" className="text-xs">Components</TabsTrigger>
-                    <TabsTrigger value="demo" className="text-xs">Demo</TabsTrigger>
-                    <TabsTrigger value="settings" className="text-xs">Settings</TabsTrigger>
+              <CardContent className="p-4">
+                <Tabs defaultValue="templates" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 mb-4">
+                    <TabsTrigger value="templates">Templates</TabsTrigger>
+                    <TabsTrigger value="settings">Settings</TabsTrigger>
                   </TabsList>
                   
-                  <TabsContent value="demo" className="space-y-3">
-                    <div className="mb-3">
-                      <h3 className="font-medium text-sm flex items-center">
-                        <Play className="w-4 h-4 mr-1 text-liquid-green" />
-                        Demo Layouts
-                      </h3>
-                      <p className="text-xs text-gray-600 mt-1">
-                        Live data demos
+                  <TabsContent value="templates" className="space-y-4">
+                    <p className="text-sm text-gray-600 mb-4">
+                      Select a template to preview it with live data
+                    </p>
+                    
+                    <RadioGroup 
+                      value={selectedTemplate} 
+                      onValueChange={handleSelectTemplate}
+                      className="space-y-3"
+                    >
+                      {templateLayouts.map((template) => (
+                        <div key={template.id} className="relative">
+                          <Label
+                            htmlFor={template.id}
+                            className={`block cursor-pointer rounded-lg border-2 p-4 transition-all hover:shadow-md ${
+                              selectedTemplate === template.id 
+                                ? 'border-liquid-green bg-liquid-green/5' 
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                          >
+                            <RadioGroupItem
+                              value={template.id}
+                              id={template.id}
+                              className="sr-only"
+                            />
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-sm mb-1">{template.name}</h4>
+                                <p className="text-xs text-gray-600 mb-2">{template.description}</p>
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="secondary" className="text-xs">
+                                    <Zap className="w-3 h-3 mr-1" />
+                                    {template.components.length} components
+                                  </Badge>
+                                  {selectedTemplate === template.id && (
+                                    <Badge className="bg-liquid-green text-white text-xs">
+                                      <Check className="w-3 h-3 mr-1" />
+                                      Active
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                    
+                    <div className="mt-6 p-4 bg-liquid-green/10 rounded-lg">
+                      <div className="flex items-center mb-2">
+                        <TrendingUp className="w-5 h-5 mr-2 text-liquid-green" />
+                        <h4 className="font-semibold text-sm">Live Market Data</h4>
+                      </div>
+                      <p className="text-xs text-gray-600">
+                        All templates include real-time TradingView charts and live market data from major exchanges
                       </p>
                     </div>
-                    
-                    <div className="space-y-3">
-                      {demoLayouts.map((layout) => (
-                        <Card key={layout.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                          <CardContent className="p-3">
-                            <div className="space-y-2">
-                              <div>
-                                <h4 className="font-medium text-sm">{layout.name}</h4>
-                                <p className="text-xs text-gray-600">{layout.description}</p>
-                              </div>
-                              <div className="flex items-center justify-between">
-                                <Badge variant="secondary" className="text-xs">
-                                  <Zap className="w-3 h-3 mr-1" />
-                                  {layout.components.length} items
-                                </Badge>
-                                <Button
-                                  size="sm"
-                                  onClick={() => handleLoadDemoLayout(layout)}
-                                  className="bg-liquid-green hover:bg-liquid-accent text-white text-xs"
-                                >
-                                  Load
-                                </Button>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                    
-                    <div className="text-center p-3 bg-liquid-green/10 rounded text-xs">
-                      <TrendingUp className="w-5 h-5 mx-auto mb-1 text-liquid-green" />
-                      <p className="font-medium">Live market data included</p>
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="components" className="space-y-2">
-                    <p className="text-xs text-gray-600 mb-3">Click to add components</p>
-                    {availableComponents.map(component => {
-                      const IconComponent = component.icon;
-                      return (
-                        <div
-                          key={component.id}
-                          className={`bg-white p-3 rounded cursor-pointer hover:shadow-md transition-all border ${component.color} hover:scale-105`}
-                          onClick={() => handleAddComponent(component)}
-                        >
-                          <div className="flex items-center">
-                            <IconComponent className={`w-4 h-4 mr-2 ${component.color.replace('border-', 'text-')}`} />
-                            <div className="flex-1">
-                              <div className="font-medium text-sm">{component.name}</div>
-                              <div className="text-xs text-gray-500">{component.description}</div>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
                   </TabsContent>
                   
                   <TabsContent value="settings" className="space-y-3">
@@ -376,26 +307,25 @@ export default function Builder() {
             </Card>
           </div>
 
-          {/* Expanded Canvas Area */}
+          {/* Live Preview Canvas */}
           <div className="flex-1 min-w-0">
-            <Card>
+            <Card className="h-full">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <span>Canvas Preview</span>
-                    {isDemoMode && (
-                      <Badge className="bg-liquid-green text-white">
-                        <Play className="w-3 h-3 mr-1" />
-                        Live Demo
-                      </Badge>
-                    )}
+                    <span>Live Preview</span>
+                    <Badge className="bg-liquid-green text-white">
+                      <Play className="w-3 h-3 mr-1" />
+                      Real-Time Data
+                    </Badge>
                   </div>
-                  <div className="flex space-x-2">
+                  <div className="flex items-center space-x-2">
                     <Button
                       variant={previewMode === 'desktop' ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setPreviewMode('desktop')}
                     >
+                      <Monitor className="w-4 h-4 mr-2" />
                       Desktop
                     </Button>
                     <Button
@@ -403,80 +333,54 @@ export default function Builder() {
                       size="sm"
                       onClick={() => setPreviewMode('mobile')}
                     >
+                      <Smartphone className="w-4 h-4 mr-2" />
                       Mobile
                     </Button>
                   </div>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-4">
-                <div className="bg-gray-100 rounded-lg p-6" style={{ minHeight: '800px' }}>
-                  {/* Live Preview Area */}
-                  <div className={`bg-white rounded-lg shadow-inner p-6 h-full ${
-                    previewMode === 'mobile' ? 'max-w-md mx-auto' : 'w-full'
-                  }`}>
-                    {selectedComponents.length > 0 ? (
-                      <div className={`grid gap-6 ${
-                        previewMode === 'mobile' ? 'grid-cols-1' : 
-                        selectedComponents.length === 1 ? 'grid-cols-1' :
-                        selectedComponents.length === 2 ? 'grid-cols-2' :
-                        selectedComponents.length === 3 ? 'grid-cols-3' :
-                        selectedComponents.length === 4 ? 'grid-cols-2 lg:grid-cols-4' :
-                        'grid-cols-2 lg:grid-cols-3'
-                      }`}>
-                        {selectedComponents.map(component => 
-                          isDemoMode ? (
-                            <div key={component.id} className={`${
-                              selectedComponents.length === 1 ? 'h-[600px]' :
-                              selectedComponents.length === 2 ? 'h-[500px]' :
-                              'h-[400px]'
-                            }`}>
-                              <LiveComponentRenderer
-                                component={component}
-                                onRemove={handleRemoveComponent}
-                                isDemoMode={true}
-                              />
-                            </div>
-                          ) : (
-                            renderComponentPreview(component)
-                          )
-                        )}
-                      </div>
-                    ) : (
-                      <div className="text-center text-gray-500 py-16">
-                        <BarChart3 className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                        <h3 className="text-lg font-semibold mb-2">Start Building</h3>
+              <CardContent className="p-6 bg-gray-100 h-full" style={{ minHeight: '800px' }}>
+                <div className={`bg-white rounded-lg shadow-lg p-6 h-full transition-all ${
+                  previewMode === 'mobile' ? 'max-w-md mx-auto' : 'w-full'
+                }`}>
+                  {selectedComponents.length > 0 ? (
+                    <div className={`h-full grid gap-4 ${
+                      previewMode === 'mobile' ? 'grid-cols-1' : 
+                      selectedComponents.length === 1 ? 'grid-cols-1' :
+                      selectedComponents.length === 2 ? 'grid-cols-2' :
+                      selectedComponents.length === 3 ? 'grid-cols-3' :
+                      selectedComponents.length === 4 ? 'grid-cols-2' :
+                      'grid-cols-2 lg:grid-cols-3'
+                    }`}>
+                      {selectedComponents.map(component => (
+                        <div key={component.id} className={`${
+                          selectedComponents.length === 1 ? 'h-[700px]' :
+                          selectedComponents.length === 2 ? 'h-[600px]' :
+                          selectedComponents.length === 4 ? 'h-[350px]' :
+                          'h-[400px]'
+                        }`}>
+                          <LiveComponentRenderer
+                            component={component}
+                            onRemove={() => {}}
+                            isDemoMode={true}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <div className="text-center text-gray-400">
+                        <Layout className="w-20 h-20 mx-auto mb-4" />
+                        <h3 className="text-xl font-semibold mb-2">Select a Template</h3>
                         <p className="text-sm">
-                          {isDemoMode ? 'Load a demo layout to see live TradingView charts and trading components' : 'Drag components from the left panel to start building your trading platform'}
+                          Choose a template from the left to see it in action with live market data
                         </p>
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
-
-            {/* Component Configuration */}
-            {selectedComponents.length > 0 && (
-              <Card className="mt-6">
-                <CardHeader>
-                  <CardTitle>Component Configuration</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <p className="text-sm text-gray-600">
-                      Select a component in the canvas to configure its settings
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedComponents.map(component => (
-                        <Badge key={component.id} variant="secondary">
-                          {component.name}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
         </div>
       </div>
