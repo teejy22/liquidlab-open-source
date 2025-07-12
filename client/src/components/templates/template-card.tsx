@@ -19,7 +19,7 @@ export default function TemplateCard({ template }: TemplateCardProps) {
       case 'Minimal':
         return <Minimize2 className="w-5 h-5" />;
       case 'Analytics':
-        return <TrendingView className="w-5 h-5" />;
+        return <TrendingUp className="w-5 h-5" />;
       default:
         return <BarChart3 className="w-5 h-5" />;
     }
