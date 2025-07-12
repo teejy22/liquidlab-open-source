@@ -20,7 +20,7 @@ export default function Orderbook({ symbol, height = 400, showHeader = true }: O
   const { data: orderbook, isLoading, error } = useQuery({
     queryKey: ['/api/hyperliquid/orderbook', symbol],
     queryFn: () => hyperliquidAPI.getOrderbook(symbol),
-    refetchInterval: 1000, // Update every second
+    refetchInterval: 5000, // Update every 5 seconds
     enabled: !!symbol
   });
 

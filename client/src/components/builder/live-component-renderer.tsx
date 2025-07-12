@@ -47,7 +47,7 @@ export default function LiveComponentRenderer({
         return (
           <Orderbook
             symbol={component.settings?.symbol || "BTC/USD"}
-            height={400}
+            height={450}
             showHeader={true}
           />
         );
@@ -55,7 +55,7 @@ export default function LiveComponentRenderer({
       case 'portfolio':
         return (
           <Portfolio
-            height={400}
+            height={450}
             showHeader={true}
           />
         );
@@ -64,7 +64,7 @@ export default function LiveComponentRenderer({
         return (
           <MarketData
             symbols={component.settings?.symbols || ['BTC/USD', 'ETH/USD', 'SOL/USD']}
-            height={400}
+            height={450}
             showHeader={true}
           />
         );

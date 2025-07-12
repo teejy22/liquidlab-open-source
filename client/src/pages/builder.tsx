@@ -245,7 +245,7 @@ export default function Builder() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-4 gap-8">
           {/* Component Library */}
           <div className="lg:col-span-1">
             <Card>
@@ -381,7 +381,7 @@ export default function Builder() {
           </div>
 
           {/* Builder Canvas */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-3">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
@@ -413,9 +413,9 @@ export default function Builder() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="bg-gray-900 rounded-lg p-6 min-h-96">
+                <div className="bg-gray-900 rounded-lg p-6" style={{ minHeight: '700px' }}>
                   {/* Live Preview */}
-                  <div className={`bg-white rounded-lg p-4 min-h-80 ${
+                  <div className={`bg-white rounded-lg p-4 h-full ${
                     previewMode === 'mobile' ? 'max-w-sm mx-auto' : 'w-full'
                   }`}>
                     {selectedComponents.length > 0 ? (
@@ -428,7 +428,7 @@ export default function Builder() {
                       }`}>
                         {selectedComponents.map(component => 
                           isDemoMode ? (
-                            <div key={component.id} className="h-[400px]">
+                            <div key={component.id} className="h-[450px]">
                               <LiveComponentRenderer
                                 component={component}
                                 onRemove={handleRemoveComponent}
