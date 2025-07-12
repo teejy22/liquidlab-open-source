@@ -149,11 +149,11 @@ export default function Example() {
       </header>
 
       {/* Main Trading Interface */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         {/* Asset Selector and Stats */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-4">
+            <div className="w-full lg:w-auto">
               <Select
                 value={selectedPair.symbol}
                 onValueChange={(value) => {
@@ -161,7 +161,7 @@ export default function Example() {
                   if (pair) setSelectedPair(pair);
                 }}
               >
-                <SelectTrigger className="w-[250px] h-12 text-lg font-semibold">
+                <SelectTrigger className="w-full sm:w-[250px] h-12 text-lg font-semibold">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -175,7 +175,7 @@ export default function Example() {
             </div>
             
             {/* Market Stats */}
-            <div className="flex items-center space-x-8">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 lg:gap-8">
               <div>
                 <p className="text-sm text-gray-500 flex items-center">
                   Price
@@ -211,7 +211,7 @@ export default function Example() {
                 )}
               </div>
               {lastUpdated && !isLoading && (
-                <div>
+                <div className="text-right sm:text-left">
                   <p className="text-sm text-gray-500">Last Updated</p>
                   <p className="text-sm font-medium text-gray-600">
                     {lastUpdated.toLocaleTimeString()}
@@ -226,11 +226,11 @@ export default function Example() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Chart Section - Takes up 3 columns */}
           <div className="lg:col-span-3">
-            <Card className="p-6">
+            <Card className="p-4 sm:p-6">
               {/* Timeframe Selector */}
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                 <h3 className="text-lg font-semibold">Live Chart</h3>
-                <div className="flex space-x-2">
+                <div className="flex flex-wrap gap-2">
                   <Button
                     variant={chartInterval === "1" ? "default" : "outline"}
                     size="sm"
@@ -298,7 +298,7 @@ export default function Example() {
 
           {/* Trading Panel - Takes up 1 column */}
           <div className="lg:col-span-1">
-            <Card className="p-8">
+            <Card className="p-4 sm:p-6 lg:p-8">
               <h3 className="text-lg font-semibold mb-6">Place Order</h3>
               
               <Tabs value={orderType} onValueChange={(v) => setOrderType(v as "buy" | "sell")}>
