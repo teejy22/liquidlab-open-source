@@ -11,6 +11,7 @@ import Builder from "@/pages/builder";
 import Templates from "@/pages/templates";
 import Analytics from "@/pages/analytics";
 import Pricing from "@/pages/pricing";
+import Education from "@/pages/education";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/templates" component={Templates} />
       <Route path="/analytics" component={Analytics} />
       <Route path="/pricing" component={Pricing} />
+      <Route path="/education" component={Education} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -44,6 +44,9 @@ export default function Footer() {
                 <Link href="/analytics" className="hover:text-liquid-green transition-colors">Analytics</Link>
               </li>
               <li>
+                <Link href="/education" className="hover:text-liquid-green transition-colors">Education</Link>
+              </li>
+              <li>
                 <a href="#" className="hover:text-liquid-green transition-colors">Integrations</a>
               </li>
             </ul>

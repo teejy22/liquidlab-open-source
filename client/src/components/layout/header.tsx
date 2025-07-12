@@ -79,6 +79,11 @@ export default function Header() {
             }`}>
               Pricing
             </Link>
+            <Link href="/education" className={`font-medium transition-colors ${
+              isActive('/education') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
+            }`}>
+              Education
+            </Link>
             <Link href="/builder" className={`font-medium transition-colors ${
               isActive('/builder') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
             }`}>
