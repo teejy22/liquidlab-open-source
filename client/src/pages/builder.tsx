@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import LiveComponentRenderer from "@/components/builder/live-component-renderer";
 import { 
   BarChart3, 
   List, 
@@ -13,7 +15,10 @@ import {
   Settings,
   Eye,
   Save,
-  Files
+  Files,
+  Play,
+  Zap,
+  TrendingUp
 } from "lucide-react";
 
 interface ComponentConfig {
@@ -68,10 +73,116 @@ const availableComponents: ComponentConfig[] = [
   }
 ];
 
+const demoLayouts = [
+  {
+    id: 'professional',
+    name: 'Professional Trader',
+    description: 'Full-featured trading layout with charts, order book, and portfolio',
+    components: [
+      {
+        id: 'chart-1',
+        type: 'tradingview-chart',
+        name: 'TradingView Chart',
+        icon: BarChart3,
+        color: 'border-liquid-green',
+        description: 'BTC/USD 1H Chart',
+        settings: { symbol: 'BINANCE:BTCUSDT', interval: '1h', theme: 'light' }
+      },
+      {
+        id: 'orderbook-1',
+        type: 'orderbook',
+        name: 'Order Book',
+        icon: List,
+        color: 'border-blue-500',
+        description: 'Live order book',
+        settings: { symbol: 'BTC/USD' }
+      },
+      {
+        id: 'portfolio-1',
+        type: 'portfolio',
+        name: 'Portfolio',
+        icon: Wallet,
+        color: 'border-orange-500',
+        description: 'Account overview',
+        settings: {}
+      },
+      {
+        id: 'trade-form-1',
+        type: 'trade-form',
+        name: 'Trade Form',
+        icon: ArrowUpDown,
+        color: 'border-purple-500',
+        description: 'Buy/sell interface',
+        settings: {}
+      }
+    ]
+  },
+  {
+    id: 'minimal',
+    name: 'Minimal Setup',
+    description: 'Clean interface focused on charts and trading',
+    components: [
+      {
+        id: 'chart-2',
+        type: 'tradingview-chart',
+        name: 'TradingView Chart',
+        icon: BarChart3,
+        color: 'border-liquid-green',
+        description: 'ETH/USD 4H Chart',
+        settings: { symbol: 'BINANCE:ETHUSDT', interval: '4h', theme: 'light' }
+      },
+      {
+        id: 'trade-form-2',
+        type: 'trade-form',
+        name: 'Trade Form',
+        icon: ArrowUpDown,
+        color: 'border-purple-500',
+        description: 'Quick trading',
+        settings: {}
+      }
+    ]
+  },
+  {
+    id: 'multi-chart',
+    name: 'Multi-Chart Analysis',
+    description: 'Multiple timeframes and pairs for advanced analysis',
+    components: [
+      {
+        id: 'chart-3',
+        type: 'tradingview-chart',
+        name: 'BTC Chart',
+        icon: BarChart3,
+        color: 'border-liquid-green',
+        description: 'BTC/USD 1D',
+        settings: { symbol: 'BINANCE:BTCUSDT', interval: '1D', theme: 'light' }
+      },
+      {
+        id: 'chart-4',
+        type: 'tradingview-chart',
+        name: 'ETH Chart',
+        icon: BarChart3,
+        color: 'border-liquid-green',
+        description: 'ETH/USD 1D',
+        settings: { symbol: 'BINANCE:ETHUSDT', interval: '1D', theme: 'light' }
+      },
+      {
+        id: 'market-data-1',
+        type: 'market-data',
+        name: 'Market Data',
+        icon: PieChart,
+        color: 'border-red-500',
+        description: 'Top movers',
+        settings: { symbols: ['BTC/USD', 'ETH/USD', 'SOL/USD'] }
+      }
+    ]
+  }
+];
+
 export default function Builder() {
   const { templateId } = useParams();
   const [selectedComponents, setSelectedComponents] = useState<ComponentConfig[]>([]);
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
+  const [isDemoMode, setIsDemoMode] = useState(false);
 
   const handleAddComponent = (component: ComponentConfig) => {
     setSelectedComponents(prev => [...prev, { ...component, id: `${component.type}-${Date.now()}` }]);
@@ -81,14 +192,20 @@ export default function Builder() {
     setSelectedComponents(prev => prev.filter(comp => comp.id !== id));
   };
 
+  const handleLoadDemoLayout = (layout: typeof demoLayouts[0]) => {
+    setSelectedComponents(layout.components);
+    setIsDemoMode(true);
+  };
+
   const renderComponentPreview = (component: ComponentConfig) => {
     const IconComponent = component.icon;
     
     return (
-      <div key={component.id} className={`bg-gray-100 rounded-lg p-4 border-2 border-dashed ${component.color} relative group`}>
+      <div key={component.id} className={`bg-white rounded-lg p-4 border-2 ${component.color} relative group shadow-sm`}>
         <div className="text-center text-gray-500 py-4">
           <IconComponent className={`text-2xl mx-auto mb-2 ${component.color.replace('border-', 'text-')}`} />
-          <div className="text-sm">{component.name}</div>
+          <div className="text-sm font-medium">{component.name}</div>
+          <div className="text-xs text-gray-400 mt-1">{component.description}</div>
         </div>
         <Button
           variant="destructive"
@@ -140,10 +257,62 @@ export default function Builder() {
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="components" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2">
+                  <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="components">Components</TabsTrigger>
+                    <TabsTrigger value="demo">Live Demo</TabsTrigger>
                     <TabsTrigger value="settings">Settings</TabsTrigger>
                   </TabsList>
+                  
+                  <TabsContent value="demo" className="space-y-4">
+                    <div className="flex items-center space-x-2 mb-4">
+                      <Play className="w-5 h-5 text-liquid-green" />
+                      <div>
+                        <h3 className="font-semibold">Interactive Demo Layouts</h3>
+                        <p className="text-sm text-gray-600">
+                          Try these pre-built layouts with live TradingView charts and real market data
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      {demoLayouts.map((layout) => (
+                        <Card key={layout.id} className="cursor-pointer hover:shadow-md transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <h4 className="font-medium text-sm">{layout.name}</h4>
+                                <p className="text-xs text-gray-600 mt-1">{layout.description}</p>
+                                <div className="flex items-center mt-2">
+                                  <Badge variant="secondary" className="text-xs">
+                                    <Zap className="w-3 h-3 mr-1" />
+                                    {layout.components.length} components
+                                  </Badge>
+                                </div>
+                              </div>
+                              <Button
+                                size="sm"
+                                onClick={() => handleLoadDemoLayout(layout)}
+                                className="bg-liquid-green hover:bg-liquid-accent text-white"
+                              >
+                                <Play className="w-4 h-4 mr-1" />
+                                Load Demo
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                    
+                    <Separator className="my-4" />
+                    
+                    <div className="text-center p-4 bg-liquid-green/10 rounded-lg">
+                      <TrendingUp className="w-8 h-8 mx-auto mb-2 text-liquid-green" />
+                      <h4 className="font-semibold text-sm">Real-Time Trading Data</h4>
+                      <p className="text-xs text-gray-600 mt-1">
+                        All demo layouts use live market data from major exchanges
+                      </p>
+                    </div>
+                  </TabsContent>
                   
                   <TabsContent value="components" className="space-y-3 mt-4">
                     {availableComponents.map(component => {
@@ -216,7 +385,15 @@ export default function Builder() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
-                  <span>Canvas Preview</span>
+                  <div className="flex items-center space-x-2">
+                    <span>Canvas Preview</span>
+                    {isDemoMode && (
+                      <Badge className="bg-liquid-green text-white">
+                        <Play className="w-3 h-3 mr-1" />
+                        Live Demo
+                      </Badge>
+                    )}
+                  </div>
                   <div className="flex space-x-2">
                     <Button
                       variant={previewMode === 'desktop' ? 'default' : 'outline'}
@@ -243,16 +420,32 @@ export default function Builder() {
                   }`}>
                     {selectedComponents.length > 0 ? (
                       <div className={`grid gap-4 ${
-                        previewMode === 'mobile' ? 'grid-cols-1' : 'grid-cols-2'
+                        previewMode === 'mobile' ? 'grid-cols-1' : 
+                        selectedComponents.length === 1 ? 'grid-cols-1' :
+                        selectedComponents.length === 2 ? 'grid-cols-2' :
+                        selectedComponents.length === 3 ? 'grid-cols-3' :
+                        'grid-cols-2'
                       }`}>
-                        {selectedComponents.map(component => renderComponentPreview(component))}
+                        {selectedComponents.map(component => 
+                          isDemoMode ? (
+                            <div key={component.id} className="h-[400px]">
+                              <LiveComponentRenderer
+                                component={component}
+                                onRemove={handleRemoveComponent}
+                                isDemoMode={true}
+                              />
+                            </div>
+                          ) : (
+                            renderComponentPreview(component)
+                          )
+                        )}
                       </div>
                     ) : (
                       <div className="text-center text-gray-500 py-16">
                         <BarChart3 className="w-16 h-16 mx-auto mb-4 text-gray-300" />
                         <h3 className="text-lg font-semibold mb-2">Start Building</h3>
                         <p className="text-sm">
-                          Drag components from the left panel to start building your trading platform
+                          {isDemoMode ? 'Load a demo layout to see live TradingView charts and trading components' : 'Drag components from the left panel to start building your trading platform'}
                         </p>
                       </div>
                     )}
