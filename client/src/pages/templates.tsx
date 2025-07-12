@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
-import { Search, Filter, BarChart3, Smartphone, Minimize2, TrendingUp } from "lucide-react";
+import { Search, Filter, BarChart3, Smartphone, Minimize2, TrendingUp, Eye } from "lucide-react";
+import TemplatePreview from "@/components/templates/template-preview";
 
 const templateCategories = [
   { name: 'All', count: 50 },
@@ -219,11 +220,19 @@ export default function Templates() {
                     <span className="text-liquid-green font-semibold">Free</span>
                     <Badge variant="outline">{template.category}</Badge>
                   </div>
-                  <Link href={`/builder/${template.id}`}>
-                    <Button className="bg-liquid-green text-white hover:bg-liquid-accent">
-                      Use Template
-                    </Button>
-                  </Link>
+                  <div className="flex items-center space-x-2">
+                    <TemplatePreview template={template}>
+                      <Button variant="outline" size="sm">
+                        <Eye className="w-4 h-4 mr-1" />
+                        Preview
+                      </Button>
+                    </TemplatePreview>
+                    <Link href={`/builder/${template.id}`}>
+                      <Button className="bg-liquid-green text-white hover:bg-liquid-accent">
+                        Use Template
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </CardContent>
             </Card>
