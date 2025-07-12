@@ -151,6 +151,16 @@ export default function Header() {
               }`}>
                 Templates
               </Link>
+              <Link href="/pricing" className={`block px-3 py-2 text-base font-medium transition-colors ${
+                isActive('/pricing') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
+              }`}>
+                Pricing
+              </Link>
+              <Link href="/education" className={`block px-3 py-2 text-base font-medium transition-colors ${
+                isActive('/education') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
+              }`}>
+                Education
+              </Link>
               <Link href="/builder" className={`block px-3 py-2 text-base font-medium transition-colors ${
                 isActive('/builder') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
               }`}>
