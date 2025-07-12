@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { walletService } from "@/lib/wallet";
 import { WalletState } from "@/types";
 import { Wallet, Menu, X } from "lucide-react";
-import logoImage from "@assets/Trade (1)_1752280163098.png";
+import logoImage from "@assets/Trade (5)_1752280465910.png";
 
 export default function Header() {
   const [location] = useLocation();
@@ -43,7 +43,7 @@ export default function Header() {
             <img 
               src={logoImage} 
               alt="LiquidLab Logo" 
-              className="h-24 w-auto bg-black rounded-lg p-2"
+              className="h-24 w-auto"
             />
           </Link>
           
