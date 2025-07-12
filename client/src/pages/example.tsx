@@ -383,6 +383,268 @@ export default function Example() {
           </div>
         </div>
 
+        {/* Position Details Section */}
+        <div className="mt-10">
+          <Card className="p-4 sm:p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold">Open Positions</h3>
+              <Button variant="outline" size="sm">Close All</Button>
+            </div>
+            
+            {/* Position Summary */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-sm text-gray-600 mb-1">Total Collateral</p>
+                <p className="text-lg font-semibold">$5,432.10</p>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-sm text-gray-600 mb-1">Unrealized PnL</p>
+                <p className="text-lg font-semibold text-green-600">+$234.56</p>
+                <p className="text-xs text-green-600">+4.32%</p>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-sm text-gray-600 mb-1">Margin Ratio</p>
+                <p className="text-lg font-semibold">15.8%</p>
+                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                  <div className="bg-green-500 h-2 rounded-full" style={{ width: '15.8%' }}></div>
+                </div>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-sm text-gray-600 mb-1">Free Collateral</p>
+                <p className="text-lg font-semibold">$4,567.89</p>
+              </div>
+            </div>
+
+            {/* Positions Table - Desktop */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-3 px-2 text-sm font-medium text-gray-700">Symbol</th>
+                    <th className="text-left py-3 px-2 text-sm font-medium text-gray-700">Side</th>
+                    <th className="text-right py-3 px-2 text-sm font-medium text-gray-700">Size</th>
+                    <th className="text-right py-3 px-2 text-sm font-medium text-gray-700">Entry</th>
+                    <th className="text-right py-3 px-2 text-sm font-medium text-gray-700">Mark</th>
+                    <th className="text-right py-3 px-2 text-sm font-medium text-gray-700">Liq. Price</th>
+                    <th className="text-right py-3 px-2 text-sm font-medium text-gray-700">PnL</th>
+                    <th className="text-right py-3 px-2 text-sm font-medium text-gray-700">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className="py-3 px-2">
+                      <div className="flex items-center">
+                        <span className="font-medium">BTC-USD</span>
+                        <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">10x</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-2">
+                      <span className="text-green-600 font-medium">Long</span>
+                    </td>
+                    <td className="py-3 px-2 text-right">0.1234</td>
+                    <td className="py-3 px-2 text-right">$43,125.00</td>
+                    <td className="py-3 px-2 text-right">$43,567.89</td>
+                    <td className="py-3 px-2 text-right text-red-600">$38,450.00</td>
+                    <td className="py-3 px-2 text-right">
+                      <div className="text-green-600">
+                        <p className="font-medium">+$54.67</p>
+                        <p className="text-xs">+1.02%</p>
+                      </div>
+                    </td>
+                    <td className="py-3 px-2 text-right">
+                      <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
+                        Close
+                      </Button>
+                    </td>
+                  </tr>
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className="py-3 px-2">
+                      <div className="flex items-center">
+                        <span className="font-medium">ETH-USD</span>
+                        <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">5x</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-2">
+                      <span className="text-red-600 font-medium">Short</span>
+                    </td>
+                    <td className="py-3 px-2 text-right">2.5000</td>
+                    <td className="py-3 px-2 text-right">$2,245.50</td>
+                    <td className="py-3 px-2 text-right">$2,198.75</td>
+                    <td className="py-3 px-2 text-right text-red-600">$2,450.00</td>
+                    <td className="py-3 px-2 text-right">
+                      <div className="text-green-600">
+                        <p className="font-medium">+$116.88</p>
+                        <p className="text-xs">+2.08%</p>
+                      </div>
+                    </td>
+                    <td className="py-3 px-2 text-right">
+                      <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
+                        Close
+                      </Button>
+                    </td>
+                  </tr>
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className="py-3 px-2">
+                      <div className="flex items-center">
+                        <span className="font-medium">SOL-USD</span>
+                        <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">3x</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-2">
+                      <span className="text-green-600 font-medium">Long</span>
+                    </td>
+                    <td className="py-3 px-2 text-right">50.0000</td>
+                    <td className="py-3 px-2 text-right">$98.75</td>
+                    <td className="py-3 px-2 text-right">$101.23</td>
+                    <td className="py-3 px-2 text-right text-red-600">$82.50</td>
+                    <td className="py-3 px-2 text-right">
+                      <div className="text-green-600">
+                        <p className="font-medium">+$124.00</p>
+                        <p className="text-xs">+2.51%</p>
+                      </div>
+                    </td>
+                    <td className="py-3 px-2 text-right">
+                      <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
+                        Close
+                      </Button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* Positions Table - Mobile */}
+            <div className="md:hidden space-y-4">
+              {/* Position 1 */}
+              <div className="border rounded-lg p-4">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold">BTC-USD</span>
+                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">10x</span>
+                    </div>
+                    <span className="text-sm text-green-600 font-medium">Long</span>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-green-600">+$54.67</p>
+                    <p className="text-xs text-green-600">+1.02%</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <span className="text-gray-600">Size:</span> 0.1234
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Entry:</span> $43,125
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Mark:</span> $43,567
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Liq:</span> <span className="text-red-600">$38,450</span>
+                  </div>
+                </div>
+                <Button variant="outline" size="sm" className="w-full mt-3 text-red-600 hover:text-red-700">
+                  Close Position
+                </Button>
+              </div>
+
+              {/* Position 2 */}
+              <div className="border rounded-lg p-4">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold">ETH-USD</span>
+                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">5x</span>
+                    </div>
+                    <span className="text-sm text-red-600 font-medium">Short</span>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-green-600">+$116.88</p>
+                    <p className="text-xs text-green-600">+2.08%</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <span className="text-gray-600">Size:</span> 2.5000
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Entry:</span> $2,245
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Mark:</span> $2,198
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Liq:</span> <span className="text-red-600">$2,450</span>
+                  </div>
+                </div>
+                <Button variant="outline" size="sm" className="w-full mt-3 text-red-600 hover:text-red-700">
+                  Close Position
+                </Button>
+              </div>
+
+              {/* Position 3 */}
+              <div className="border rounded-lg p-4">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold">SOL-USD</span>
+                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">3x</span>
+                    </div>
+                    <span className="text-sm text-green-600 font-medium">Long</span>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-green-600">+$124.00</p>
+                    <p className="text-xs text-green-600">+2.51%</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <span className="text-gray-600">Size:</span> 50.0000
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Entry:</span> $98.75
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Mark:</span> $101.23
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Liq:</span> <span className="text-red-600">$82.50</span>
+                  </div>
+                </div>
+                <Button variant="outline" size="sm" className="w-full mt-3 text-red-600 hover:text-red-700">
+                  Close Position
+                </Button>
+              </div>
+            </div>
+
+            {/* Position Controls */}
+            <div className="mt-6 flex flex-col sm:flex-row gap-4">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-600">Default Leverage:</span>
+                <Select defaultValue="10">
+                  <SelectTrigger className="w-20 h-8">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1x</SelectItem>
+                    <SelectItem value="2">2x</SelectItem>
+                    <SelectItem value="3">3x</SelectItem>
+                    <SelectItem value="5">5x</SelectItem>
+                    <SelectItem value="10">10x</SelectItem>
+                    <SelectItem value="20">20x</SelectItem>
+                    <SelectItem value="50">50x</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-600">Cross Margin:</span>
+                <Button variant="outline" size="sm">Enabled</Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+
         {/* Order Book Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
           <Card className="p-6">
