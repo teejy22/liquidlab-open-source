@@ -339,41 +339,167 @@ export default function Builder() {
                   </div>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6 bg-gray-100 h-full" style={{ minHeight: '800px' }}>
-                <div className={`bg-white rounded-lg shadow-lg p-6 h-full transition-all ${
+              <CardContent className="p-6 bg-gray-50" style={{ minHeight: '700px' }}>
+                <div className={`transition-all ${
                   previewMode === 'mobile' ? 'max-w-md mx-auto' : 'w-full'
                 }`}>
                   {selectedComponents.length > 0 ? (
-                    <div className={`h-full grid gap-4 ${
-                      previewMode === 'mobile' ? 'grid-cols-1' : 
-                      selectedComponents.length === 1 ? 'grid-cols-1' :
-                      selectedComponents.length === 2 ? 'grid-cols-2' :
-                      selectedComponents.length === 3 ? 'grid-cols-3' :
-                      selectedComponents.length === 4 ? 'grid-cols-2' :
-                      'grid-cols-2 lg:grid-cols-3'
-                    }`}>
-                      {selectedComponents.map(component => (
-                        <div key={component.id} className={`${
-                          selectedComponents.length === 1 ? 'h-[700px]' :
-                          selectedComponents.length === 2 ? 'h-[600px]' :
-                          selectedComponents.length === 4 ? 'h-[350px]' :
-                          'h-[400px]'
-                        }`}>
-                          <LiveComponentRenderer
-                            component={component}
-                            onRemove={() => {}}
-                            isDemoMode={true}
-                          />
+                    <div className="bg-gray-900 text-white p-8 rounded-lg min-h-[600px] relative">
+                      {/* Header */}
+                      <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center space-x-4">
+                          <h2 className="text-xl font-bold">My Trading Platform</h2>
+                          <Badge className="bg-liquid-green text-white">
+                            {selectedTemplate === 'professional' ? 'Professional' : 
+                             selectedTemplate === 'minimal' ? 'Minimal' : 'Multi-Chart'}
+                          </Badge>
                         </div>
-                      ))}
+                        <div className="text-green-400 font-mono text-lg">$67,845.32</div>
+                      </div>
+
+                      {/* Mock Trading Interface */}
+                      <div className={`grid ${previewMode === 'mobile' ? 'grid-cols-1 gap-4' : 'grid-cols-12 gap-4'} h-96`}>
+                        {/* Left Panel - Market Data */}
+                        <div className={previewMode === 'mobile' ? 'col-span-1' : 'col-span-3 space-y-4'}>
+                          <div className="bg-black/20 p-4 rounded">
+                            <h3 className="text-sm font-semibold mb-2">Market Data</h3>
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-xs">
+                                <span>ETH/USD</span>
+                                <span className="text-green-400">+2.34%</span>
+                              </div>
+                              <div className="flex justify-between text-xs">
+                                <span>BTC/USD</span>
+                                <span className="text-red-400">-1.23%</span>
+                              </div>
+                              <div className="flex justify-between text-xs">
+                                <span>SOL/USD</span>
+                                <span className="text-green-400">+5.67%</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {previewMode === 'desktop' && (
+                            <div className="bg-black/20 p-4 rounded">
+                              <h3 className="text-sm font-semibold mb-2">Order Book</h3>
+                              <div className="space-y-1">
+                                <div className="flex justify-between text-xs">
+                                  <span className="text-red-400">67,845</span>
+                                  <span>0.234</span>
+                                </div>
+                                <div className="flex justify-between text-xs">
+                                  <span className="text-red-400">67,840</span>
+                                  <span>0.156</span>
+                                </div>
+                                <div className="flex justify-between text-xs">
+                                  <span className="text-green-400">67,850</span>
+                                  <span>0.891</span>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Center - Chart */}
+                        <div className={previewMode === 'mobile' ? 'col-span-1' : 'col-span-6'}>
+                          <div className="bg-black/20 p-4 rounded h-full">
+                            <div className="flex justify-between items-center mb-4">
+                              <h3 className="text-sm font-semibold">
+                                {selectedTemplate === 'multi-chart' ? 'Multi-Chart View' : 'ETH/USD Chart'}
+                              </h3>
+                              <div className="flex space-x-2">
+                                <span className="text-xs bg-liquid-green px-2 py-1 rounded">1H</span>
+                                <span className="text-xs bg-gray-600 px-2 py-1 rounded">4H</span>
+                                <span className="text-xs bg-gray-600 px-2 py-1 rounded">1D</span>
+                              </div>
+                            </div>
+                            <div className="h-64 bg-gradient-to-br from-green-500/20 to-blue-500/20 rounded flex items-center justify-center">
+                              <div className="text-center">
+                                <BarChart3 className="w-16 h-16 mx-auto mb-2 opacity-50" />
+                                <p className="text-sm opacity-70">TradingView Chart</p>
+                                <p className="text-xs opacity-50 mt-2">Live data will be shown here</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Right Panel - Trading */}
+                        <div className={previewMode === 'mobile' ? 'col-span-1' : 'col-span-3 space-y-4'}>
+                          <div className="bg-black/20 p-4 rounded">
+                            <h3 className="text-sm font-semibold mb-2">Trade</h3>
+                            <div className="space-y-2">
+                              <div className="flex space-x-2">
+                                <button className="flex-1 bg-green-600 text-white py-1 px-2 rounded text-xs">Buy</button>
+                                <button className="flex-1 bg-red-600 text-white py-1 px-2 rounded text-xs">Sell</button>
+                              </div>
+                              <div className="text-xs">
+                                <div className="flex justify-between mb-1">
+                                  <span>Amount:</span>
+                                  <span>0.5 ETH</span>
+                                </div>
+                                <div className="flex justify-between mb-1">
+                                  <span>Price:</span>
+                                  <span>$67,845</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span>Total:</span>
+                                  <span>$33,922.50</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {previewMode === 'desktop' && (
+                            <div className="bg-black/20 p-4 rounded">
+                              <h3 className="text-sm font-semibold mb-2">Portfolio</h3>
+                              <div className="space-y-1 text-xs">
+                                <div className="flex justify-between">
+                                  <span>ETH</span>
+                                  <span>2.34</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span>BTC</span>
+                                  <span>0.045</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span>USDC</span>
+                                  <span>1,247.89</span>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Footer Stats */}
+                      <div className="mt-6 pt-4 border-t border-white/20">
+                        <div className={`grid ${previewMode === 'mobile' ? 'grid-cols-2' : 'grid-cols-4'} gap-4 text-center`}>
+                          <div>
+                            <div className="text-lg font-bold text-green-400">+12.34%</div>
+                            <div className="text-xs opacity-70">24h Change</div>
+                          </div>
+                          <div>
+                            <div className="text-lg font-bold">$2.4M</div>
+                            <div className="text-xs opacity-70">Volume</div>
+                          </div>
+                          <div>
+                            <div className="text-lg font-bold">1,247</div>
+                            <div className="text-xs opacity-70">Active Users</div>
+                          </div>
+                          <div>
+                            <div className="text-lg font-bold">$156.78</div>
+                            <div className="text-xs opacity-70">Avg Trade</div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-center h-full">
+                    <div className="bg-white rounded-lg shadow-lg p-6 h-full min-h-[600px] flex items-center justify-center">
                       <div className="text-center text-gray-400">
                         <Layout className="w-20 h-20 mx-auto mb-4" />
                         <h3 className="text-xl font-semibold mb-2">Select a Template</h3>
                         <p className="text-sm">
-                          Choose a template from the left to see it in action with live market data
+                          Choose a template from the left to see it in action
                         </p>
                       </div>
                     </div>
