@@ -23,8 +23,10 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByAddress(address: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<User>): Promise<User>;
+  authenticateUser(email: string, address: string): Promise<User | undefined>;
   
   // Trading platforms
   getTradingPlatforms(userId?: string): Promise<TradingPlatform[]>;
@@ -67,6 +69,18 @@ export class DatabaseStorage implements IStorage {
 
   async getUserByAddress(address: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.address, address));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async authenticateUser(email: string, address: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(
+      and(eq(users.email, email), eq(users.address, address))
+    );
     return user || undefined;
   }
 

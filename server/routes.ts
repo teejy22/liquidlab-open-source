@@ -12,6 +12,92 @@ function handleError(error: unknown): string {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Authentication routes
+  app.post("/api/auth/signup", async (req, res) => {
+    try {
+      const { username, email, address } = req.body;
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ error: "User with this email already exists" });
+      }
+      
+      const existingAddress = await storage.getUserByAddress(address);
+      if (existingAddress) {
+        return res.status(400).json({ error: "User with this wallet address already exists" });
+      }
+      
+      // Create new user
+      const userData = insertUserSchema.parse({
+        username,
+        email,
+        address,
+      });
+      
+      const user = await storage.createUser(userData);
+      
+      // Generate builder and referral codes
+      await storage.generateBuilderCode(user.id);
+      
+      res.json({ 
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          address: user.address,
+          builderCode: user.builderCode,
+          referralCode: user.referralCode
+        }
+      });
+    } catch (error) {
+      res.status(400).json({ error: handleError(error) });
+    }
+  });
+
+  app.post("/api/auth/signin", async (req, res) => {
+    try {
+      const { email, address } = req.body;
+      
+      const user = await storage.authenticateUser(email, address);
+      if (!user) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+      
+      res.json({ 
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          address: user.address,
+          builderCode: user.builderCode,
+          referralCode: user.referralCode
+        }
+      });
+    } catch (error) {
+      res.status(400).json({ error: handleError(error) });
+    }
+  });
+
+  app.get("/api/auth/user", async (req, res) => {
+    try {
+      // This would normally check session/token, but for now we'll return null
+      // In a real app, you'd validate the session and return the current user
+      res.json(null);
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  app.post("/api/auth/logout", async (req, res) => {
+    try {
+      // Clear session/token
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
   // User management
   app.post("/api/users", async (req, res) => {
     try {

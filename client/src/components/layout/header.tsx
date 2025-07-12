@@ -3,13 +3,19 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { walletService } from "@/lib/wallet";
 import { WalletState } from "@/types";
-import { Wallet, Menu, X } from "lucide-react";
+import { Wallet, Menu, X, User, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import AuthModal from "@/components/auth/auth-modal";
+import { useToast } from "@/hooks/use-toast";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import logoImage from "@assets/Trade (5)_1752280465910.png";
 
 export default function Header() {
   const [location] = useLocation();
   const [walletState, setWalletState] = useState<WalletState>(walletService.getWalletState());
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const { toast } = useToast();
 
   useEffect(() => {
     const unsubscribe = walletService.subscribe(setWalletState);
@@ -30,6 +36,19 @@ export default function Header() {
 
   const formatAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
+
+  const handleLogout = async () => {
+    try {
+      await walletService.disconnectWallet();
+      // Clear user session
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out of LiquidLab",
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   const isActive = (path: string) => location === path;
@@ -71,31 +90,67 @@ export default function Header() {
             </Link>
           </nav>
           
-          {/* Wallet Connection */}
+          {/* Authentication & Wallet */}
           <div className="flex items-center space-x-4">
-            {walletState.isConnected ? (
-              <div className="hidden md:flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-lg">
-                <Wallet className="w-4 h-4 text-gray-500" />
-                <span className="text-sm text-gray-600">
-                  {formatAddress(walletState.address!)}
-                </span>
-                <span className="text-sm text-gray-500">
-                  {walletState.balance} ETH
-                </span>
-              </div>
+            {isAuthenticated ? (
+              <>
+                {/* Wallet Info */}
+                {walletState.isConnected && (
+                  <div className="hidden md:flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-lg">
+                    <Wallet className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm text-gray-600">
+                      {formatAddress(walletState.address!)}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {walletState.balance} ETH
+                    </span>
+                  </div>
+                )}
+                
+                {/* User Menu */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="flex items-center space-x-2">
+                      <User className="w-4 h-4" />
+                      <span className="hidden md:inline">{user?.username || 'User'}</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={handleLogout}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
             ) : (
-              <div className="hidden md:flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-lg">
-                <Wallet className="w-4 h-4 text-gray-500" />
-                <span className="text-sm text-gray-600">Not Connected</span>
-              </div>
+              <>
+                {/* Wallet Connection for non-authenticated users */}
+                {walletState.isConnected ? (
+                  <div className="hidden md:flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-lg">
+                    <Wallet className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm text-gray-600">
+                      {formatAddress(walletState.address!)}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {walletState.balance} ETH
+                    </span>
+                  </div>
+                ) : (
+                  <div className="hidden md:flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-lg">
+                    <Wallet className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm text-gray-600">Not Connected</span>
+                  </div>
+                )}
+                
+                {/* Auth Modal */}
+                <AuthModal>
+                  <Button className="bg-liquid-green text-white hover:bg-liquid-accent transition-colors">
+                    Sign In / Sign Up
+                  </Button>
+                </AuthModal>
+              </>
             )}
-            
-            <Button
-              onClick={walletState.isConnected ? handleDisconnectWallet : handleConnectWallet}
-              className="bg-liquid-green text-white hover:bg-liquid-accent transition-colors"
-            >
-              {walletState.isConnected ? 'Disconnect' : 'Connect Wallet'}
-            </Button>
 
             {/* Mobile menu button */}
             <button
