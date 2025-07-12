@@ -12,6 +12,7 @@ import Templates from "@/pages/templates";
 import Analytics from "@/pages/analytics";
 import Pricing from "@/pages/pricing";
 import Education from "@/pages/education";
+import ChartDemo from "@/pages/chart-demo";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/analytics" component={Analytics} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/education" component={Education} />
+      <Route path="/chart-demo" component={ChartDemo} />
       <Route component={NotFound} />
     </Switch>
   );

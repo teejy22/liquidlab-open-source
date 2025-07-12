@@ -36,7 +36,7 @@ export default function TradingViewWidget({
       "locale": "en",
       "enable_publishing": false,
       "allow_symbol_change": true,
-      "calendar": false,
+      "calendar": true,
       "support_host": "https://www.tradingview.com",
       "width": width,
       "height": height,
@@ -47,7 +47,6 @@ export default function TradingViewWidget({
       "gridColor": theme === 'dark' ? "rgba(42, 46, 57, 1)" : "rgba(233, 233, 234, 1)",
       "details": true,
       "hotlist": true,
-      "calendar": true,
       "studies": [
         "Volume@tv-basicstudies",
         "MASimple@tv-basicstudies",
