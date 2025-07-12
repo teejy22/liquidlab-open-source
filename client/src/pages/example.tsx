@@ -131,7 +131,7 @@ export default function Example() {
       {/* MarketBeat-style Header */}
       <header className="bg-[#003366] text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-20">
             <div className="flex items-center space-x-4">
               <h1 className="text-2xl font-bold">MarketBeat Trading</h1>
               <span className="text-sm text-gray-300">Powered by LiquidLab</span>
@@ -149,9 +149,9 @@ export default function Example() {
       </header>
 
       {/* Main Trading Interface */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Asset Selector and Stats */}
-        <div className="mb-6">
+        <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-4">
               <Select
@@ -175,7 +175,7 @@ export default function Example() {
             </div>
             
             {/* Market Stats */}
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-8">
               <div>
                 <p className="text-sm text-gray-500 flex items-center">
                   Price
@@ -223,10 +223,10 @@ export default function Example() {
         </div>
 
         {/* Main Trading Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Chart Section - Takes up 3 columns */}
           <div className="lg:col-span-3">
-            <Card className="p-4">
+            <Card className="p-6">
               {/* Timeframe Selector */}
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">Live Chart</h3>
@@ -298,8 +298,8 @@ export default function Example() {
 
           {/* Trading Panel - Takes up 1 column */}
           <div className="lg:col-span-1">
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Place Order</h3>
+            <Card className="p-8">
+              <h3 className="text-lg font-semibold mb-6">Place Order</h3>
               
               <Tabs value={orderType} onValueChange={(v) => setOrderType(v as "buy" | "sell")}>
                 <TabsList className="grid w-full grid-cols-2 mb-6">
@@ -384,7 +384,7 @@ export default function Example() {
         </div>
 
         {/* Order Book Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
           <Card className="p-6">
             <h3 className="text-lg font-semibold mb-4">Order Book</h3>
             <div className="grid grid-cols-2 gap-4">
@@ -474,8 +474,8 @@ export default function Example() {
         </div>
 
         {/* Additional Info Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-          <Card className="p-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-10">
+          <Card className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Market Cap</p>
@@ -485,7 +485,7 @@ export default function Example() {
             </div>
           </Card>
           
-          <Card className="p-4">
+          <Card className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Circulating Supply</p>
@@ -495,7 +495,7 @@ export default function Example() {
             </div>
           </Card>
           
-          <Card className="p-4">
+          <Card className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">24h Trades</p>
@@ -505,7 +505,7 @@ export default function Example() {
             </div>
           </Card>
           
-          <Card className="p-4">
+          <Card className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Funding Rate</p>
@@ -518,7 +518,7 @@ export default function Example() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-[#003366] text-white mt-12 py-8">
+      <footer className="bg-[#003366] text-white mt-16 py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <p className="text-sm">© 2024 MarketBeat Trading. Powered by LiquidLab</p>
