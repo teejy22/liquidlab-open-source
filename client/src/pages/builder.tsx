@@ -245,89 +245,84 @@ export default function Builder() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-4 gap-8">
-          {/* Component Library */}
-          <div className="lg:col-span-1">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Settings className="w-5 h-5 mr-2" />
-                  Components
+        <div className="flex gap-6">
+          {/* Compact Sidebar */}
+          <div className="w-80 flex-shrink-0">
+            <Card className="h-full">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm flex items-center">
+                  <Settings className="w-4 h-4 mr-2" />
+                  Builder Tools
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 pt-2">
                 <Tabs defaultValue="components" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="components">Components</TabsTrigger>
-                    <TabsTrigger value="demo">Live Demo</TabsTrigger>
-                    <TabsTrigger value="settings">Settings</TabsTrigger>
+                  <TabsList className="grid w-full grid-cols-3 mb-4">
+                    <TabsTrigger value="components" className="text-xs">Components</TabsTrigger>
+                    <TabsTrigger value="demo" className="text-xs">Demo</TabsTrigger>
+                    <TabsTrigger value="settings" className="text-xs">Settings</TabsTrigger>
                   </TabsList>
                   
-                  <TabsContent value="demo" className="space-y-4">
-                    <div className="flex items-center space-x-2 mb-4">
-                      <Play className="w-5 h-5 text-liquid-green" />
-                      <div>
-                        <h3 className="font-semibold">Interactive Demo Layouts</h3>
-                        <p className="text-sm text-gray-600">
-                          Try these pre-built layouts with live TradingView charts and real market data
-                        </p>
-                      </div>
+                  <TabsContent value="demo" className="space-y-3">
+                    <div className="mb-3">
+                      <h3 className="font-medium text-sm flex items-center">
+                        <Play className="w-4 h-4 mr-1 text-liquid-green" />
+                        Demo Layouts
+                      </h3>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Live data demos
+                      </p>
                     </div>
                     
                     <div className="space-y-3">
                       {demoLayouts.map((layout) => (
                         <Card key={layout.id} className="cursor-pointer hover:shadow-md transition-shadow">
-                          <CardContent className="p-4">
-                            <div className="flex items-center justify-between">
-                              <div className="flex-1">
+                          <CardContent className="p-3">
+                            <div className="space-y-2">
+                              <div>
                                 <h4 className="font-medium text-sm">{layout.name}</h4>
-                                <p className="text-xs text-gray-600 mt-1">{layout.description}</p>
-                                <div className="flex items-center mt-2">
-                                  <Badge variant="secondary" className="text-xs">
-                                    <Zap className="w-3 h-3 mr-1" />
-                                    {layout.components.length} components
-                                  </Badge>
-                                </div>
+                                <p className="text-xs text-gray-600">{layout.description}</p>
                               </div>
-                              <Button
-                                size="sm"
-                                onClick={() => handleLoadDemoLayout(layout)}
-                                className="bg-liquid-green hover:bg-liquid-accent text-white"
-                              >
-                                <Play className="w-4 h-4 mr-1" />
-                                Load Demo
-                              </Button>
+                              <div className="flex items-center justify-between">
+                                <Badge variant="secondary" className="text-xs">
+                                  <Zap className="w-3 h-3 mr-1" />
+                                  {layout.components.length} items
+                                </Badge>
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleLoadDemoLayout(layout)}
+                                  className="bg-liquid-green hover:bg-liquid-accent text-white text-xs"
+                                >
+                                  Load
+                                </Button>
+                              </div>
                             </div>
                           </CardContent>
                         </Card>
                       ))}
                     </div>
                     
-                    <Separator className="my-4" />
-                    
-                    <div className="text-center p-4 bg-liquid-green/10 rounded-lg">
-                      <TrendingUp className="w-8 h-8 mx-auto mb-2 text-liquid-green" />
-                      <h4 className="font-semibold text-sm">Real-Time Trading Data</h4>
-                      <p className="text-xs text-gray-600 mt-1">
-                        All demo layouts use live market data from major exchanges
-                      </p>
+                    <div className="text-center p-3 bg-liquid-green/10 rounded text-xs">
+                      <TrendingUp className="w-5 h-5 mx-auto mb-1 text-liquid-green" />
+                      <p className="font-medium">Live market data included</p>
                     </div>
                   </TabsContent>
                   
-                  <TabsContent value="components" className="space-y-3 mt-4">
+                  <TabsContent value="components" className="space-y-2">
+                    <p className="text-xs text-gray-600 mb-3">Click to add components</p>
                     {availableComponents.map(component => {
                       const IconComponent = component.icon;
                       return (
                         <div
                           key={component.id}
-                          className={`bg-white p-3 rounded-lg shadow-sm cursor-pointer hover:shadow-md transition-shadow border-l-4 ${component.color}`}
+                          className={`bg-white p-3 rounded cursor-pointer hover:shadow-md transition-all border ${component.color} hover:scale-105`}
                           onClick={() => handleAddComponent(component)}
                         >
                           <div className="flex items-center">
-                            <IconComponent className={`mr-3 ${component.color.replace('border-', 'text-')}`} />
-                            <div>
-                              <div className="font-medium">{component.name}</div>
-                              <div className="text-sm text-gray-500">{component.description}</div>
+                            <IconComponent className={`w-4 h-4 mr-2 ${component.color.replace('border-', 'text-')}`} />
+                            <div className="flex-1">
+                              <div className="font-medium text-sm">{component.name}</div>
+                              <div className="text-xs text-gray-500">{component.description}</div>
                             </div>
                           </div>
                         </div>
@@ -335,8 +330,9 @@ export default function Builder() {
                     })}
                   </TabsContent>
                   
-                  <TabsContent value="settings" className="space-y-3 mt-4">
-                    <div className="space-y-4">
+                  <TabsContent value="settings" className="space-y-3">
+                    <p className="text-xs text-gray-600 mb-3">Platform settings</p>
+                    <div className="space-y-3">
                       <div>
                         <label className="text-sm font-medium">Platform Name</label>
                         <input
@@ -380,8 +376,8 @@ export default function Builder() {
             </Card>
           </div>
 
-          {/* Builder Canvas */}
-          <div className="lg:col-span-3">
+          {/* Expanded Canvas Area */}
+          <div className="flex-1 min-w-0">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
@@ -412,23 +408,28 @@ export default function Builder() {
                   </div>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="bg-gray-900 rounded-lg p-6" style={{ minHeight: '700px' }}>
-                  {/* Live Preview */}
-                  <div className={`bg-white rounded-lg p-4 h-full ${
-                    previewMode === 'mobile' ? 'max-w-sm mx-auto' : 'w-full'
+              <CardContent className="p-4">
+                <div className="bg-gray-100 rounded-lg p-6" style={{ minHeight: '800px' }}>
+                  {/* Live Preview Area */}
+                  <div className={`bg-white rounded-lg shadow-inner p-6 h-full ${
+                    previewMode === 'mobile' ? 'max-w-md mx-auto' : 'w-full'
                   }`}>
                     {selectedComponents.length > 0 ? (
-                      <div className={`grid gap-4 ${
+                      <div className={`grid gap-6 ${
                         previewMode === 'mobile' ? 'grid-cols-1' : 
                         selectedComponents.length === 1 ? 'grid-cols-1' :
                         selectedComponents.length === 2 ? 'grid-cols-2' :
                         selectedComponents.length === 3 ? 'grid-cols-3' :
-                        'grid-cols-2'
+                        selectedComponents.length === 4 ? 'grid-cols-2 lg:grid-cols-4' :
+                        'grid-cols-2 lg:grid-cols-3'
                       }`}>
                         {selectedComponents.map(component => 
                           isDemoMode ? (
-                            <div key={component.id} className="h-[450px]">
+                            <div key={component.id} className={`${
+                              selectedComponents.length === 1 ? 'h-[600px]' :
+                              selectedComponents.length === 2 ? 'h-[500px]' :
+                              'h-[400px]'
+                            }`}>
                               <LiveComponentRenderer
                                 component={component}
                                 onRemove={handleRemoveComponent}
