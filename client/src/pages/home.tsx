@@ -175,7 +175,7 @@ export default function Home() {
                 </div>
                 <div className="mt-6 p-4 bg-purple-50 rounded-lg">
                   <p className="text-sm text-purple-700">
-                    <strong>$0 extra cost</strong> - Normally $500+/month, included free with every LiquidLab platform
+                    <strong>$0 extra cost</strong> - Included free with every LiquidLab platform
                   </p>
                 </div>
               </div>
