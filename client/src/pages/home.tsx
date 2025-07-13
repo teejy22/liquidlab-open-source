@@ -15,7 +15,8 @@ import {
   CheckCircle,
   Plug,
   Wallet,
-  Check
+  Check,
+  CreditCard
 } from "lucide-react";
 
 export default function Home() {
@@ -182,6 +183,53 @@ export default function Home() {
               <div className="flex-shrink-0">
                 <div className="w-64 h-64 bg-gradient-to-br from-purple-400 to-blue-400 rounded-2xl shadow-2xl flex items-center justify-center">
                   <Wallet className="w-24 h-24 text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* MoonPay Integration Section */}
+      <section className="py-12 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-blue-100">
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              <div className="flex-shrink-0 order-2 md:order-1">
+                <div className="w-64 h-64 bg-gradient-to-br from-blue-400 to-indigo-400 rounded-2xl shadow-2xl flex items-center justify-center">
+                  <CreditCard className="w-24 h-24 text-white" />
+                </div>
+              </div>
+              <div className="flex-1 order-1 md:order-2">
+                <Badge className="mb-4 bg-blue-100 text-blue-700">Fiat On-Ramp</Badge>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                  MoonPay Integration Built-In
+                </h2>
+                <p className="text-lg text-gray-600 mb-6">
+                  Every trading platform includes MoonPay's fiat-to-crypto gateway, making it easy for users to fund their accounts with traditional payment methods.
+                </p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Credit card & bank transfer support</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">170+ countries supported</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Built-in KYC/AML compliance</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Earn affiliate revenue on transactions</span>
+                  </div>
+                </div>
+                <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                  <p className="text-sm text-blue-700">
+                    <strong>Automatically integrated</strong> - No setup required, works out of the box
+                  </p>
                 </div>
               </div>
             </div>

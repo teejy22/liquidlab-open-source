@@ -105,6 +105,11 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - No setup fees, monthly charges, or hidden costs
   - Platform owners only pay when they earn from actual trades
 - **Enhanced FAQ**: Added detailed explanations about earnings potential and fee structures
+- **Privy Wallet Infrastructure**: Added prominent section highlighting enterprise wallet integration at $0 extra cost
+- **MoonPay Integration**: Added section showcasing automatic fiat on-ramp integration with every platform
+  - Supports credit cards, bank transfers in 170+ countries
+  - Built-in KYC/AML compliance
+  - Platform owners can earn affiliate revenue from transactions
 
 ## Recent Changes (January 2025)
 
