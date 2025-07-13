@@ -349,6 +349,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // CoinGecko price proxy endpoint
+  app.get("/api/prices", async (req, res) => {
+    try {
+      const { ids } = req.query;
+      if (!ids || typeof ids !== 'string') {
+        return res.status(400).json({ error: "Missing 'ids' parameter" });
+      }
+      
+      const response = await fetch(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(ids)}&vs_currencies=usd&include_24hr_vol=true&include_24hr_change=true&include_market_cap=true`
+      );
+      
+      if (!response.ok) {
+        throw new Error(`CoinGecko API error: ${response.status} ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      res.json(data);
+    } catch (error) {
+      console.error("Error fetching prices from CoinGecko:", error);
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

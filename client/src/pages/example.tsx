@@ -69,36 +69,42 @@ export default function Example() {
   const fetchPrices = async () => {
     try {
       setIsLoading(true);
-      // Temporarily use mock data to check if API is the issue
-      const mockData: any = {
-        bitcoin: { usd: 47382.50, usd_24h_change: 2.34, usd_24h_vol: 28943829483 },
-        ethereum: { usd: 2458.32, usd_24h_change: -0.87, usd_24h_vol: 12384729384 },
-        solana: { usd: 105.45, usd_24h_change: 5.21, usd_24h_vol: 2384729384 },
-        arbitrum: { usd: 1.23, usd_24h_change: -2.15, usd_24h_vol: 384729384 },
-        optimism: { usd: 2.87, usd_24h_change: 3.45, usd_24h_vol: 284729384 },
-        "injective-protocol": { usd: 18.34, usd_24h_change: 1.23, usd_24h_vol: 84729384 },
-        sui: { usd: 0.98, usd_24h_change: -1.45, usd_24h_vol: 184729384 },
-        "sei-network": { usd: 0.43, usd_24h_change: 4.32, usd_24h_vol: 54729384 }
-      };
+      const coinIds = tradingPairs.map(pair => pair.coinId).join(',');
       
-      setPricesData(mockData);
+      // Use our backend proxy to fetch prices
+      const response = await fetch(`/api/prices?ids=${encodeURIComponent(coinIds)}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setPricesData(data || {});
       
       // Update market stats for selected pair
-      const selectedCoinData = mockData[selectedPair.coinId];
-      if (selectedCoinData) {
+      const selectedCoinData = data?.[selectedPair.coinId];
+      if (selectedCoinData && selectedCoinData.usd) {
         setMarketStats({
           price: formatPrice(selectedCoinData.usd),
-          change24h: formatChange(selectedCoinData.usd_24h_change),
-          high24h: formatPrice(selectedCoinData.usd * 1.02),
-          low24h: formatPrice(selectedCoinData.usd * 0.98),
-          volume24h: formatVolume(selectedCoinData.usd_24h_vol)
+          change24h: formatChange(selectedCoinData.usd_24h_change || 0),
+          high24h: formatPrice(selectedCoinData.usd * 1.02), // Approximate
+          low24h: formatPrice(selectedCoinData.usd * 0.98), // Approximate
+          volume24h: formatVolume(selectedCoinData.usd_24h_vol || 0)
         });
       }
       setIsLoading(false);
       setLastUpdated(new Date());
     } catch (error) {
-      console.error('Error in fetchPrices:', error);
+      console.error('Error fetching prices:', error);
       setIsLoading(false);
+      // Set default values to prevent runtime errors
+      setMarketStats({
+        price: "0.00",
+        change24h: "0.00%",
+        high24h: "0.00",
+        low24h: "0.00",
+        volume24h: "0.00"
+      });
     }
   };
 
