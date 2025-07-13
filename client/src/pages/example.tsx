@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ArrowUp, ArrowDown, Settings, BarChart3, Star } from "lucide-react";
 import TradingViewWidget from "@/components/charts/tradingview-widget";
+import liquidLabLogo from "@assets/Trade (6)_1752423674786.png";
 
 interface MarketData {
   price: string;
@@ -139,12 +140,16 @@ export default function Example() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-gray-100">
-      {/* Hyperliquid-style Header */}
+      {/* Header */}
       <header className="bg-[#0f0f0f] border-b border-gray-800">
         <div className="flex items-center justify-between h-14 px-4">
           {/* Left Section */}
           <div className="flex items-center space-x-6">
-            <h1 className="text-xl font-medium">Hyperliquid</h1>
+            <img 
+              src={liquidLabLogo} 
+              alt="LiquidLab" 
+              className="h-8 w-auto"
+            />
             <nav className="hidden md:flex items-center space-x-6 text-sm">
               <a href="#" className="text-white">Trade</a>
               <a href="#" className="text-gray-400 hover:text-white transition-colors">Portfolio</a>
