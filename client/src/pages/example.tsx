@@ -367,7 +367,7 @@ export default function Example() {
             </div>
 
             {/* Right Panel - Order Book & Trading */}
-            <div className="w-[420px] bg-[#0f0f0f] border-l border-gray-800 flex flex-col">
+            <div className="w-[340px] bg-[#0f0f0f] border-l border-gray-800 flex flex-col">
               {/* Order Book */}
               <div className="border-b border-gray-800">
                 <div className="p-3 border-b border-gray-800">
