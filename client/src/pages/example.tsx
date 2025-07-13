@@ -68,28 +68,36 @@ export default function Example() {
   // Fetch live prices
   const fetchPrices = async () => {
     try {
-      const coinIds = tradingPairs.map(pair => pair.coinId).join(',');
-      const response = await fetch(
-        `https://api.coingecko.com/api/v3/simple/price?ids=${coinIds}&vs_currencies=usd&include_24hr_vol=true&include_24hr_change=true&include_market_cap=true`
-      );
-      const data = await response.json();
-      setPricesData(data);
+      setIsLoading(true);
+      // Temporarily use mock data to check if API is the issue
+      const mockData: any = {
+        bitcoin: { usd: 47382.50, usd_24h_change: 2.34, usd_24h_vol: 28943829483 },
+        ethereum: { usd: 2458.32, usd_24h_change: -0.87, usd_24h_vol: 12384729384 },
+        solana: { usd: 105.45, usd_24h_change: 5.21, usd_24h_vol: 2384729384 },
+        arbitrum: { usd: 1.23, usd_24h_change: -2.15, usd_24h_vol: 384729384 },
+        optimism: { usd: 2.87, usd_24h_change: 3.45, usd_24h_vol: 284729384 },
+        "injective-protocol": { usd: 18.34, usd_24h_change: 1.23, usd_24h_vol: 84729384 },
+        sui: { usd: 0.98, usd_24h_change: -1.45, usd_24h_vol: 184729384 },
+        "sei-network": { usd: 0.43, usd_24h_change: 4.32, usd_24h_vol: 54729384 }
+      };
+      
+      setPricesData(mockData);
       
       // Update market stats for selected pair
-      const selectedCoinData = data[selectedPair.coinId];
+      const selectedCoinData = mockData[selectedPair.coinId];
       if (selectedCoinData) {
         setMarketStats({
           price: formatPrice(selectedCoinData.usd),
           change24h: formatChange(selectedCoinData.usd_24h_change),
-          high24h: formatPrice(selectedCoinData.usd * 1.02), // Approximate
-          low24h: formatPrice(selectedCoinData.usd * 0.98), // Approximate
+          high24h: formatPrice(selectedCoinData.usd * 1.02),
+          low24h: formatPrice(selectedCoinData.usd * 0.98),
           volume24h: formatVolume(selectedCoinData.usd_24h_vol)
         });
       }
       setIsLoading(false);
       setLastUpdated(new Date());
     } catch (error) {
-      console.error('Error fetching prices:', error);
+      console.error('Error in fetchPrices:', error);
       setIsLoading(false);
     }
   };
@@ -99,7 +107,7 @@ export default function Example() {
     fetchPrices();
     const interval = setInterval(fetchPrices, 30000);
     return () => clearInterval(interval);
-  }, [selectedPair.coinId]);
+  }, [selectedPair]);
 
   // Generate dynamic orderbook based on current price
   const generateOrderbook = () => {
