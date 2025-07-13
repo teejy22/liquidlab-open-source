@@ -142,13 +142,13 @@ export default function Example() {
     <div className="min-h-screen bg-[#0a0a0a] text-gray-100">
       {/* Header */}
       <header className="bg-[#0f0f0f] border-b border-gray-800">
-        <div className="flex items-center justify-between h-40 px-4">
+        <div className="flex items-center justify-between h-28 px-4">
           {/* Left Section */}
           <div className="flex items-center space-x-6">
             <img 
               src={liquidLabLogo} 
               alt="LiquidLab" 
-              className="h-32 w-auto py-4"
+              className="h-32 w-auto py-2"
             />
             <nav className="hidden md:flex items-center space-x-6 text-sm">
               <a href="#" className="text-white">Trade</a>
