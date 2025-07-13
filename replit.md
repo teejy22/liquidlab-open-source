@@ -135,3 +135,7 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - 30-second auto-refresh intervals
   - Loading states and visual update indicators
   - Proper error handling for API failures
+
+- **UI Refinements**: 
+  - Reduced markets column width from w-64 to w-48 for more trading space
+  - Fixed buy/sell button styling with consistent green/red color scheme

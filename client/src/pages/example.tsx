@@ -202,7 +202,7 @@ export default function Example() {
       {/* Main Trading Interface */}
       <div className="flex h-[calc(100vh-112px)]">
         {/* Left Sidebar - Market List */}
-        <div className="w-64 bg-[#0f0f0f] border-r border-gray-800 overflow-y-auto hidden lg:block">
+        <div className="w-48 bg-[#0f0f0f] border-r border-gray-800 overflow-y-auto hidden lg:block">
           <div className="p-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-medium">Markets</h3>
