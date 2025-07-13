@@ -439,16 +439,16 @@ export default function Example() {
                     {/* Buy/Sell Toggle */}
                     <div className="grid grid-cols-2 gap-2">
                       <Button
-                        variant={side === "buy" ? "default" : "outline"}
+                        variant="default"
                         onClick={() => setSide("buy")}
-                        className={side === "buy" ? "bg-green-600 hover:bg-green-700 text-white" : "bg-white hover:bg-green-600 hover:text-white text-green-600 border-green-600"}
+                        className="bg-green-600 hover:bg-green-700 text-white"
                       >
                         Buy Long
                       </Button>
                       <Button
-                        variant={side === "sell" ? "default" : "outline"}
+                        variant="default"
                         onClick={() => setSide("sell")}
-                        className={side === "sell" ? "bg-red-600 hover:bg-red-700 text-white" : "bg-white hover:bg-red-600 hover:text-white text-red-600 border-red-600"}
+                        className="bg-red-600 hover:bg-red-700 text-white"
                       >
                         Sell Short
                       </Button>
