@@ -98,6 +98,16 @@ The application uses a monorepo structure with shared types and schemas, enablin
 
 ## Recent Changes (January 2025)
 
+### Pricing Model Update (January 13, 2025)
+- **Fee Structure Redesign**: Updated pricing page to emphasize zero upfront costs with revenue sharing model
+  - Spot Trading: 0.2% builder fee (70% to platform owner, 30% to LiquidLab)
+  - Perp Trading: 0.1% builder fee (70% to platform owner, 30% to LiquidLab)
+  - No setup fees, monthly charges, or hidden costs
+  - Platform owners only pay when they earn from actual trades
+- **Enhanced FAQ**: Added detailed explanations about earnings potential and fee structures
+
+## Recent Changes (January 2025)
+
 ### Example Trading Page Enhancements
 - **Position Details Section**: Added comprehensive leverage trading information including:
   - Total collateral and free collateral amounts

@@ -17,38 +17,83 @@ export default function Pricing() {
         </div>
 
         {/* Revenue Share Model */}
-        <Card className="max-w-4xl mx-auto mb-16 border-primary">
+        <Card className="max-w-5xl mx-auto mb-16 border-primary">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl flex items-center justify-center gap-2">
               <DollarSign className="w-6 h-6" />
               Simple Revenue Sharing Model
             </CardTitle>
             <CardDescription className="text-lg mt-2">
-              Every trade on your platform has a 0.2% fee
+              Two fee structures optimized for different trading types
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center p-6 bg-green-50 dark:bg-green-950 rounded-lg">
-                <div className="text-3xl font-bold text-green-600 dark:text-green-400">0.15%</div>
-                <div className="text-sm font-medium mt-2">Goes to You</div>
-                <div className="text-xs text-muted-foreground mt-1">Platform Owner Revenue</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              {/* Spot Trading */}
+              <div className="border rounded-lg p-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  Spot Trading
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center pb-2 border-b">
+                    <span className="text-sm text-muted-foreground">Builder Fee</span>
+                    <span className="font-semibold">0.2%</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                      <div className="text-2xl font-bold text-green-600 dark:text-green-400">70%</div>
+                      <div className="text-xs font-medium">You Keep</div>
+                      <div className="text-xs text-muted-foreground mt-1">0.14% of volume</div>
+                    </div>
+                    <div className="text-center p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">30%</div>
+                      <div className="text-xs font-medium">LiquidLab</div>
+                      <div className="text-xs text-muted-foreground mt-1">0.06% of volume</div>
+                    </div>
+                  </div>
+                  <div className="text-sm text-muted-foreground bg-muted p-3 rounded">
+                    Example: $10,000 spot trade = $20 fee
+                    <br />You earn: $14 • LiquidLab: $6
+                  </div>
+                </div>
               </div>
-              <div className="text-center p-6 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">0.05%</div>
-                <div className="text-sm font-medium mt-2">Goes to LiquidLab</div>
-                <div className="text-xs text-muted-foreground mt-1">Platform Fee</div>
-              </div>
-              <div className="text-center p-6 bg-purple-50 dark:bg-purple-950 rounded-lg">
-                <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">$0</div>
-                <div className="text-sm font-medium mt-2">Upfront Cost</div>
-                <div className="text-xs text-muted-foreground mt-1">Start Building Today</div>
+
+              {/* Perp Trading */}
+              <div className="border rounded-lg p-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  Perp Trading
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center pb-2 border-b">
+                    <span className="text-sm text-muted-foreground">Builder Fee</span>
+                    <span className="font-semibold">0.1% <span className="text-xs text-muted-foreground">(max allowed)</span></span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                      <div className="text-2xl font-bold text-green-600 dark:text-green-400">70%</div>
+                      <div className="text-xs font-medium">You Keep</div>
+                      <div className="text-xs text-muted-foreground mt-1">0.07% of volume</div>
+                    </div>
+                    <div className="text-center p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">30%</div>
+                      <div className="text-xs font-medium">LiquidLab</div>
+                      <div className="text-xs text-muted-foreground mt-1">0.03% of volume</div>
+                    </div>
+                  </div>
+                  <div className="text-sm text-muted-foreground bg-muted p-3 rounded">
+                    Example: $10,000 perp trade = $10 fee
+                    <br />You earn: $7 • LiquidLab: $3
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="mt-6 p-4 bg-muted rounded-lg">
-              <p className="text-center text-sm">
-                <strong>Example:</strong> A $10,000 trade generates $20 in fees. You keep $15, LiquidLab gets $5.
-              </p>
+
+            <div className="text-center p-6 bg-purple-50 dark:bg-purple-950 rounded-lg">
+              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">$0</div>
+              <div className="text-sm font-medium mt-2">Upfront Cost</div>
+              <div className="text-xs text-muted-foreground mt-1">No setup fees • No monthly charges • No hidden costs</div>
             </div>
           </CardContent>
         </Card>
@@ -158,13 +203,19 @@ export default function Pricing() {
             <div>
               <h3 className="font-semibold mb-2">How do I get paid?</h3>
               <p className="text-muted-foreground">
-                Your 0.15% share of trading fees is automatically deposited to your connected wallet in real-time. No minimum payout thresholds.
+                Your 70% share of builder fees is automatically deposited to your connected wallet in real-time. This equals 0.14% on spot trades and 0.07% on perp trades. No minimum payout thresholds.
               </p>
             </div>
             <div>
               <h3 className="font-semibold mb-2">Are there any hidden fees?</h3>
               <p className="text-muted-foreground">
                 No hidden fees whatsoever. You only share revenue from actual trades. Domain hosting, SSL, templates, and all features are included at no extra cost.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-2">What types of trading are supported?</h3>
+              <p className="text-muted-foreground">
+                Your platforms support both Spot Trading (0.2% builder fee) and Perpetual Trading (0.1% builder fee). You keep 70% of all builder fees generated. The fee structures are optimized for each trading type.
               </p>
             </div>
             <div>
@@ -182,7 +233,7 @@ export default function Pricing() {
             <div>
               <h3 className="font-semibold mb-2">How much can I earn?</h3>
               <p className="text-muted-foreground">
-                Your earnings scale with trading volume. A platform doing $1M in daily volume would generate $1,500/day for you (0.15% of volume).
+                Your earnings scale with trading volume. A platform doing $1M daily spot volume generates $1,400/day (0.14%). For perp trading, $1M daily volume generates $700/day (0.07%). Many platforms trade both types.
               </p>
             </div>
           </div>
