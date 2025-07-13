@@ -199,35 +199,8 @@ export default function Example() {
         </div>
       </header>
 
-      {/* LiquidLab Navigation Bar */}
-      <div className="bg-[#1a1a1a] border-b border-gray-800 px-4 py-2">
-        <div className="flex items-center justify-between">
-          <nav className="flex items-center space-x-6 text-sm">
-            <Link href="/" className="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
-              <Home className="w-4 h-4" />
-              Home
-            </Link>
-            <Link href="/builder" className="text-gray-400 hover:text-white transition-colors">
-              Builder
-            </Link>
-            <Link href="/templates" className="text-gray-400 hover:text-white transition-colors">
-              Templates
-            </Link>
-            <Link href="/pricing" className="text-gray-400 hover:text-white transition-colors">
-              Pricing
-            </Link>
-            <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors">
-              Dashboard
-            </Link>
-          </nav>
-          <div className="text-xs text-gray-500">
-            Powered by LiquidLab
-          </div>
-        </div>
-      </div>
-
       {/* Main Trading Interface */}
-      <div className="flex h-[calc(100vh-136px)]">
+      <div className="flex h-[calc(100vh-112px)]">
         {/* Left Sidebar - Market List */}
         <div className="w-64 bg-[#0f0f0f] border-r border-gray-800 overflow-y-auto hidden lg:block">
           <div className="p-4">
