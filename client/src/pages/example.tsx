@@ -441,14 +441,14 @@ export default function Example() {
                       <Button
                         variant={side === "buy" ? "default" : "outline"}
                         onClick={() => setSide("buy")}
-                        className={side === "buy" ? "bg-green-600 hover:bg-green-700" : ""}
+                        className={side === "buy" ? "bg-green-600 hover:bg-green-700 text-white" : ""}
                       >
                         Buy Long
                       </Button>
                       <Button
                         variant={side === "sell" ? "default" : "outline"}
                         onClick={() => setSide("sell")}
-                        className={side === "sell" ? "bg-red-600 hover:bg-red-700" : ""}
+                        className={side === "sell" ? "bg-red-600 hover:bg-red-700 text-white" : ""}
                       >
                         Sell Short
                       </Button>
