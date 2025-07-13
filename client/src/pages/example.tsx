@@ -6,9 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ArrowUp, ArrowDown, Settings, BarChart3, Star } from "lucide-react";
+import { ArrowUp, ArrowDown, Settings, BarChart3, Star, ArrowLeft, Home } from "lucide-react";
 import TradingViewWidget from "@/components/charts/tradingview-widget";
 import liquidLabLogo from "@assets/Trade (6)_1752423674786.png";
+import { Link } from "wouter";
 
 interface MarketData {
   price: string;
@@ -108,10 +109,10 @@ export default function Example() {
     }
   };
 
-  // Update prices on mount and every 30 seconds
+  // Update prices on mount and every 60 seconds (to avoid rate limiting)
   useEffect(() => {
     fetchPrices();
-    const interval = setInterval(fetchPrices, 30000);
+    const interval = setInterval(fetchPrices, 60000); // Changed to 60 seconds
     return () => clearInterval(interval);
   }, [selectedPair]);
 
@@ -159,11 +160,23 @@ export default function Example() {
         <div className="flex items-center justify-between h-28 px-4">
           {/* Left Section */}
           <div className="flex items-center space-x-6">
-            <img 
-              src={liquidLabLogo} 
-              alt="LiquidLab" 
-              className="h-32 w-auto py-2"
-            />
+            <div className="flex items-center space-x-4">
+              <Link href="/">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="bg-transparent border-gray-700 hover:bg-gray-800 text-sm flex items-center gap-2"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Back to LiquidLab
+                </Button>
+              </Link>
+              <img 
+                src={liquidLabLogo} 
+                alt="LiquidLab" 
+                className="h-32 w-auto py-2"
+              />
+            </div>
             <nav className="hidden md:flex items-center space-x-6 text-sm">
               <a href="#" className="text-white">Trade</a>
               <a href="#" className="text-gray-400 hover:text-white transition-colors">Portfolio</a>
@@ -186,8 +199,35 @@ export default function Example() {
         </div>
       </header>
 
+      {/* LiquidLab Navigation Bar */}
+      <div className="bg-[#1a1a1a] border-b border-gray-800 px-4 py-2">
+        <div className="flex items-center justify-between">
+          <nav className="flex items-center space-x-6 text-sm">
+            <Link href="/" className="text-gray-400 hover:text-white transition-colors flex items-center gap-2">
+              <Home className="w-4 h-4" />
+              Home
+            </Link>
+            <Link href="/builder" className="text-gray-400 hover:text-white transition-colors">
+              Builder
+            </Link>
+            <Link href="/templates" className="text-gray-400 hover:text-white transition-colors">
+              Templates
+            </Link>
+            <Link href="/pricing" className="text-gray-400 hover:text-white transition-colors">
+              Pricing
+            </Link>
+            <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors">
+              Dashboard
+            </Link>
+          </nav>
+          <div className="text-xs text-gray-500">
+            Powered by LiquidLab
+          </div>
+        </div>
+      </div>
+
       {/* Main Trading Interface */}
-      <div className="flex h-[calc(100vh-56px)]">
+      <div className="flex h-[calc(100vh-136px)]">
         {/* Left Sidebar - Market List */}
         <div className="w-64 bg-[#0f0f0f] border-r border-gray-800 overflow-y-auto hidden lg:block">
           <div className="p-4">
