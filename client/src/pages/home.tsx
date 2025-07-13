@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 import { 
   TrendingUp, 
@@ -13,7 +14,8 @@ import {
   DollarSign,
   CheckCircle,
   Plug,
-  Wallet
+  Wallet,
+  Check
 } from "lucide-react";
 
 export default function Home() {
@@ -134,6 +136,53 @@ export default function Home() {
                     </div>
                   </CardContent>
                 </Card>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Privy Wallet Infrastructure Section */}
+      <section className="py-12 bg-gradient-to-r from-purple-50 to-blue-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-purple-100">
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              <div className="flex-1">
+                <Badge className="mb-4 bg-purple-100 text-purple-700">Enterprise Infrastructure</Badge>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                  Privy Wallet Infrastructure Included
+                </h2>
+                <p className="text-lg text-gray-600 mb-6">
+                  Every platform you build comes with enterprise-grade wallet infrastructure powered by Privy - at absolutely no additional cost.
+                </p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Social logins (Google, Twitter, Discord)</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Email & SMS authentication</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Built-in wallet creation for new users</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Support for 10+ external wallets</span>
+                  </div>
+                </div>
+                <div className="mt-6 p-4 bg-purple-50 rounded-lg">
+                  <p className="text-sm text-purple-700">
+                    <strong>$0 extra cost</strong> - Normally $500+/month, included free with every LiquidLab platform
+                  </p>
+                </div>
+              </div>
+              <div className="flex-shrink-0">
+                <div className="w-64 h-64 bg-gradient-to-br from-purple-400 to-blue-400 rounded-2xl shadow-2xl flex items-center justify-center">
+                  <Wallet className="w-24 h-24 text-white" />
+                </div>
               </div>
             </div>
           </div>
@@ -273,8 +322,8 @@ export default function Home() {
               },
               {
                 icon: Wallet,
-                title: "Multi-Wallet Support",
-                description: "Connect with MetaMask, WalletConnect, Coinbase Wallet, and more.",
+                title: "Privy Wallet Integration",
+                description: "Enterprise wallet infrastructure with social logins, built-in wallets, and 10+ wallet connections.",
                 color: "bg-purple-500/10 text-purple-500"
               },
               {
