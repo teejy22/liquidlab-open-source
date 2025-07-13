@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Github, Twitter, MessageCircle } from "lucide-react";
-import logoImage from "@assets/Trade (2)_1752284339280.png";
+import logoImage from "@assets/Trade (6)_1752434284086.png";
 
 export default function Footer() {
   return (
@@ -12,7 +12,7 @@ export default function Footer() {
               <img 
                 src={logoImage} 
                 alt="LiquidLab Logo" 
-                className="h-24 w-auto"
+                className="h-40 w-auto"
               />
             </div>
             <p className="text-gray-400 mb-4">

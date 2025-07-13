@@ -140,3 +140,4 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Reduced markets column width from w-64 to w-48 for more trading space
   - Reduced order book/trading panel width from w-[420px] to w-[340px] for better balance
   - Fixed buy/sell button styling with consistent green/red color scheme
+  - Updated footer logo to new LiquidLab branding with larger size (h-40)
