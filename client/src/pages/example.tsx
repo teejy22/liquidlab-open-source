@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,48 +18,124 @@ interface MarketData {
 }
 
 export default function Example() {
-  const [selectedPair, setSelectedPair] = useState({ symbol: "BTCUSDT", name: "BTC-USD" });
+  const [selectedPair, setSelectedPair] = useState({ symbol: "BTCUSDT", name: "BTC-USD", coinId: "bitcoin" });
   const [orderType, setOrderType] = useState("market");
   const [side, setSide] = useState("buy");
   const [leverage, setLeverage] = useState("10");
   const [timeInterval, setTimeInterval] = useState("15m");
   const [marketStats, setMarketStats] = useState<MarketData>({
-    price: "43,567.89",
-    change24h: "+2.45%",
-    high24h: "44,125.50",
-    low24h: "42,890.25",
-    volume24h: "2.34B"
+    price: "0.00",
+    change24h: "0.00%",
+    high24h: "0.00",
+    low24h: "0.00",
+    volume24h: "0.00"
   });
+  const [pricesData, setPricesData] = useState<any>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const tradingPairs = [
-    { symbol: "BTCUSDT", name: "BTC-USD" },
-    { symbol: "ETHUSDT", name: "ETH-USD" },
-    { symbol: "SOLUSDT", name: "SOL-USD" },
-    { symbol: "ARBUSDT", name: "ARB-USD" },
-    { symbol: "OPUSDT", name: "OP-USD" },
-    { symbol: "INJUSDT", name: "INJ-USD" },
-    { symbol: "SUIUSDT", name: "SUI-USD" },
-    { symbol: "SEIUSDT", name: "SEI-USD" }
+    { symbol: "BTCUSDT", name: "BTC-USD", coinId: "bitcoin" },
+    { symbol: "ETHUSDT", name: "ETH-USD", coinId: "ethereum" },
+    { symbol: "SOLUSDT", name: "SOL-USD", coinId: "solana" },
+    { symbol: "ARBUSDT", name: "ARB-USD", coinId: "arbitrum" },
+    { symbol: "OPUSDT", name: "OP-USD", coinId: "optimism" },
+    { symbol: "INJUSDT", name: "INJ-USD", coinId: "injective-protocol" },
+    { symbol: "SUIUSDT", name: "SUI-USD", coinId: "sui" },
+    { symbol: "SEIUSDT", name: "SEI-USD", coinId: "sei-network" }
   ];
 
-  const orderbook = {
-    asks: [
-      { price: "43,572.00", amount: "0.1234", total: "5,376.58" },
-      { price: "43,571.50", amount: "0.5000", total: "21,785.75" },
-      { price: "43,571.00", amount: "0.2500", total: "10,892.75" },
-      { price: "43,570.50", amount: "1.0000", total: "43,570.50" },
-      { price: "43,570.00", amount: "0.3750", total: "16,338.75" },
-      { price: "43,569.50", amount: "0.2100", total: "9,149.60" },
-    ],
-    bids: [
-      { price: "43,567.00", amount: "0.1234", total: "5,374.17" },
-      { price: "43,566.50", amount: "0.5000", total: "21,783.25" },
-      { price: "43,566.00", amount: "0.2500", total: "10,891.50" },
-      { price: "43,565.50", amount: "1.0000", total: "43,565.50" },
-      { price: "43,565.00", amount: "0.3750", total: "16,336.88" },
-      { price: "43,564.50", amount: "0.2100", total: "9,148.55" },
-    ]
+  // Format number functions
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(price);
   };
+
+  const formatVolume = (volume: number) => {
+    if (volume >= 1e9) return `$${(volume / 1e9).toFixed(2)}B`;
+    if (volume >= 1e6) return `$${(volume / 1e6).toFixed(2)}M`;
+    return `$${volume.toFixed(2)}`;
+  };
+
+  const formatChange = (change: number) => {
+    const sign = change >= 0 ? '+' : '';
+    return `${sign}${change.toFixed(2)}%`;
+  };
+
+  // Fetch live prices
+  const fetchPrices = async () => {
+    try {
+      const coinIds = tradingPairs.map(pair => pair.coinId).join(',');
+      const response = await fetch(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${coinIds}&vs_currencies=usd&include_24hr_vol=true&include_24hr_change=true&include_market_cap=true`
+      );
+      const data = await response.json();
+      setPricesData(data);
+      
+      // Update market stats for selected pair
+      const selectedCoinData = data[selectedPair.coinId];
+      if (selectedCoinData) {
+        setMarketStats({
+          price: formatPrice(selectedCoinData.usd),
+          change24h: formatChange(selectedCoinData.usd_24h_change),
+          high24h: formatPrice(selectedCoinData.usd * 1.02), // Approximate
+          low24h: formatPrice(selectedCoinData.usd * 0.98), // Approximate
+          volume24h: formatVolume(selectedCoinData.usd_24h_vol)
+        });
+      }
+      setIsLoading(false);
+      setLastUpdated(new Date());
+    } catch (error) {
+      console.error('Error fetching prices:', error);
+      setIsLoading(false);
+    }
+  };
+
+  // Update prices on mount and every 30 seconds
+  useEffect(() => {
+    fetchPrices();
+    const interval = setInterval(fetchPrices, 30000);
+    return () => clearInterval(interval);
+  }, [selectedPair.coinId]);
+
+  // Generate dynamic orderbook based on current price
+  const generateOrderbook = () => {
+    const currentPrice = parseFloat(marketStats.price.replace(/,/g, '')) || 0;
+    if (currentPrice === 0) return { asks: [], bids: [] };
+    
+    const asks = [];
+    const bids = [];
+    
+    // Generate asks (sell orders) above current price
+    for (let i = 0; i < 6; i++) {
+      const price = currentPrice + (i + 1) * 0.50;
+      const amount = (Math.random() * 2).toFixed(4);
+      const total = (price * parseFloat(amount)).toFixed(2);
+      asks.push({
+        price: formatPrice(price),
+        amount,
+        total: formatPrice(parseFloat(total))
+      });
+    }
+    
+    // Generate bids (buy orders) below current price
+    for (let i = 0; i < 6; i++) {
+      const price = currentPrice - (i + 1) * 0.50;
+      const amount = (Math.random() * 2).toFixed(4);
+      const total = (price * parseFloat(amount)).toFixed(2);
+      bids.push({
+        price: formatPrice(price),
+        amount,
+        total: formatPrice(parseFloat(total))
+      });
+    }
+    
+    return { asks, bids };
+  };
+  
+  const orderbook = useMemo(() => generateOrderbook(), [marketStats.price]);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-gray-100">
@@ -103,26 +179,48 @@ export default function Example() {
               </Button>
             </div>
             <div className="space-y-1">
-              {tradingPairs.map(pair => (
-                <div 
-                  key={pair.symbol}
-                  onClick={() => setSelectedPair(pair)}
-                  className={`p-2 rounded cursor-pointer transition-colors ${
-                    selectedPair.symbol === pair.symbol 
-                      ? 'bg-gray-800' 
-                      : 'hover:bg-gray-800/50'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{pair.name.split('-')[0]}</span>
-                    <span className="text-xs text-green-400">+2.45%</span>
+              {tradingPairs.map(pair => {
+                const coinData = pricesData[pair.coinId];
+                const price = coinData?.usd || 0;
+                const change = coinData?.usd_24h_change || 0;
+                const volume = coinData?.usd_24h_vol || 0;
+                
+                return (
+                  <div 
+                    key={pair.symbol}
+                    onClick={() => setSelectedPair(pair)}
+                    className={`p-2 rounded cursor-pointer transition-colors ${
+                      selectedPair.symbol === pair.symbol 
+                        ? 'bg-gray-800' 
+                        : 'hover:bg-gray-800/50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">{pair.name.split('-')[0]}</span>
+                      {isLoading ? (
+                        <span className="inline-block w-12 h-3 bg-gray-700 animate-pulse rounded" />
+                      ) : (
+                        <span className={`text-xs ${change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {formatChange(change)}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between mt-1">
+                      {isLoading ? (
+                        <>
+                          <span className="inline-block w-16 h-3 bg-gray-700 animate-pulse rounded" />
+                          <span className="inline-block w-12 h-3 bg-gray-700 animate-pulse rounded" />
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-xs text-gray-400">${formatPrice(price)}</span>
+                          <span className="text-xs text-gray-500">{formatVolume(volume)}</span>
+                        </>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between mt-1">
-                    <span className="text-xs text-gray-400">$43,567.89</span>
-                    <span className="text-xs text-gray-500">$2.3B</span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -142,33 +240,59 @@ export default function Example() {
                 <div className="flex items-center space-x-6 text-sm">
                   <div>
                     <span className="text-gray-400">Mark</span>
-                    <span className="ml-2 font-medium text-white">${marketStats.price}</span>
+                    <span className="ml-2 font-medium text-white">
+                      {isLoading ? (
+                        <span className="inline-block w-16 h-4 bg-gray-700 animate-pulse rounded" />
+                      ) : (
+                        `$${marketStats.price}`
+                      )}
+                    </span>
                   </div>
                   <div>
                     <span className="text-gray-400">24h</span>
                     <span className={`ml-2 font-medium ${marketStats.change24h.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
-                      {marketStats.change24h}
+                      {isLoading ? (
+                        <span className="inline-block w-12 h-4 bg-gray-700 animate-pulse rounded" />
+                      ) : (
+                        marketStats.change24h
+                      )}
                     </span>
                   </div>
                   <div>
                     <span className="text-gray-400">Volume</span>
-                    <span className="ml-2 font-medium text-white">${marketStats.volume24h}</span>
+                    <span className="ml-2 font-medium text-white">
+                      {isLoading ? (
+                        <span className="inline-block w-16 h-4 bg-gray-700 animate-pulse rounded" />
+                      ) : (
+                        marketStats.volume24h
+                      )}
+                    </span>
                   </div>
-                  <div>
+                  <div className="flex items-center">
                     <span className="text-gray-400">Funding</span>
                     <span className="ml-2 font-medium text-green-400">0.01%</span>
+                    {!isLoading && (
+                      <span className="ml-2 w-2 h-2 bg-green-400 rounded-full animate-pulse" title="Live" />
+                    )}
                   </div>
                 </div>
               </div>
               
               {/* Right side - Quick actions */}
-              <div className="flex items-center space-x-2">
-                <Button variant="ghost" size="sm" className="h-8 px-3 text-xs">
-                  <BarChart3 className="w-4 h-4" />
-                </Button>
-                <Button variant="ghost" size="sm" className="h-8 px-3 text-xs">
-                  <Settings className="w-4 h-4" />
-                </Button>
+              <div className="flex items-center space-x-4">
+                {lastUpdated && !isLoading && (
+                  <div className="text-xs text-gray-400">
+                    Updated {lastUpdated.toLocaleTimeString()}
+                  </div>
+                )}
+                <div className="flex items-center space-x-2">
+                  <Button variant="ghost" size="sm" className="h-8 px-3 text-xs">
+                    <BarChart3 className="w-4 h-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-8 px-3 text-xs">
+                    <Settings className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -240,8 +364,19 @@ export default function Example() {
                   {/* Current Price */}
                   <div className="px-3 py-2 border-y border-gray-800 my-1">
                     <div className="text-center">
-                      <span className="text-lg font-semibold text-green-400">${marketStats.price}</span>
-                      <span className="text-xs text-gray-400 ml-2">≈ ${marketStats.price}</span>
+                      {isLoading ? (
+                        <div className="flex items-center justify-center space-x-2">
+                          <span className="inline-block w-20 h-5 bg-gray-700 animate-pulse rounded" />
+                          <span className="inline-block w-16 h-4 bg-gray-700 animate-pulse rounded" />
+                        </div>
+                      ) : (
+                        <>
+                          <span className={`text-lg font-semibold ${marketStats.change24h.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
+                            ${marketStats.price}
+                          </span>
+                          <span className="text-xs text-gray-400 ml-2">≈ ${marketStats.price}</span>
+                        </>
+                      )}
                     </div>
                   </div>
                   
