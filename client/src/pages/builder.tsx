@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import templatePreview from "@assets/Trade_1752276632533.png";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 import { CustomDomainManager } from "@/components/CustomDomainManager";
@@ -53,9 +53,38 @@ export default function Builder() {
     return null;
   }
 
+  // Load existing platforms
+  const { data: platforms } = useQuery({
+    queryKey: ['/api/platforms', { userId: user?.id }],
+    queryFn: async () => {
+      const response = await fetch(`/api/platforms?userId=${user?.id}`);
+      if (!response.ok) throw new Error('Failed to fetch platforms');
+      return response.json();
+    },
+    enabled: !!user?.id
+  });
+
+  // Set the first platform as the saved platform if exists
+  useEffect(() => {
+    if (platforms && platforms.length > 0 && !savedPlatformId) {
+      const latestPlatform = platforms[platforms.length - 1];
+      setSavedPlatformId(latestPlatform.id);
+      setPlatformName(latestPlatform.name || '');
+      setLogoUrl(latestPlatform.logoUrl || '');
+      setPayoutWallet(latestPlatform.payoutWallet || '');
+      setSavedChanges(true);
+    }
+  }, [platforms]);
+
   const savePlatformMutation = useMutation({
     mutationFn: async (data: any) => {
-      return apiRequest("POST", "/api/platforms", data);
+      if (savedPlatformId) {
+        // Update existing platform
+        return apiRequest("PUT", `/api/platforms/${savedPlatformId}`, data);
+      } else {
+        // Create new platform
+        return apiRequest("POST", "/api/platforms", data);
+      }
     },
     onSuccess: (data) => {
       setSavedChanges(true);
