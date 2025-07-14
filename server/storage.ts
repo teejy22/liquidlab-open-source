@@ -137,11 +137,25 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createTradingPlatform(platform: InsertTradingPlatform): Promise<TradingPlatform> {
+    let baseSlug = this.generateSlug(platform.name);
+    let slug = baseSlug;
+    let counter = 1;
+    
+    // Check if slug already exists and append number if needed
+    while (true) {
+      const existing = await db.select().from(tradingPlatforms).where(eq(tradingPlatforms.slug, slug));
+      if (existing.length === 0) {
+        break;
+      }
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+    
     const [created] = await db
       .insert(tradingPlatforms)
       .values({
         ...platform,
-        slug: this.generateSlug(platform.name)
+        slug
       })
       .returning();
     return created;
