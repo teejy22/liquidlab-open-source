@@ -4,8 +4,43 @@ import { storage } from "./storage";
 import { z } from "zod";
 import { insertUserSchema, insertTradingPlatformSchema, insertTemplateSchema, insertRevenueRecordSchema } from "@shared/schema";
 import { HyperliquidService } from "./services/hyperliquid";
+import multer from "multer";
+import path from "path";
+import fs from "fs/promises";
 
 const hyperliquidService = new HyperliquidService();
+
+// Configure multer for file uploads
+const uploadDir = 'uploads';
+fs.mkdir(uploadDir, { recursive: true }).catch(console.error);
+
+const multerStorage = multer.diskStorage({
+  destination: async (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'logo-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ 
+  storage: multerStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
 
 function handleError(error: unknown): string {
   return error instanceof Error ? error.message : 'Unknown error';
@@ -414,6 +449,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const revenues = await storage.getAllPlatformRevenues(options);
       res.json(revenues);
     } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  // Logo upload endpoint
+  app.post("/api/upload-logo", upload.single('logo'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+
+      // Return the URL path to the uploaded file
+      const logoUrl = `/uploads/${req.file.filename}`;
+      res.json({ url: logoUrl });
+    } catch (error) {
+      console.error("Error uploading logo:", error);
       res.status(500).json({ error: handleError(error) });
     }
   });

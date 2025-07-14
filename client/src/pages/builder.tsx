@@ -19,7 +19,9 @@ import {
   Smartphone,
   Check,
   Copy,
-  ExternalLink
+  ExternalLink,
+  Upload,
+  Image
 } from "lucide-react";
 
 export default function Builder() {
@@ -28,6 +30,8 @@ export default function Builder() {
   const [customDomain, setCustomDomain] = useState("");
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
   const [savedChanges, setSavedChanges] = useState(false);
+  const [logoUrl, setLogoUrl] = useState("");
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   // Fixed LiquidLab builder code
   const LIQUIDLAB_BUILDER_CODE = "LIQUIDLAB2025";
@@ -47,6 +51,61 @@ export default function Builder() {
       title: "Platform Saved",
       description: "Your platform configuration has been saved.",
     });
+  };
+
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid File",
+        description: "Please upload an image file (PNG, JPG, etc.)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File Too Large",
+        description: "Please upload an image smaller than 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploadingLogo(true);
+    const formData = new FormData();
+    formData.append('logo', file);
+
+    try {
+      const response = await fetch('/api/upload-logo', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload logo');
+      }
+
+      const data = await response.json();
+      setLogoUrl(data.url);
+      toast({
+        title: "Logo Uploaded",
+        description: "Your logo has been uploaded successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload logo. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingLogo(false);
+    }
   };
 
   const handlePublish = () => {
@@ -131,6 +190,51 @@ export default function Builder() {
                       <p className="text-xs text-gray-500 mt-1">
                         Configure your own domain for the platform
                       </p>
+                    </div>
+
+                    <div>
+                      <Label>Platform Logo</Label>
+                      <div className="mt-1 space-y-2">
+                        {logoUrl ? (
+                          <div className="flex items-center gap-3">
+                            <img 
+                              src={logoUrl} 
+                              alt="Platform logo" 
+                              className="w-16 h-16 object-cover rounded-lg border"
+                            />
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setLogoUrl("")}
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                            <label 
+                              htmlFor="logo-upload" 
+                              className="flex flex-col items-center cursor-pointer"
+                            >
+                              <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                              <span className="text-sm font-medium text-gray-700">
+                                {uploadingLogo ? "Uploading..." : "Upload Logo"}
+                              </span>
+                              <span className="text-xs text-gray-500 mt-1">
+                                PNG, JPG up to 5MB
+                              </span>
+                              <input
+                                id="logo-upload"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleLogoUpload}
+                                className="hidden"
+                                disabled={uploadingLogo}
+                              />
+                            </label>
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     <div className="pt-4">
@@ -257,10 +361,28 @@ export default function Builder() {
                   </div>
                   
                   <div className={`p-8 ${previewMode === 'mobile' ? 'max-w-sm mx-auto' : ''}`}>
+                    {/* Custom Platform Header Preview */}
+                    {(platformName || logoUrl) && (
+                      <div className="bg-white rounded-t-lg border border-b-0 p-4 mb-0">
+                        <div className="flex items-center gap-3">
+                          {logoUrl && (
+                            <img 
+                              src={logoUrl} 
+                              alt="Platform logo" 
+                              className="w-10 h-10 object-cover rounded"
+                            />
+                          )}
+                          <h3 className="font-semibold text-lg">
+                            {platformName || "Your Platform Name"}
+                          </h3>
+                        </div>
+                      </div>
+                    )}
+                    
                     <img
                       src={templatePreview}
                       alt="Trading Platform Preview"
-                      className="w-full rounded-lg shadow-xl"
+                      className={`w-full shadow-xl ${(platformName || logoUrl) ? 'rounded-b-lg' : 'rounded-lg'}`}
                     />
                     
                     <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">

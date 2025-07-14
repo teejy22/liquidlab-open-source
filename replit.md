@@ -99,6 +99,15 @@ The application uses a monorepo structure with shared types and schemas, enablin
 
 ## Recent Changes (January 14, 2025)
 
+### Logo Upload Feature
+- **File Upload Implementation**: Added multer-based logo upload system with 5MB size limit
+- **Supported Formats**: PNG, JPG, JPEG, GIF, and WebP images
+- **Upload UI**: Drag-and-drop style upload interface in builder configuration panel
+- **Real-time Preview**: Uploaded logos display immediately in platform preview header
+- **File Storage**: Logos stored in 'uploads' directory and served statically via Express
+- **API Endpoint**: POST /api/upload-logo endpoint handles file uploads
+- **Visual Integration**: Logo appears alongside platform name in the preview section
+
 ### Builder Simplification
 - **Removed Drag-and-Drop**: Eliminated complex drag-and-drop builder functionality
 - **Single Template System**: Now offers one professional Hyperliquid-style template
