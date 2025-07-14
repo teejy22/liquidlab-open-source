@@ -40,10 +40,11 @@ export default function ExampleTradingPage() {
       try {
         setIsLoading(true);
         const symbol = selectedPair.symbol.replace("USDT", "").toLowerCase();
-        const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${symbol === "btc" ? "bitcoin" : symbol === "eth" ? "ethereum" : symbol}&vs_currencies=usd&include_24hr_vol=true&include_24hr_change=true`);
+        const coinId = symbol === "btc" ? "bitcoin" : symbol === "eth" ? "ethereum" : symbol === "sol" ? "solana" : symbol;
+        const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd&include_24hr_vol=true&include_24hr_change=true`);
         const data = await response.json();
         
-        const coinData = data[symbol === "btc" ? "bitcoin" : symbol === "eth" ? "ethereum" : symbol];
+        const coinData = data[coinId];
         if (coinData) {
           setMarketStats({
             price: coinData.usd.toFixed(2),
