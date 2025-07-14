@@ -16,6 +16,7 @@ let tvScriptLoadingPromise: Promise<void> | null = null;
 export function TradingViewChart({ symbol = 'BTCUSDT', theme = 'dark' }: TradingViewChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetRef = useRef<any>(null);
+  const containerId = useRef(`tradingview_${Math.random().toString(36).substring(7)}`);
 
   useEffect(() => {
     const initWidget = async () => {
@@ -51,7 +52,7 @@ export function TradingViewChart({ symbol = 'BTCUSDT', theme = 'dark' }: Trading
           hide_top_toolbar: false,
           hide_side_toolbar: false,
           allow_symbol_change: true,
-          container_id: containerRef.current.id,
+          container_id: containerId.current,
           autosize: true,
           studies: [], // No default indicators
           disabled_features: ['header_symbol_search', 'header_compare'],
@@ -82,7 +83,7 @@ export function TradingViewChart({ symbol = 'BTCUSDT', theme = 'dark' }: Trading
 
   return (
     <div 
-      id={`tradingview_${Math.random().toString(36).substring(7)}`}
+      id={containerId.current}
       ref={containerRef} 
       className="h-full w-full"
     />

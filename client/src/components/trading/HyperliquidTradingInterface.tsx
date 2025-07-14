@@ -42,7 +42,7 @@ export function HyperliquidTradingInterface() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-black text-white">
+    <div className="flex flex-col bg-black text-white" style={{ height: '600px' }}>
       {/* Mode Selector */}
       <div className="bg-gray-900 border-b border-gray-800 p-2">
         <div className="flex items-center justify-between">
@@ -74,7 +74,7 @@ export function HyperliquidTradingInterface() {
       {/* Main Trading Area */}
       <div className="flex flex-1 overflow-hidden">
         {/* Markets Sidebar */}
-        <div className="w-56 border-r border-gray-800 overflow-y-auto">
+        <div className="w-44 border-r border-gray-800 overflow-y-auto">
           {tradingMode === 'perp' ? (
             <HyperliquidMarkets
               selectedMarket={selectedPerpMarket?.name || ''}
@@ -90,7 +90,45 @@ export function HyperliquidTradingInterface() {
 
         {/* Chart Area */}
         <div className="flex-1 flex flex-col">
-          <div className="flex-1 min-h-[400px]">
+          {/* Market Stats Bar */}
+          <div className="bg-[#0f0f0f] border-b border-gray-800 px-4 py-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <h2 className="text-lg font-semibold">
+                  {tradingMode === 'perp' ? selectedPerpMarket?.name || 'Select Market' : selectedSpotMarket?.token || 'Select Market'} / USD
+                </h2>
+                {selectedPerpMarket && tradingMode === 'perp' && (
+                  <>
+                    <div>
+                      <div className="text-xs text-gray-400">Last Price</div>
+                      <div className="text-lg font-semibold">${selectedPerpMarket.markPx}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-400">24h Volume</div>
+                      <div className="text-sm">${parseFloat(selectedPerpMarket.dayNtlVlm).toLocaleString()}</div>
+                    </div>
+                  </>
+                )}
+                {selectedSpotMarket && tradingMode === 'spot' && (
+                  <>
+                    <div>
+                      <div className="text-xs text-gray-400">Last Price</div>
+                      <div className="text-lg font-semibold">${selectedSpotMarket.markPrice}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-400">24h Change</div>
+                      <div className={`text-sm ${parseFloat(selectedSpotMarket.change24h) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {parseFloat(selectedSpotMarket.change24h) >= 0 ? '+' : ''}{selectedSpotMarket.change24h}%
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Chart */}
+          <div className="flex-1">
             <TradingViewChart 
               symbol={getTradingViewSymbol()}
               theme="dark"
