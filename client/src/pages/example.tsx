@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, BarChart3, Volume2, Activity } from "lucide-react";
 import liquidLabLogo from "@assets/Trade (6)_1752434284086.png";
-import SimpleHyperliquidChart from "@/components/charts/SimpleHyperliquidChart";
+import CandlestickChart from "@/components/charts/CandlestickChart";
 import { TrustIndicators } from "@/components/TrustIndicators";
 import { PlatformVerificationBadge } from "@/components/PlatformVerificationBadge";
 import { PrivyProvider } from "@/components/PrivyProvider";
@@ -256,12 +256,11 @@ export default function ExampleTradingPage() {
             
             {/* Hyperliquid Chart */}
             <div className="flex-1 bg-[#131313]">
-              <SimpleHyperliquidChart
+              <CandlestickChart
                 symbol={selectedPair.symbol}
                 interval={timeInterval}
-                theme="dark"
-                height="100%"
-                width="100%"
+                height={450}
+                className="w-full"
               />
             </div>
           </div>

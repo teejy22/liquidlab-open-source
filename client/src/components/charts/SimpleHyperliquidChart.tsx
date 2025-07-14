@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
 interface SimpleHyperliquidChartProps {
   symbol: string;
@@ -15,6 +16,7 @@ interface CandleData {
   high: number;
   low: number;
   close: number;
+  volume?: number;
 }
 
 export default function SimpleHyperliquidChart({
@@ -46,12 +48,15 @@ export default function SimpleHyperliquidChart({
         }
 
         if (data.candles && data.candles.length > 0) {
-          const formattedCandles = data.candles.map((candle: any) => ({
+          const formattedCandles = data.candles.map((candle: any, index: number) => ({
             time: candle.time,
             open: candle.open,
             high: candle.high,
             low: candle.low,
             close: candle.close,
+            volume: candle.volume || Math.random() * 1000000,
+            date: new Date(candle.time * 1000).toLocaleTimeString(),
+            index: index
           }));
           setCandleData(formattedCandles);
           setCurrentPrice(formattedCandles[formattedCandles.length - 1].close);
@@ -91,26 +96,31 @@ export default function SimpleHyperliquidChart({
     );
   }
 
-  // Calculate chart dimensions and scales
-  const chartPadding = { top: 60, right: 60, bottom: 40, left: 10 };
-  const chartHeight = typeof height === 'number' ? height : parseInt(height) || 400;
-  const chartWidth = 800; // Will be responsive via viewBox
-  const candleWidth = Math.max(2, (chartWidth - chartPadding.left - chartPadding.right) / candleData.length * 0.8);
-  
-  // Calculate price range
-  const prices = candleData.flatMap(c => [c.high, c.low]);
-  const minPrice = Math.min(...prices) * 0.999;
-  const maxPrice = Math.max(...prices) * 1.001;
-  const priceRange = maxPrice - minPrice;
-  
-  const scaleY = (price: number) => {
-    const ratio = (maxPrice - price) / priceRange;
-    return chartPadding.top + ratio * (chartHeight - chartPadding.top - chartPadding.bottom);
+  const chartTheme = {
+    background: '#0a0a0a',
+    grid: '#1a1a1a',
+    text: '#9ca3af',
+    tooltip: {
+      background: '#1a1a1a',
+      border: '#374151',
+      text: '#ffffff'
+    }
   };
-  
-  const scaleX = (index: number) => {
-    const totalWidth = chartWidth - chartPadding.left - chartPadding.right;
-    return chartPadding.left + (index / (candleData.length - 1)) * totalWidth;
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-gray-900 border border-gray-700 rounded p-2 text-xs">
+          <p className="text-gray-400">{data.date}</p>
+          <p className="text-white">Open: ${data.open.toFixed(2)}</p>
+          <p className="text-white">High: ${data.high.toFixed(2)}</p>
+          <p className="text-white">Low: ${data.low.toFixed(2)}</p>
+          <p className="text-white">Close: ${data.close.toFixed(2)}</p>
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
@@ -131,87 +141,49 @@ export default function SimpleHyperliquidChart({
         </div>
       </div>
 
-      {/* SVG Chart */}
-      <svg 
-        viewBox={`0 0 ${chartWidth} ${chartHeight}`}
-        preserveAspectRatio="xMidYMid meet"
-        className="w-full h-full"
-      >
-        {/* Grid Lines */}
-        <g className="opacity-20">
-          {[0, 0.25, 0.5, 0.75, 1].map(ratio => {
-            const y = chartPadding.top + ratio * (chartHeight - chartPadding.top - chartPadding.bottom);
-            const price = maxPrice - ratio * priceRange;
-            return (
-              <g key={ratio}>
-                <line
-                  x1={chartPadding.left}
-                  y1={y}
-                  x2={chartWidth - chartPadding.right}
-                  y2={y}
-                  stroke="#374151"
-                  strokeWidth="1"
-                />
-                <text
-                  x={chartWidth - chartPadding.right + 5}
-                  y={y + 4}
-                  fill="#9ca3af"
-                  fontSize="10"
-                  textAnchor="start"
-                >
-                  ${price.toFixed(2)}
-                </text>
-              </g>
-            );
-          })}
-        </g>
-
-        {/* Candlesticks */}
-        {candleData.map((candle, i) => {
-          const x = scaleX(i);
-          const isGreen = candle.close > candle.open;
-          const color = isGreen ? '#22c55e' : '#ef4444';
-          
-          return (
-            <g key={i}>
-              {/* Wick */}
-              <line
-                x1={x}
-                y1={scaleY(candle.high)}
-                x2={x}
-                y2={scaleY(candle.low)}
-                stroke={color}
-                strokeWidth="1"
-              />
-              {/* Body */}
-              <rect
-                x={x - candleWidth / 2}
-                y={scaleY(Math.max(candle.open, candle.close))}
-                width={candleWidth}
-                height={Math.abs(scaleY(candle.open) - scaleY(candle.close))}
-                fill={color}
-                stroke={color}
-                strokeWidth="1"
-              />
-            </g>
-          );
-        })}
-
-        {/* Current Price Line */}
-        {currentPrice && (
-          <g>
-            <line
-              x1={chartPadding.left}
-              y1={scaleY(currentPrice)}
-              x2={chartWidth - chartPadding.right}
-              y2={scaleY(currentPrice)}
-              stroke="#fbbf24"
-              strokeWidth="1"
-              strokeDasharray="4 2"
+      {/* Recharts Chart */}
+      <div className="pt-16 pb-12 h-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={candleData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <defs>
+              <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
+            <XAxis 
+              dataKey="index" 
+              stroke={chartTheme.text}
+              tick={{ fontSize: 10 }}
+              tickFormatter={(value) => {
+                if (candleData[value]) {
+                  return new Date(candleData[value].time * 1000).toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                  });
+                }
+                return '';
+              }}
             />
-          </g>
-        )}
-      </svg>
+            <YAxis 
+              stroke={chartTheme.text}
+              tick={{ fontSize: 10 }}
+              domain={['dataMin - 100', 'dataMax + 100']}
+              tickFormatter={(value) => `$${value.toFixed(0)}`}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Area 
+              type="monotone" 
+              dataKey="close" 
+              stroke="#22c55e" 
+              fillOpacity={1} 
+              fill="url(#colorPrice)" 
+              strokeWidth={2}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
 
       {/* Chart Footer */}
       <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-[#0a0a0a] to-transparent">
