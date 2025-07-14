@@ -441,3 +441,10 @@ The application uses a monorepo structure with shared types and schemas, enablin
 - **Admin API Endpoints**: 
   - POST `/api/trades/process-batch` - Manually trigger batch processing
   - GET `/api/trades/batch-status` - View recent processing logs
+
+### Trust Indicators Enhancement (January 16, 2025)
+- **Added Hyperliquid Connection Status**: Enhanced the security bar (TrustIndicators component) to show "Connected to Hyperliquid"
+  - Live connection indicator with green pill background
+  - Pulsing animation on the connection status icon
+  - Clear visual confirmation that the platform is connected to Hyperliquid DEX
+  - Tooltip explains "Live connection to Hyperliquid DEX established"
