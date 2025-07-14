@@ -33,8 +33,9 @@ export function MoonPayButton({ platformId, className }: MoonPayButtonProps) {
   }, []);
   
   // MoonPay widget URL with LiquidLab configuration
+  // Note: In production, you'll need a real MoonPay API key
   const moonpayUrl = moonpayConfig?.apiKey ? 
-    `https://widget.moonpay.com?apiKey=${moonpayConfig.apiKey}&currencyCode=usdc&walletAddress=${walletAddress}&colorCode=%237084FF&showWalletAddressForm=true&theme=dark&language=en&variant=overlay` : 
+    `https://widget.moonpay.com?apiKey=${moonpayConfig.apiKey}&currencyCode=usdc&walletAddress=${walletAddress}&colorCode=%237084FF&showWalletAddressForm=true&theme=dark&language=en` : 
     null;
   
   const handleBuyClick = () => {
@@ -101,7 +102,18 @@ export function MoonPayButton({ platformId, className }: MoonPayButtonProps) {
             <DialogTitle>Buy Crypto with MoonPay</DialogTitle>
           </DialogHeader>
           <div className="flex-1 overflow-hidden rounded-b-lg">
-            {moonpayUrl ? (
+            {moonpayConfig?.environment === 'test' ? (
+              <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+                <CreditCard className="w-16 h-16 text-purple-500 mb-4" />
+                <h3 className="text-xl font-semibold mb-2">MoonPay Integration Ready</h3>
+                <p className="text-gray-400 mb-4">
+                  To enable real crypto purchases, you'll need to configure a production MoonPay API key.
+                </p>
+                <p className="text-sm text-gray-500">
+                  Contact LiquidLab support to get your MoonPay affiliate API key set up.
+                </p>
+              </div>
+            ) : moonpayUrl ? (
               <iframe
                 src={moonpayUrl}
                 className="w-full h-full border-0"

@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { db } from '../db';
-import { tradingPlatforms, platformRevenueSummary, payoutRecords } from '@shared/schema';
-import { eq, and, gte, sql } from 'drizzle-orm';
+import { tradingPlatforms, platformRevenueSummary, payoutRecords, moonpayTransactions } from '@shared/schema';
+import { eq, and, gte, lte, desc, sql } from 'drizzle-orm';
 
 // Payout configuration
 const PAYOUT_CONFIG = {
@@ -105,18 +105,39 @@ export class CryptoPayoutService {
         return;
       }
 
-      // Calculate platform owner's share (70%)
-      const revenueAmount = parseFloat(totalRevenue);
-      const platformOwnerShare = revenueAmount * 0.7;
+      // Calculate platform owner's share from trading fees (70%)
+      const tradingRevenue = parseFloat(totalRevenue);
+      const tradingFeesShare = tradingRevenue * 0.7;
+
+      // Get MoonPay revenue for this platform and period
+      const moonpayTransactions = await db
+        .select()
+        .from(moonpayTransactions)
+        .where(
+          and(
+            eq(moonpayTransactions.platformId, platformId),
+            eq(moonpayTransactions.status, 'completed'),
+            gte(moonpayTransactions.createdAt, startDate),
+            lte(moonpayTransactions.createdAt, endDate)
+          )
+        );
+
+      // Calculate MoonPay earnings (platform gets 50% of affiliate fees)
+      const moonpayEarnings = moonpayTransactions.reduce((sum, tx) => {
+        return sum + parseFloat(tx.platformEarnings);
+      }, 0);
+
+      // Total payout = Trading fees share + MoonPay earnings
+      const totalPayout = tradingFeesShare + moonpayEarnings;
 
       // Check minimum payout
-      if (platformOwnerShare < parseFloat(PAYOUT_CONFIG.minPayoutAmount)) {
-        console.log(`Platform ${platformId} revenue below minimum: $${platformOwnerShare.toFixed(2)}`);
+      if (totalPayout < parseFloat(PAYOUT_CONFIG.minPayoutAmount)) {
+        console.log(`Platform ${platformId} total earnings below minimum: $${totalPayout.toFixed(2)}`);
         return;
       }
 
       // Convert to USDC amount (6 decimals)
-      const usdcAmount = ethers.parseUnits(platformOwnerShare.toFixed(2), 6);
+      const usdcAmount = ethers.parseUnits(totalPayout.toFixed(2), 6);
 
       // Check USDC balance
       const balance = await this.usdcContract!.balanceOf(this.payoutWallet!.address);
@@ -126,7 +147,7 @@ export class CryptoPayoutService {
       }
 
       // Send USDC
-      console.log(`Sending $${platformOwnerShare.toFixed(2)} USDC to ${payoutAddress}`);
+      console.log(`Sending $${totalPayout.toFixed(2)} USDC to ${payoutAddress} (Trading: $${tradingFeesShare.toFixed(2)}, MoonPay: $${moonpayEarnings.toFixed(2)})`);
       const tx = await this.usdcContract!.transfer(payoutAddress, usdcAmount, {
         gasLimit: PAYOUT_CONFIG.gasLimit,
       });
@@ -138,7 +159,7 @@ export class CryptoPayoutService {
       await db.insert(payoutRecords).values({
         platformId,
         userId,
-        amount: platformOwnerShare.toFixed(2),
+        amount: totalPayout.toFixed(2),
         currency: 'USDC',
         status: 'completed',
         txHash: receipt.hash,
@@ -147,6 +168,7 @@ export class CryptoPayoutService {
         periodStart: startDate,
         periodEnd: endDate,
         processedAt: new Date(),
+        notes: `Trading fees: $${tradingFeesShare.toFixed(2)}, MoonPay: $${moonpayEarnings.toFixed(2)}`,
       });
 
       console.log(`Payout completed for platform ${platformId}: ${receipt.hash}`);
@@ -157,7 +179,7 @@ export class CryptoPayoutService {
       await db.insert(payoutRecords).values({
         platformId,
         userId,
-        amount: platformOwnerShare.toFixed(2),
+        amount: totalPayout.toFixed(2),
         currency: 'USDC',
         status: 'failed',
         error: error.message,
@@ -165,6 +187,7 @@ export class CryptoPayoutService {
         periodStart: startDate,
         periodEnd: endDate,
         processedAt: new Date(),
+        notes: `Trading fees: $${tradingFeesShare.toFixed(2)}, MoonPay: $${moonpayEarnings.toFixed(2)}`,
       });
     }
   }

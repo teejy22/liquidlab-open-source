@@ -455,11 +455,17 @@ The application uses a monorepo structure with shared types and schemas, enablin
 - **Complete Blockchain-Based Revenue Distribution**: Built comprehensive crypto payout system for platform owners
   - CryptoPayoutService using ethers.js for Arbitrum network integration
   - USDC transfers for stable, low-fee payouts to platform owners
-  - 70% of trading fees distributed weekly to platform owners
+  - Combined payouts include both trading fees (70%) and MoonPay commissions (50%)
   - Automatic payout processing with minimum threshold of $10
+- **MoonPay Revenue Integration**: Enhanced payout system to include MoonPay earnings
+  - Crypto payout service now calculates total earnings from both revenue streams
+  - Single USDC transfer includes trading fees + MoonPay affiliate commissions
+  - Payout records show breakdown: "Trading fees: $X, MoonPay: $Y"
+  - Platform owners receive all earnings in one convenient crypto payment
 - **Database Schema**: Added payoutRecords table to track all crypto payments
   - Tracks platform ID, amount, currency (USDC), transaction hash
   - Status tracking: pending → processing → completed
+  - Notes field shows revenue breakdown between trading and MoonPay
   - Audit trail for all payout attempts and completions
 - **Dashboard Integration**: Added dedicated Payouts tab showing:
   - Pending payouts with amounts and periods
