@@ -324,11 +324,7 @@ export default function ExampleTradingPage() {
                       size="sm"
                       variant="outline"
                       onClick={() => setSide("buy")}
-                      className={`h-8 transition-colors ${
-                        side === "buy" 
-                          ? "!bg-green-600 hover:!bg-green-700 !text-white !border-green-600" 
-                          : "text-gray-300 border-gray-700 hover:border-green-600 hover:text-green-400"
-                      }`}
+                      className="h-8 transition-colors !bg-green-600 hover:!bg-green-700 !text-white !border-green-600"
                     >
                       Buy
                     </Button>
@@ -336,11 +332,7 @@ export default function ExampleTradingPage() {
                       size="sm"
                       variant="outline"
                       onClick={() => setSide("sell")}
-                      className={`h-8 transition-colors ${
-                        side === "sell" 
-                          ? "!bg-red-600 hover:!bg-red-700 !text-white !border-red-600" 
-                          : "text-gray-300 border-gray-700 hover:border-red-600 hover:text-red-400"
-                      }`}
+                      className="h-8 transition-colors !bg-red-600 hover:!bg-red-700 !text-white !border-red-600"
                     >
                       Sell
                     </Button>
