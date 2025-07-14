@@ -332,9 +332,9 @@ export default function ExampleTradingPage() {
                         Buy
                       </Button>
                       <Button
-                        variant={side === "sell" ? "default" : "outline"}
+                        variant="outline"
                         onClick={() => setSide("sell")}
-                        className={side === "sell" ? "bg-red-600 hover:bg-red-700 text-white" : ""}
+                        className={side === "sell" ? "bg-red-600 hover:bg-red-700 text-white border-red-600" : "border-gray-700 hover:border-red-600"}
                       >
                         Sell
                       </Button>
@@ -431,13 +431,13 @@ export default function ExampleTradingPage() {
             <Card className="bg-[#131313] border-gray-800">
               <CardContent className="p-4">
                 <div className="text-xs text-gray-400 mb-1">Total Collateral</div>
-                <div className="text-xl font-semibold">$125,430.45</div>
+                <div className="text-xl font-semibold text-white">$125,430.45</div>
               </CardContent>
             </Card>
             <Card className="bg-[#131313] border-gray-800">
               <CardContent className="p-4">
                 <div className="text-xs text-gray-400 mb-1">Free Collateral</div>
-                <div className="text-xl font-semibold">$45,230.12</div>
+                <div className="text-xl font-semibold text-white">$45,230.12</div>
               </CardContent>
             </Card>
             <Card className="bg-[#131313] border-gray-800">
