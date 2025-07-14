@@ -112,16 +112,23 @@ export function CustomDomainManager({ platformId }: CustomDomainManagerProps) {
       return response.json();
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/platforms', platformId, 'domains'] });
       toast({
         title: "Domain removed",
-        description: "The custom domain has been removed."
+        description: "The domain has been removed from your platform."
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/platforms', platformId, 'domains'] });
     }
   });
 
   const handleAddDomain = () => {
-    if (!domainInput) return;
+    if (!domainInput.trim()) {
+      toast({
+        title: "Invalid input",
+        description: "Please enter a domain name",
+        variant: "destructive"
+      });
+      return;
+    }
     
     // Basic domain validation
     const domainRegex = /^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/i;
@@ -153,72 +160,28 @@ export function CustomDomainManager({ platformId }: CustomDomainManagerProps) {
           Use your own domain for your trading platform
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        {domains.length === 0 ? (
-          <div className="space-y-4">
-            <div className="flex gap-2">
-              <Input
-                placeholder="yourdomain.com"
-                value={domainInput}
-                onChange={(e) => setDomainInput(e.target.value)}
-                disabled={addDomainMutation.isPending}
-              />
-              <Button
-                onClick={handleAddDomain}
-                disabled={addDomainMutation.isPending || !domainInput}
-              >
-                {addDomainMutation.isPending && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Add Domain
-              </Button>
-            </div>
-
-            {verificationInstructions && (
-              <Alert>
-                <AlertTitle>Domain Verification Required</AlertTitle>
-                <AlertDescription className="mt-2 space-y-2">
-                  <p>Add the following DNS record to verify ownership:</p>
-                  <div className="bg-muted p-3 rounded-md space-y-1 font-mono text-sm">
-                    <div className="flex justify-between items-center">
-                      <span>Type: {verificationInstructions.recordType}</span>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => copyToClipboard(verificationInstructions.recordType)}
-                      >
-                        <Copy className="h-3 w-3" />
-                      </Button>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span>Name: {verificationInstructions.recordName}</span>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => copyToClipboard(verificationInstructions.recordName)}
-                      >
-                        <Copy className="h-3 w-3" />
-                      </Button>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="break-all">Value: {verificationInstructions.recordValue}</span>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => copyToClipboard(verificationInstructions.recordValue)}
-                      >
-                        <Copy className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    After adding the record, wait a few minutes for DNS propagation, then click verify.
-                  </p>
-                </AlertDescription>
-              </Alert>
+      <CardContent className="space-y-4">
+        {/* Always show add domain input */}
+        <div className="flex gap-2">
+          <Input
+            placeholder="yourdomain.com"
+            value={domainInput}
+            onChange={(e) => setDomainInput(e.target.value)}
+            disabled={addDomainMutation.isPending}
+          />
+          <Button
+            onClick={handleAddDomain}
+            disabled={addDomainMutation.isPending || !domainInput}
+          >
+            {addDomainMutation.isPending && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
-          </div>
-        ) : (
+            Add Domain
+          </Button>
+        </div>
+
+        {/* Show existing domains */}
+        {domains.length > 0 && (
           <div className="space-y-4">
             {domains.map((domain) => (
               <div key={domain.id} className="border rounded-lg p-4 space-y-3">
@@ -242,12 +205,40 @@ export function CustomDomainManager({ platformId }: CustomDomainManagerProps) {
                 {domain.status === 'pending' && (
                   <div className="space-y-2">
                     <Alert>
+                      <AlertTitle>DNS Verification Required</AlertTitle>
                       <AlertDescription>
-                        <p className="mb-2">Add this DNS record to verify:</p>
-                        <div className="bg-muted p-2 rounded text-xs font-mono space-y-1">
-                          <div>Type: TXT</div>
-                          <div>Name: _liquidlab</div>
-                          <div className="break-all">Value: {domain.verificationToken}</div>
+                        <p className="mb-2">Add this DNS record to verify ownership:</p>
+                        <div className="bg-muted p-3 rounded-md space-y-1 font-mono text-sm">
+                          <div className="flex justify-between items-center">
+                            <span>Type: TXT</span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => copyToClipboard('TXT')}
+                            >
+                              <Copy className="h-3 w-3" />
+                            </Button>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span>Name: _liquidlab</span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => copyToClipboard('_liquidlab')}
+                            >
+                              <Copy className="h-3 w-3" />
+                            </Button>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="break-all">Value: {domain.verificationToken}</span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => copyToClipboard(domain.verificationToken)}
+                            >
+                              <Copy className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </div>
                       </AlertDescription>
                     </Alert>
@@ -279,19 +270,6 @@ export function CustomDomainManager({ platformId }: CustomDomainManagerProps) {
                 )}
               </div>
             ))}
-
-            <div className="pt-2">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setDomainInput("");
-                  setVerificationInstructions(null);
-                }}
-                className="w-full"
-              >
-                Add Another Domain
-              </Button>
-            </div>
           </div>
         )}
 
