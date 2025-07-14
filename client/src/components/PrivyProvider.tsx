@@ -1,16 +1,34 @@
 import { PrivyProvider as Privy } from '@privy-io/react-auth';
+import { useEffect, useState } from 'react';
 
 interface PrivyProviderProps {
   children: React.ReactNode;
 }
 
 export function PrivyProvider({ children }: PrivyProviderProps) {
-  // In production, this should come from a secure environment variable
-  // For now, using a placeholder ID - replace with actual Privy App ID
-  const appId = import.meta.env.VITE_PRIVY_APP_ID || 'clsnqcjyk05yw0fl36x7d2x3v';
-  
-  if (!appId) {
-    console.error('Privy App ID not found. Please set VITE_PRIVY_APP_ID environment variable.');
+  const [appId, setAppId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch Privy config from backend
+    fetch('/api/privy/config')
+      .then(res => res.json())
+      .then(data => {
+        if (data.appId) {
+          setAppId(data.appId);
+        } else {
+          console.error('Privy App ID not found in config');
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching Privy config:', err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading || !appId) {
     return <>{children}</>;
   }
 

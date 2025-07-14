@@ -728,6 +728,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Privy configuration endpoint
+  app.get("/api/privy/config", async (req, res) => {
+    try {
+      const appId = process.env.PRIVY_APP_ID;
+      if (!appId) {
+        return res.status(500).json({ error: "Privy app ID not configured" });
+      }
+      res.json({ appId });
+    } catch (error) {
+      console.error("Error fetching Privy config:", error);
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
