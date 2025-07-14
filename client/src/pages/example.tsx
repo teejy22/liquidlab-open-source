@@ -137,13 +137,13 @@ export default function ExampleTradingPage() {
               <img 
                 src={platformData.logoUrl} 
                 alt={platformData.name || "Trading Platform"} 
-                className="h-24 w-auto"
+                className="h-32 w-auto"
               />
             ) : (
               <img 
                 src={liquidLabLogo} 
                 alt="LiquidLab" 
-                className="h-24 w-auto"
+                className="h-32 w-auto"
               />
             )}
           </div>
@@ -166,7 +166,6 @@ export default function ExampleTradingPage() {
             >
               Test Wallet
             </Button>
-            <span className="text-sm text-gray-400">Powered by LiquidLab</span>
           </div>
         </div>
       </header>

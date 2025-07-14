@@ -59,17 +59,7 @@ export function TrustIndicators({
                 </TooltipContent>
               </Tooltip>
 
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1.5">
-                    <CheckCircle className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
-                    <span className="text-xs text-green-800 dark:text-green-200">Verified</span>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Officially verified by LiquidLab platform</p>
-                </TooltipContent>
-              </Tooltip>
+
 
               <Tooltip>
                 <TooltipTrigger asChild>
