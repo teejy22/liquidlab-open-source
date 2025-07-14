@@ -250,3 +250,32 @@ export function formatOrderRequest(
     signature: signedOrders[0].signature
   };
 }
+
+// Sign L1 action for spot trading
+export async function signL1Action(
+  signer: ethers.Signer,
+  action: any,
+  nonce: number
+): Promise<string> {
+  const domain = {
+    name: 'HyperliquidL1',
+    version: '1',
+    chainId: 1337, // Hyperliquid chain ID
+    verifyingContract: '0x0000000000000000000000000000000000000000'
+  };
+
+  const types = {
+    L1Action: [
+      { name: 'action', type: 'string' },
+      { name: 'nonce', type: 'uint64' }
+    ]
+  };
+
+  const value = {
+    action: JSON.stringify(action),
+    nonce: nonce
+  };
+
+  const signature = await signer._signTypedData(domain, types, value);
+  return signature;
+}

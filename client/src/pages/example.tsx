@@ -8,16 +8,11 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, BarChart3, Volume2, Activity, X } from "lucide-react";
 import liquidLabLogo from "@assets/Trade (6)_1752434284086.png";
-import TradingViewWidget from "@/components/charts/TradingViewWidget";
 import { TrustIndicators } from "@/components/TrustIndicators";
 import { PlatformVerificationBadge } from "@/components/PlatformVerificationBadge";
 import { PrivyProvider } from "@/components/PrivyProvider";
 import { WalletConnect } from "@/components/WalletConnect";
-import { HyperliquidMarkets } from "@/components/trading/HyperliquidMarkets";
-import { useHyperliquidTrading } from "@/hooks/useHyperliquidTrading";
-import { HyperliquidOrder } from "@/lib/hyperliquid-signing";
-import { HyperliquidTradeForm } from "@/components/trading/HyperliquidTradeForm";
-import { HyperliquidPositions } from "@/components/trading/HyperliquidPositions";
+import { HyperliquidTradingInterface } from "@/components/trading/HyperliquidTradingInterface";
 import { TestWalletInput } from "@/components/TestWalletInput";
 import { MoonPayButton } from "@/components/MoonPayButton";
 
@@ -194,134 +189,10 @@ export default function ExampleTradingPage() {
         </div>
       )}
 
-      {/* Main Trading Area - Fixed Height */}
-      <div className="flex overflow-hidden" style={{ height: '450px' }}>
-        {/* Markets Sidebar - Real Hyperliquid Markets */}
-        <div className="w-44 bg-[#0f0f0f] border-r border-gray-800 overflow-hidden">
-          <HyperliquidMarkets 
-            onSelectMarket={(market, leverage) => {
-              setSelectedPair({ symbol: market, display: `${market}/USD` });
-              setSelectedMarket(market);
-              if (leverage) {
-                setMaxLeverage(leverage);
-              }
-            }} 
-          />
-        </div>
-
-        {/* Chart and Trading Area */}
-        <div className="flex-1 flex h-full">
-          {/* Chart Section */}
-          <div className="flex-1 flex flex-col">
-            {/* Market Stats Bar */}
-            <div className="bg-[#0f0f0f] border-b border-gray-800 px-4 py-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <h2 className="text-lg font-semibold">{selectedPair.display}</h2>
-                  <div>
-                    <div className="text-xs text-gray-400">Last Price</div>
-                    {isLoading ? (
-                      <div className="w-20 h-6 bg-gray-700 animate-pulse rounded" />
-                    ) : (
-                      <div className={`text-lg font-semibold ${marketStats.change24h.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
-                        ${marketStats.price}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div>
-                    <div className="text-xs text-gray-400">24h Change</div>
-                    <div className={`text-sm ${marketStats.change24h.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
-                      {marketStats.change24h}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-gray-400">24h High</div>
-                    <div className="text-sm">${marketStats.high24h}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-gray-400">24h Low</div>
-                    <div className="text-sm">${marketStats.low24h}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-gray-400">24h Volume</div>
-                    <div className="text-sm">${marketStats.volume24h}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Chart Time Intervals */}
-            <div className="bg-[#0f0f0f] border-b border-gray-800 px-4 py-2">
-              <div className="flex items-center space-x-2">
-                {['1m', '5m', '15m', '1h', '4h', '1d'].map(interval => (
-                  <Button
-                    key={interval}
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setTimeInterval(interval)}
-                    className={`h-7 px-3 ${
-                      timeInterval === interval 
-                        ? 'bg-gray-800 text-white' 
-                        : 'text-gray-400 hover:text-white'
-                    }`}
-                  >
-                    {interval}
-                  </Button>
-                ))}
-              </div>
-            </div>
-            
-            {/* TradingView Chart */}
-            <div className="flex-1 bg-[#131313] h-full">
-              <TradingViewWidget
-                symbol={`BINANCE:${selectedPair.symbol}USDT`}
-                theme="dark"
-                interval={timeInterval === '1m' ? '1' : timeInterval === '5m' ? '5' : timeInterval === '15m' ? '15' : timeInterval === '1h' ? '60' : timeInterval === '4h' ? '240' : 'D'}
-                autosize={true}
-                allow_symbol_change={true}
-                toolbar_bg="#131313"
-              />
-            </div>
-          </div>
-
-            {/* Trading Panel */}
-            <div className="w-[340px] bg-[#0f0f0f] border-l border-gray-800 flex flex-col h-full">
-              {/* Trading Form */}
-              <div className="flex-1">
-                <div className="p-3 border-b border-gray-800">
-                  <h3 className="text-sm font-medium">Trade {selectedMarket}-USD</h3>
-                  <div className="mt-2">
-                    {isLoading ? (
-                      <div className="flex items-center space-x-2">
-                        <span className="inline-block w-20 h-5 bg-gray-700 animate-pulse rounded" />
-                        <span className="inline-block w-16 h-4 bg-gray-700 animate-pulse rounded" />
-                      </div>
-                    ) : (
-                      <div className="flex items-center space-x-2">
-                        <span className={`text-lg font-semibold ${marketStats.change24h.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
-                          ${marketStats.price}
-                        </span>
-                        <span className={`text-xs ${marketStats.change24h.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
-                          {marketStats.change24h}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <HyperliquidTradeForm 
-                  selectedMarket={selectedMarket}
-                  currentPrice={parseFloat(marketStats.price.replace(/,/g, ''))}
-                  maxLeverage={maxLeverage}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-      {/* Positions Area - Hyperliquid Style */}
-      <HyperliquidPositions />
+      {/* Main Trading Area */}
+      <div className="flex-1 overflow-hidden">
+        <HyperliquidTradingInterface />
+      </div>
       </div>
     </PrivyProvider>
   );

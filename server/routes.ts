@@ -721,6 +721,144 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Hyperliquid spot trading endpoints
+  app.get("/api/hyperliquid/spot-markets", async (req, res) => {
+    try {
+      const response = await fetch('https://api.hyperliquid.xyz/info', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'spotMeta' })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const spotMeta = await response.json();
+      
+      // Get current prices for spot markets
+      const markets = spotMeta.tokens || [];
+      const spotMarkets = markets.map((market: any, index: number) => ({
+        token: market.name,
+        name: market.name,
+        index: index + 10000, // Spot indices start at 10000
+        markPrice: '0.00', // Will be fetched separately
+        volume24h: '0.00',
+        change24h: '0.00',
+        baseDecimals: market.szDecimals || 8,
+        quoteDecimals: 6 // USDC has 6 decimals
+      }));
+      
+      res.json(spotMarkets);
+    } catch (error) {
+      console.error('Error fetching spot markets:', error);
+      res.status(500).json({ error: 'Failed to fetch spot markets' });
+    }
+  });
+  
+  app.get("/api/hyperliquid/spot-account/:address", async (req, res) => {
+    try {
+      const { address } = req.params;
+      
+      // Get spot balances
+      const response = await fetch('https://api.hyperliquid.xyz/info', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'spotClearinghouseState',
+          user: address
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const accountState = await response.json();
+      res.json(accountState);
+    } catch (error) {
+      console.error('Error fetching spot account:', error);
+      res.status(500).json({ error: 'Failed to fetch spot account state' });
+    }
+  });
+  
+  app.post("/api/hyperliquid/spot-transfer", async (req, res) => {
+    try {
+      const { address, amount, toPerp, nonce, signature } = req.body;
+      
+      // Construct the transfer action
+      const action = {
+        type: toPerp ? 'spotSend' : 'withdraw3',
+        destination: toPerp ? 'perp' : 'spot',
+        amount: amount,
+        nonce: nonce
+      };
+      
+      // Submit to Hyperliquid
+      const response = await fetch('https://api.hyperliquid.xyz/exchange', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: action,
+          nonce: nonce,
+          signature: signature
+        })
+      });
+      
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || 'Transfer failed');
+      }
+      
+      const result = await response.json();
+      res.json(result);
+    } catch (error) {
+      console.error('Error processing spot transfer:', error);
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Transfer failed' });
+    }
+  });
+  
+  app.post("/api/hyperliquid/spot-order", async (req, res) => {
+    try {
+      const { address, token, isBuy, amount, limitPrice, nonce, signature } = req.body;
+      
+      // Construct the spot order action
+      const orderType = limitPrice ? { limit: { tif: 'Gtc' } } : { market: {} };
+      
+      const action = {
+        type: 'spotOrder',
+        coin: token,
+        isBuy: isBuy,
+        sz: amount,
+        limitPx: limitPrice,
+        orderType: orderType,
+        nonce: nonce
+      };
+      
+      // Submit to Hyperliquid
+      const response = await fetch('https://api.hyperliquid.xyz/exchange', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: action,
+          nonce: nonce,
+          signature: signature
+        })
+      });
+      
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || 'Order failed');
+      }
+      
+      const result = await response.json();
+      res.json(result);
+    } catch (error) {
+      console.error('Error placing spot order:', error);
+      res.status(500).json({ error: error instanceof Error ? error.message : 'Order failed' });
+    }
+  });
+
   app.get("/api/hyperliquid/user-state/:address", async (req, res) => {
     try {
       const { address } = req.params;
