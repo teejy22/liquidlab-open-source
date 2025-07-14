@@ -12,6 +12,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { useLocation } from "wouter";
+import { CustomDomainManager } from "@/components/CustomDomainManager";
 import { 
   Eye,
   Save,
@@ -41,6 +42,7 @@ export default function Builder() {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [payoutWallet, setPayoutWallet] = useState("");
   const [savingPlatform, setSavingPlatform] = useState(false);
+  const [savedPlatformId, setSavedPlatformId] = useState<number | null>(null);
 
   // Fixed LiquidLab builder code
   const LIQUIDLAB_BUILDER_CODE = "LIQUIDLAB2025";
@@ -55,8 +57,9 @@ export default function Builder() {
     mutationFn: async (data: any) => {
       return apiRequest("POST", "/api/platforms", data);
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       setSavedChanges(true);
+      setSavedPlatformId(data.id);
       toast({
         title: "Platform Saved",
         description: "Your platform configuration has been saved successfully.",
@@ -234,9 +237,10 @@ export default function Builder() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <Tabs defaultValue="basic" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2">
+                  <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="basic">Basic</TabsTrigger>
                     <TabsTrigger value="revenue">Revenue</TabsTrigger>
+                    <TabsTrigger value="domain">Domain</TabsTrigger>
                   </TabsList>
                   
                   <TabsContent value="basic" className="space-y-4 mt-4">
@@ -249,20 +253,6 @@ export default function Builder() {
                         onChange={(e) => setPlatformName(e.target.value)}
                         className="mt-1"
                       />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="custom-domain">Custom Domain (Optional)</Label>
-                      <Input
-                        id="custom-domain"
-                        placeholder="trading.example.com"
-                        value={customDomain}
-                        onChange={(e) => setCustomDomain(e.target.value)}
-                        className="mt-1"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Configure your own domain for the platform
-                      </p>
                     </div>
 
                     <div>
@@ -392,6 +382,26 @@ export default function Builder() {
                         </p>
                       </div>
                     </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="domain" className="space-y-4 mt-4">
+                    {savedPlatformId ? (
+                      <CustomDomainManager platformId={savedPlatformId} />
+                    ) : (
+                      <div className="text-center py-8">
+                        <Globe className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                        <p className="text-gray-600 mb-4">
+                          Save your platform first to manage custom domains
+                        </p>
+                        <Button 
+                          onClick={handleSave}
+                          disabled={savingPlatform || !platformName}
+                          size="sm"
+                        >
+                          Save Platform
+                        </Button>
+                      </div>
+                    )}
                   </TabsContent>
                 </Tabs>
               </CardContent>

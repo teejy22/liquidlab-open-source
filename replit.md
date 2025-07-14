@@ -448,3 +448,31 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Pulsing animation on the connection status icon
   - Clear visual confirmation that the platform is connected to Hyperliquid DEX
   - Tooltip explains "Live connection to Hyperliquid DEX established"
+
+### Custom Domain Support System (January 16, 2025)
+- **Domain Management Service**: Created comprehensive domain management system for platform owners
+  - domainManager service handles domain operations (add, verify, remove)
+  - Domain ownership verification via DNS TXT records
+  - Active/pending status tracking for each domain
+  - Platform mapping to allow custom domains instead of liquidlab.trade subdomains
+- **API Endpoints**: Added domain management endpoints
+  - POST /api/platforms/:id/domains - Add custom domain with verification token
+  - POST /api/platforms/:id/domains/verify - Check DNS verification status
+  - GET /api/platforms/:id/domains - List all domains for a platform
+  - DELETE /api/platforms/:id/domains/:domain - Remove custom domain
+- **CORS Middleware Update**: Enhanced platformCors to check custom domains
+  - Checks static allowed origins first (liquidlab.trade and subdomains)
+  - Falls back to database lookup for custom domains
+  - Automatic CORS headers for verified custom domains
+- **Builder Interface**: Added dedicated Domain tab in platform builder
+  - CustomDomainManager component for managing domains
+  - Clear instructions for DNS verification process
+  - Shows pending/active status for each domain
+  - Copy-to-clipboard functionality for DNS records
+  - Requires platform to be saved before domain management
+- **User Flow**:
+  1. Platform owner adds custom domain in builder Domain tab
+  2. System generates unique verification token
+  3. Owner adds TXT record "_liquidlab" with token to their DNS
+  4. Owner clicks "Verify Domain" after DNS propagation
+  5. Once verified, platform accessible at custom domain

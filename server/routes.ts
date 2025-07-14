@@ -357,6 +357,118 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Custom domain management
+  app.post("/api/platforms/:id/domains", async (req, res) => {
+    try {
+      const platformId = parseInt(req.params.id);
+      const { domain } = req.body;
+      
+      // Check authentication
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Unauthorized - Please login" });
+      }
+      
+      // Verify platform ownership
+      const platform = await storage.getTradingPlatform(platformId);
+      if (!platform || platform.userId !== req.session.userId.toString()) {
+        return res.status(403).json({ error: "Unauthorized" });
+      }
+      
+      const { domainManager } = await import('./services/domainManager');
+      const result = await domainManager.addCustomDomain(platformId, domain);
+      
+      if (result.success) {
+        res.json({
+          success: true,
+          verificationToken: result.verificationToken,
+          instructions: {
+            recordType: 'TXT',
+            recordName: '_liquidlab',
+            recordValue: result.verificationToken
+          }
+        });
+      } else {
+        res.status(400).json({ error: result.error });
+      }
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+  
+  app.post("/api/platforms/:id/domains/verify", async (req, res) => {
+    try {
+      const platformId = parseInt(req.params.id);
+      const { domain } = req.body;
+      
+      // Check authentication
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Unauthorized - Please login" });
+      }
+      
+      // Verify platform ownership
+      const platform = await storage.getTradingPlatform(platformId);
+      if (!platform || platform.userId !== req.session.userId.toString()) {
+        return res.status(403).json({ error: "Unauthorized" });
+      }
+      
+      const { domainManager } = await import('./services/domainManager');
+      const result = await domainManager.verifyDomain(platformId, domain);
+      
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+  
+  app.get("/api/platforms/:id/domains", async (req, res) => {
+    try {
+      const platformId = parseInt(req.params.id);
+      
+      // Check authentication
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Unauthorized - Please login" });
+      }
+      
+      // Verify platform ownership
+      const platform = await storage.getTradingPlatform(platformId);
+      if (!platform || platform.userId !== req.session.userId.toString()) {
+        return res.status(403).json({ error: "Unauthorized" });
+      }
+      
+      const { domainManager } = await import('./services/domainManager');
+      const domains = await domainManager.getPlatformDomains(platformId);
+      
+      res.json(domains);
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+  
+  app.delete("/api/platforms/:id/domains/:domain", async (req, res) => {
+    try {
+      const platformId = parseInt(req.params.id);
+      const { domain } = req.params;
+      
+      // Check authentication
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Unauthorized - Please login" });
+      }
+      
+      // Verify platform ownership
+      const platform = await storage.getTradingPlatform(platformId);
+      if (!platform || platform.userId !== req.session.userId.toString()) {
+        return res.status(403).json({ error: "Unauthorized" });
+      }
+      
+      const { domainManager } = await import('./services/domainManager');
+      const success = await domainManager.removeDomain(platformId, domain);
+      
+      res.json({ success });
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
   // Templates
   app.get("/api/templates", async (req, res) => {
     try {

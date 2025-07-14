@@ -100,19 +100,32 @@ export async function platformCors(
   }
 
   // In production, validate against allowed domains
-  // TODO: Check against platformDomains table
-  const allowedOrigins = [
+  const staticAllowedOrigins = [
     'https://liquidlab.trade',
     'https://app.liquidlab.trade',
     /^https:\/\/[a-zA-Z0-9-]+\.liquidlab\.trade$/,
   ];
 
-  const isAllowed = allowedOrigins.some(allowed => {
+  // Check static allowed origins first
+  let isAllowed = staticAllowedOrigins.some(allowed => {
     if (allowed instanceof RegExp) {
       return allowed.test(origin);
     }
     return allowed === origin;
   });
+
+  // If not in static list, check custom domains from database
+  if (!isAllowed) {
+    try {
+      const { domainManager } = await import('../services/domainManager');
+      const domain = new URL(origin).hostname;
+      const platformId = await domainManager.getPlatformByDomain(domain);
+      isAllowed = platformId !== null;
+    } catch (error) {
+      // If error parsing URL or checking domain, deny access
+      isAllowed = false;
+    }
+  }
 
   if (isAllowed) {
     res.setHeader('Access-Control-Allow-Origin', origin);
