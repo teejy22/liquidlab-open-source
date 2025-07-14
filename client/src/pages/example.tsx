@@ -257,7 +257,7 @@ export default function ExampleTradingPage() {
             {/* TradingView Chart */}
             <div className="flex-1 bg-[#131313]">
               <TradingViewWidget
-                symbol={`BINANCE:${selectedPair.symbol}`}
+                symbol={`BINANCE:${selectedPair.symbol}USDT`}
                 interval={timeInterval}
                 theme="dark"
                 height="100%"

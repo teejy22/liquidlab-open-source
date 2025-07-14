@@ -18,6 +18,18 @@ export default function TradingViewWidget({
   // Convert interval to TradingView format
   const getIntervalValue = (interval: string) => {
     const intervalMap: { [key: string]: string } = {
+      "1m": "1",
+      "5m": "5", 
+      "15m": "15",
+      "30m": "30",
+      "1h": "60",
+      "2h": "120",
+      "4h": "240",
+      "1d": "D",
+      "1D": "D",
+      "1w": "W",
+      "1W": "W",
+      "1M": "M",
       "1": "1",
       "5": "5", 
       "15": "15",
