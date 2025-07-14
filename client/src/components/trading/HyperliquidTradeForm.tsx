@@ -17,6 +17,7 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice }: Hyperliqu
   const [orderType, setOrderType] = useState<"limit" | "market">("limit");
   const [price, setPrice] = useState("");
   const [size, setSize] = useState("");
+  const [sizeMode, setSizeMode] = useState<"asset" | "usd">("asset");
   const [leverage, setLeverage] = useState("1");
   const [reduceOnly, setReduceOnly] = useState(false);
   const [postOnly, setPostOnly] = useState(false);
@@ -44,11 +45,20 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice }: Hyperliqu
       return;
     }
 
+    // Calculate actual size based on mode
+    let actualSize = parseFloat(size);
+    if (sizeMode === "usd") {
+      const orderPrice = orderType === "limit" && price ? parseFloat(price) : currentPrice;
+      if (orderPrice > 0) {
+        actualSize = parseFloat(size) / orderPrice;
+      }
+    }
+
     await placeOrder({
       symbol: selectedMarket,
       side,
       price: orderType === "limit" ? parseFloat(price) : 0,
-      size: parseFloat(size),
+      size: actualSize,
       orderType,
       reduceOnly,
       postOnly: orderType === "limit" && postOnly,
@@ -61,8 +71,15 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice }: Hyperliqu
 
   const calculateOrderValue = () => {
     if (!size) return "0.00";
-    const orderPrice = orderType === "limit" && price ? parseFloat(price) : currentPrice;
-    return (parseFloat(size) * orderPrice).toFixed(2);
+    
+    if (sizeMode === "usd") {
+      // If user entered USD, the order value is what they entered
+      return parseFloat(size).toFixed(2);
+    } else {
+      // If user entered asset amount, calculate USD value
+      const orderPrice = orderType === "limit" && price ? parseFloat(price) : currentPrice;
+      return (parseFloat(size) * orderPrice).toFixed(2);
+    }
   };
 
   const calculateMarginRequired = () => {
@@ -134,14 +151,42 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice }: Hyperliqu
         </div>
       )}
 
-      {/* Size Input */}
+      {/* Size Input with Mode Toggle */}
       <div>
-        <Label className="text-xs text-gray-400">Size ({selectedMarket})</Label>
+        <div className="flex items-center justify-between mb-1">
+          <Label className="text-xs text-gray-400">
+            Size {sizeMode === "asset" ? `(${selectedMarket})` : "(USD)"}
+          </Label>
+          <div className="flex items-center space-x-1">
+            <button
+              type="button"
+              onClick={() => setSizeMode("asset")}
+              className={`px-2 py-0.5 text-xs rounded ${
+                sizeMode === "asset" 
+                  ? "bg-blue-600 text-white" 
+                  : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+              }`}
+            >
+              {selectedMarket}
+            </button>
+            <button
+              type="button"
+              onClick={() => setSizeMode("usd")}
+              className={`px-2 py-0.5 text-xs rounded ${
+                sizeMode === "usd" 
+                  ? "bg-blue-600 text-white" 
+                  : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+              }`}
+            >
+              USD
+            </button>
+          </div>
+        </div>
         <Input
           type="number"
           value={size}
           onChange={(e) => setSize(e.target.value)}
-          placeholder="0.00"
+          placeholder={sizeMode === "asset" ? "0.00" : "$0.00"}
           className="bg-gray-900 border-gray-700 h-8 text-sm"
         />
       </div>
