@@ -219,7 +219,8 @@ export default function Example() {
       </div>
 
       {/* Main Trading Interface */}
-      <div className="flex h-[calc(100vh-200px)]">
+      <div className="flex flex-col h-[calc(100vh-120px)]">
+        <div className="flex flex-1">
         {/* Left Sidebar - Market List */}
         <div className="w-48 bg-[#0f0f0f] border-r border-gray-800 overflow-y-auto hidden lg:block">
           <div className="p-4">
@@ -589,14 +590,15 @@ export default function Example() {
             </div>
           </div>
         </div>
+        </div>
+        
+        {/* Security Footer */}
+        <SecurityFooter 
+          platformName="Example Trading Platform"
+          platformId={1}
+          builderCode="LIQUIDLAB2025"
+        />
       </div>
-      
-      {/* Security Footer */}
-      <SecurityFooter 
-        platformName="Example Trading Platform"
-        platformId={1}
-        builderCode="LIQUIDLAB2025"
-      />
     </div>
   );
 }

@@ -1,6 +1,6 @@
-import { Shield, Lock, CheckCircle, Info, ExternalLink } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Shield, CheckCircle, Lock, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
   TooltipContent,
@@ -25,141 +25,118 @@ export function TrustIndicators({
   const [showDetails, setShowDetails] = useState(false);
 
   return (
-    <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <Shield className="w-5 h-5 text-green-600 dark:text-green-400" />
-          <h3 className="font-semibold text-green-900 dark:text-green-100">Platform Security</h3>
+    <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg px-3 py-1.5 mb-2">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <Shield className="w-4 h-4 text-green-600 dark:text-green-400" />
+            <span className="text-xs font-medium text-green-900 dark:text-green-100">Secure Platform</span>
+          </div>
+          
+          <TooltipProvider>
+            <div className="flex items-center gap-4">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1.5">
+                    <CheckCircle className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
+                    <span className="text-xs text-green-800 dark:text-green-200">SSL</span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>All data is encrypted using SSL/TLS certificates</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1.5">
+                    <Lock className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
+                    <span className="text-xs text-green-800 dark:text-green-200">Privy</span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Enterprise-grade wallet security by Privy</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1.5">
+                    <CheckCircle className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
+                    <span className="text-xs text-green-800 dark:text-green-200">Verified</span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Officially verified by LiquidLab platform</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1.5">
+                    <Info className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
+                    <span className="text-xs text-green-800 dark:text-green-200">ID: #{platformId}</span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Unique platform identifier for verification</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </TooltipProvider>
         </div>
+        
         <Button
           variant="ghost"
           size="sm"
           onClick={() => setShowDetails(!showDetails)}
-          className="text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/20"
+          className="text-xs text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/20 h-6 px-2"
         >
-          {showDetails ? "Hide Details" : "View Details"}
+          {showDetails ? "Hide" : "Details"}
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
-                <span className="text-sm text-green-800 dark:text-green-200">SSL Secured</span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>All data is encrypted using SSL/TLS certificates</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-2">
-                <Lock className="w-4 h-4 text-green-600 dark:text-green-400" />
-                <span className="text-sm text-green-800 dark:text-green-200">Privy Secured</span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Enterprise-grade wallet security by Privy</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
-                <span className="text-sm text-green-800 dark:text-green-200">LiquidLab Verified</span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Officially verified by LiquidLab platform</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-2">
-                <Info className="w-4 h-4 text-green-600 dark:text-green-400" />
-                <span className="text-sm text-green-800 dark:text-green-200">Platform ID: #{platformId}</span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Unique platform identifier for verification</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-
       {showDetails && (
-        <div className="mt-4 pt-4 border-t border-green-200 dark:border-green-800 space-y-3">
-          <div className="bg-white dark:bg-gray-900 rounded p-3 space-y-2">
-            <h4 className="font-medium text-sm text-gray-900 dark:text-gray-100 mb-2">Security Features</h4>
+        <div className="mt-2 pt-2 border-t border-green-200 dark:border-green-800 space-y-2">
+          <div className="bg-white dark:bg-gray-900 rounded p-2 space-y-1.5">
+            <h4 className="font-medium text-xs text-gray-900 dark:text-gray-100">Security Features</h4>
             
-            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-              <div className="flex items-start gap-2">
-                <CheckCircle className="w-4 h-4 text-green-500 mt-0.5" />
+            <div className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5" />
                 <div>
-                  <strong>Non-Custodial Trading:</strong> Your wallet remains in your control. The platform never has access to your private keys.
+                  <strong>Non-Custodial:</strong> Your wallet remains in your control
                 </div>
               </div>
               
-              <div className="flex items-start gap-2">
-                <CheckCircle className="w-4 h-4 text-green-500 mt-0.5" />
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5" />
                 <div>
-                  <strong>Direct Hyperliquid Integration:</strong> All trades execute directly on Hyperliquid DEX through official APIs.
+                  <strong>Direct Trading:</strong> Trades execute on Hyperliquid DEX
                 </div>
               </div>
               
-              <div className="flex items-start gap-2">
-                <CheckCircle className="w-4 h-4 text-green-500 mt-0.5" />
+              <div className="flex items-start gap-1.5">
+                <CheckCircle className="w-3 h-3 text-green-500 mt-0.5" />
                 <div>
-                  <strong>Transparent Fees:</strong> Builder code <Badge variant="outline" className="ml-1">{builderCode}</Badge> takes only standard exchange fees.
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-2">
-                <CheckCircle className="w-4 h-4 text-green-500 mt-0.5" />
-                <div>
-                  <strong>Open Source Verification:</strong> Platform built on LiquidLab's audited infrastructure.
+                  <strong>Transparent:</strong> Builder code <Badge variant="outline" className="ml-1 text-xs h-4 px-1">{builderCode}</Badge>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 rounded p-3">
-            <h4 className="font-medium text-sm text-gray-900 dark:text-gray-100 mb-2">How to Verify This Platform</h4>
+          <div className="bg-white dark:bg-gray-900 rounded p-2">
+            <h4 className="font-medium text-xs text-gray-900 dark:text-gray-100 mb-1">Verify This Platform</h4>
             
-            <ol className="space-y-1 text-sm text-gray-600 dark:text-gray-400 list-decimal list-inside">
-              <li>Check the URL matches: <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">{customDomain || `${platformName.toLowerCase().replace(/\s+/g, '-')}.liquidlab.app`}</code></li>
-              <li>Look for the green padlock (SSL) in your browser</li>
-              <li>Verify the platform ID #{platformId} on LiquidLab.com</li>
-              <li>Confirm Privy wallet connection shows official branding</li>
+            <ol className="space-y-0.5 text-xs text-gray-600 dark:text-gray-400 list-decimal list-inside">
+              <li>Visit <a href="https://liquidlab.com/verify" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">liquidlab.com/verify</a></li>
+              <li>Enter Platform ID: <strong>#{platformId}</strong></li>
+              <li>Confirm the URL matches: <strong>{customDomain || window.location.hostname}</strong></li>
             </ol>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <a 
-              href="https://liquidlab.com/verify" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-sm text-green-700 dark:text-green-300 hover:underline flex items-center gap-1"
-            >
-              Verify on LiquidLab.com
-              <ExternalLink className="w-3 h-3" />
-            </a>
             
-            <a 
-              href="https://docs.liquidlab.com/security" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-sm text-green-700 dark:text-green-300 hover:underline flex items-center gap-1"
-            >
-              Security Documentation
-              <ExternalLink className="w-3 h-3" />
-            </a>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+              Report suspicious platforms to <a href="mailto:security@liquidlab.com" className="text-blue-600 hover:underline">security@liquidlab.com</a>
+            </p>
           </div>
         </div>
       )}
