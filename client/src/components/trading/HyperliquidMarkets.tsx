@@ -17,7 +17,7 @@ interface MarketPrice {
   volume24h: string;
 }
 
-export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market: string) => void }) {
+export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market: string, maxLeverage?: number) => void }) {
   const [markets, setMarkets] = useState<HyperliquidMarket[]>([]);
   const [prices, setPrices] = useState<{[key: string]: MarketPrice}>({});
   const [loading, setLoading] = useState(true);
@@ -74,9 +74,9 @@ export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market
     }
   };
 
-  const handleMarketClick = (marketName: string) => {
-    setSelectedMarket(marketName);
-    onSelectMarket(marketName);
+  const handleMarketClick = (market: HyperliquidMarket) => {
+    setSelectedMarket(market.name);
+    onSelectMarket(market.name, market.maxLeverage);
   };
 
   if (loading) {
@@ -129,7 +129,7 @@ export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market
               className={`p-2 cursor-pointer transition-all group ${
                 isSelected ? 'bg-gray-800 border-blue-500' : 'hover:bg-gray-800/50 border-transparent'
               }`}
-              onClick={() => handleMarketClick(market.name)}
+              onClick={() => handleMarketClick(market)}
             >
               <div className={`flex justify-between items-center ${
                 isSelected ? '' : 'group-hover:text-white'

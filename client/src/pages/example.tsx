@@ -36,6 +36,7 @@ export default function ExampleTradingPage() {
   const [timeInterval, setTimeInterval] = useState("15m");
   const [isLoading, setIsLoading] = useState(true);
   const [showTestWallet, setShowTestWallet] = useState(false);
+  const [maxLeverage, setMaxLeverage] = useState(100); // Default to 100x
   const [marketStats, setMarketStats] = useState<MarketData>({
     price: "0.00",
     change24h: "+0.00%",
@@ -194,9 +195,12 @@ export default function ExampleTradingPage() {
         {/* Markets Sidebar - Real Hyperliquid Markets */}
         <div className="w-44 bg-[#0f0f0f] border-r border-gray-800 overflow-hidden">
           <HyperliquidMarkets 
-            onSelectMarket={(market) => {
+            onSelectMarket={(market, leverage) => {
               setSelectedPair({ symbol: market, display: `${market}/USD` });
               setSelectedMarket(market);
+              if (leverage) {
+                setMaxLeverage(leverage);
+              }
             }} 
           />
         </div>
@@ -305,6 +309,7 @@ export default function ExampleTradingPage() {
                 <HyperliquidTradeForm 
                   selectedMarket={selectedMarket}
                   currentPrice={parseFloat(marketStats.price.replace(/,/g, ''))}
+                  maxLeverage={maxLeverage}
                 />
               </div>
             </div>

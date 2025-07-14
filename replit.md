@@ -532,3 +532,20 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Builder code "LIQUIDLAB2025" is automatically included in all orders
   - Trade batch runs every 10 minutes to check for new trades
   - Real-time revenue tracking and distribution enabled
+
+### Leverage UI Improvements (January 16, 2025)
+- **Leverage Slider Implementation**: Replaced dropdown selector with visual slider interface
+  - Smooth sliding experience for selecting leverage from 1x to token's maximum
+  - Current leverage value prominently displayed above slider
+  - Visual tick marks showing key leverage points
+  - Blue-filled slider bar indicating selected leverage level
+- **Dynamic Maximum Leverage**: Implemented token-specific leverage limits from Hyperliquid
+  - Each market passes its maxLeverage property (e.g., BTC: 50x, ETH: 25x, smaller tokens: 5x-10x)
+  - Slider automatically adjusts maximum value when switching between tokens
+  - Visual indicators below slider dynamically update (e.g., for 10x max: shows 1x, 3x, 5x, 8x, 10x)
+  - Prevents users from exceeding Hyperliquid's allowed leverage for each token
+  - Automatic leverage reduction when switching to tokens with lower maximums
+- **User Experience**: Seamless leverage management with real-time updates
+  - No manual checking of leverage limits required
+  - Clear visual feedback on available leverage range
+  - Protects traders from accidentally selecting invalid leverage values

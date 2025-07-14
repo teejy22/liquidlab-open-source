@@ -11,9 +11,10 @@ import { Loader2 } from "lucide-react";
 interface HyperliquidTradeFormProps {
   selectedMarket: string;
   currentPrice: number;
+  maxLeverage?: number;
 }
 
-export function HyperliquidTradeForm({ selectedMarket, currentPrice }: HyperliquidTradeFormProps) {
+export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage = 100 }: HyperliquidTradeFormProps) {
   const [side, setSide] = useState<"buy" | "sell">("buy");
   const [orderType, setOrderType] = useState<"limit" | "market">("limit");
   const [price, setPrice] = useState("");
@@ -36,6 +37,13 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice }: Hyperliqu
       setPrice(currentPrice.toFixed(2));
     }
   }, [currentPrice, orderType]);
+
+  // Update leverage when maxLeverage changes
+  useEffect(() => {
+    if (leverage > maxLeverage) {
+      setLeverage(maxLeverage);
+    }
+  }, [maxLeverage, leverage]);
 
   const handleSubmit = async () => {
     if (!size || parseFloat(size) <= 0) {
@@ -201,17 +209,17 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice }: Hyperliqu
         <Slider
           value={[leverage]}
           onValueChange={(value) => setLeverage(value[0])}
-          max={100}
+          max={maxLeverage}
           min={1}
           step={1}
           className="w-full"
         />
         <div className="flex justify-between text-[10px] text-gray-500 mt-1">
           <span>1x</span>
-          <span>25x</span>
-          <span>50x</span>
-          <span>75x</span>
-          <span>100x</span>
+          {maxLeverage >= 25 && <span>{Math.round(maxLeverage * 0.25)}x</span>}
+          {maxLeverage >= 50 && <span>{Math.round(maxLeverage * 0.5)}x</span>}
+          {maxLeverage >= 75 && <span>{Math.round(maxLeverage * 0.75)}x</span>}
+          <span>{maxLeverage}x</span>
         </div>
       </div>
 
