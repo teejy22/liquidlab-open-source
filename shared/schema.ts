@@ -313,6 +313,7 @@ export const insertUserSchema = createInsertSchema(users).omit({
 
 export const insertTradingPlatformSchema = createInsertSchema(tradingPlatforms).omit({
   id: true,
+  slug: true,
   createdAt: true,
   updatedAt: true,
 });
