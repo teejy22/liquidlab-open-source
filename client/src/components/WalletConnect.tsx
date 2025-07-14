@@ -1,9 +1,22 @@
 import { usePrivy } from '@privy-io/react-auth';
 import { Button } from '@/components/ui/button';
 import { Wallet } from 'lucide-react';
+import { useEffect } from 'react';
 
 export function WalletConnect() {
   const { ready, authenticated, user, login, logout } = usePrivy();
+
+  // Listen for custom login event from other components
+  useEffect(() => {
+    const handlePrivyLogin = () => {
+      if (ready && !authenticated) {
+        login();
+      }
+    };
+
+    window.addEventListener('privy:login', handlePrivyLogin);
+    return () => window.removeEventListener('privy:login', handlePrivyLogin);
+  }, [ready, authenticated, login]);
 
   if (!ready) {
     return (
