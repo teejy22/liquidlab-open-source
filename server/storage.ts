@@ -297,21 +297,25 @@ export class DatabaseStorage implements IStorage {
     platformId: number, 
     options?: { status?: string; startDate?: Date; endDate?: Date }
   ): Promise<FeeTransaction[]> {
-    let query = db.select().from(feeTransactions).where(eq(feeTransactions.platformId, platformId));
+    const conditions = [eq(feeTransactions.platformId, platformId)];
     
     if (options?.status) {
-      query = query.where(eq(feeTransactions.status, options.status));
+      conditions.push(eq(feeTransactions.status, options.status));
     }
     
     if (options?.startDate) {
-      query = query.where(gte(feeTransactions.createdAt, options.startDate));
+      conditions.push(gte(feeTransactions.createdAt, options.startDate));
     }
     
     if (options?.endDate) {
-      query = query.where(lte(feeTransactions.createdAt, options.endDate));
+      conditions.push(lte(feeTransactions.createdAt, options.endDate));
     }
     
-    return await query.orderBy(desc(feeTransactions.createdAt));
+    return await db
+      .select()
+      .from(feeTransactions)
+      .where(and(...conditions))
+      .orderBy(desc(feeTransactions.createdAt));
   }
 
   async updateFeeTransactionStatus(
@@ -367,8 +371,8 @@ export class DatabaseStorage implements IStorage {
       .values({
         platformId,
         period,
-        startDate,
-        endDate,
+        startDate: startDate.toISOString().split('T')[0],
+        endDate: endDate.toISOString().split('T')[0],
         totalVolume: totalVolume.toFixed(8),
         totalFees: totalFees.toFixed(8),
         platformEarnings: platformEarnings.toFixed(8),
@@ -378,7 +382,7 @@ export class DatabaseStorage implements IStorage {
       .onConflictDoUpdate({
         target: [platformRevenueSummary.platformId, platformRevenueSummary.period, platformRevenueSummary.startDate],
         set: {
-          endDate,
+          endDate: endDate.toISOString().split('T')[0],
           totalVolume: totalVolume.toFixed(8),
           totalFees: totalFees.toFixed(8),
           platformEarnings: platformEarnings.toFixed(8),
@@ -411,15 +415,13 @@ export class DatabaseStorage implements IStorage {
   async getAllPlatformRevenues(
     options?: { period?: string; minRevenue?: number }
   ): Promise<PlatformRevenueSummary[]> {
-    let query = db.select().from(platformRevenueSummary);
-    
-    if (options?.period) {
-      query = query.where(eq(platformRevenueSummary.period, options.period));
-    }
+    const query = options?.period
+      ? db.select().from(platformRevenueSummary).where(eq(platformRevenueSummary.period, options.period))
+      : db.select().from(platformRevenueSummary);
     
     const results = await query.orderBy(desc(platformRevenueSummary.platformEarnings));
     
-    if (options?.minRevenue) {
+    if (options?.minRevenue !== undefined) {
       return results.filter(r => parseFloat(r.platformEarnings) >= options.minRevenue);
     }
     
@@ -439,12 +441,7 @@ export class DatabaseStorage implements IStorage {
     platformId: number, 
     options?: { status?: string; startDate?: Date; endDate?: Date }
   ): Promise<MoonpayTransaction[]> {
-    let query = db
-      .select()
-      .from(moonpayTransactions)
-      .where(eq(moonpayTransactions.platformId, platformId));
-    
-    const conditions = [];
+    const conditions = [eq(moonpayTransactions.platformId, platformId)];
     
     if (options?.status) {
       conditions.push(eq(moonpayTransactions.status, options.status));
@@ -458,18 +455,16 @@ export class DatabaseStorage implements IStorage {
       conditions.push(lte(moonpayTransactions.createdAt, options.endDate));
     }
     
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
-    
-    return await query.orderBy(desc(moonpayTransactions.createdAt));
+    return await db
+      .select()
+      .from(moonpayTransactions)
+      .where(and(...conditions))
+      .orderBy(desc(moonpayTransactions.createdAt));
   }
 
   async getAllMoonpayTransactions(
     options?: { status?: string; startDate?: Date; endDate?: Date }
   ): Promise<MoonpayTransaction[]> {
-    let query = db.select().from(moonpayTransactions);
-    
     const conditions = [];
     
     if (options?.status) {
@@ -484,9 +479,9 @@ export class DatabaseStorage implements IStorage {
       conditions.push(lte(moonpayTransactions.createdAt, options.endDate));
     }
     
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
+    const query = conditions.length > 0
+      ? db.select().from(moonpayTransactions).where(and(...conditions))
+      : db.select().from(moonpayTransactions);
     
     return await query.orderBy(desc(moonpayTransactions.createdAt));
   }
@@ -511,14 +506,16 @@ export class DatabaseStorage implements IStorage {
     platformEarnings: string; 
     liquidlabEarnings: string 
   }> {
-    let query = db.select().from(moonpayTransactions)
-      .where(eq(moonpayTransactions.status, 'completed'));
+    const conditions = [eq(moonpayTransactions.status, 'completed')];
     
     if (platformId) {
-      query = query.where(eq(moonpayTransactions.platformId, platformId));
+      conditions.push(eq(moonpayTransactions.platformId, platformId));
     }
     
-    const transactions = await query;
+    const transactions = await db
+      .select()
+      .from(moonpayTransactions)
+      .where(and(...conditions));
     
     const summary = transactions.reduce((acc, tx) => ({
       totalPurchases: (parseFloat(acc.totalPurchases) + parseFloat(tx.purchaseAmount)).toFixed(2),
