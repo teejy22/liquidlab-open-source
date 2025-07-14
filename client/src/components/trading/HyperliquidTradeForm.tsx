@@ -75,11 +75,11 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice }: Hyperliqu
     <div className="p-4 space-y-3">
       {/* Buy/Sell Toggle */}
       <Tabs value={side} onValueChange={(v) => setSide(v as "buy" | "sell")}>
-        <TabsList className="grid w-full grid-cols-2 h-8">
-          <TabsTrigger value="buy" className="text-xs data-[state=active]:bg-green-600">
+        <TabsList className="grid w-full grid-cols-2 h-8 bg-gray-900 p-0.5">
+          <TabsTrigger value="buy" className="text-xs data-[state=active]:bg-green-600 data-[state=active]:text-white data-[state=inactive]:bg-gray-800 data-[state=inactive]:text-gray-400">
             Buy / Long
           </TabsTrigger>
-          <TabsTrigger value="sell" className="text-xs data-[state=active]:bg-red-600">
+          <TabsTrigger value="sell" className="text-xs data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=inactive]:bg-gray-800 data-[state=inactive]:text-gray-400">
             Sell / Short
           </TabsTrigger>
         </TabsList>
@@ -88,10 +88,10 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice }: Hyperliqu
       {/* Order Type */}
       <div className="flex items-center space-x-2">
         <Select value={orderType} onValueChange={(v) => setOrderType(v as "limit" | "market")}>
-          <SelectTrigger className="w-24 h-8 text-xs">
+          <SelectTrigger className="w-24 h-8 text-xs bg-gray-900 border-gray-700">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-gray-900 border-gray-700">
             <SelectItem value="limit">Limit</SelectItem>
             <SelectItem value="market">Market</SelectItem>
           </SelectContent>
