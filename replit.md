@@ -199,13 +199,13 @@ The application uses a monorepo structure with shared types and schemas, enablin
 - **Layout Simplification**: Reverted from dropdown market selector back to markets sidebar
   - Markets sidebar remains on the left side with BTC/ETH/SOL pairs
   - Chart positioned in the center with market stats bar
-  - Order book and trading form on the right side
+  - Trading form on the right side (orderbook temporarily removed for repositioning)
   - Fixed height containers (450px) to ensure positions area is visible
 - **Compact Trading Form**: Streamlined trading interface
   - Removed tabs for spot/cross/isolated trading
   - Smaller input fields and buttons for space efficiency
-  - Buy/sell buttons with clear green/red visual states
-  - Compact leverage selector and order type controls
+  - Buy/sell buttons with clear green/red visual states with dark backgrounds
+  - Compact leverage selector and order type controls with dark theme
 - **Dynamic Logo Display**: Connected uploaded logos to example trading page
   - Example page now fetches the most recent platform data
   - Displays uploaded logo from builder instead of hardcoded logo

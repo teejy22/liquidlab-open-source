@@ -44,7 +44,6 @@ export default function ExampleTradingPage() {
   const [allMarketData, setAllMarketData] = useState<{[key: string]: any}>({});
   const [platformData, setPlatformData] = useState<any>(null);
   const [hyperliquidPrices, setHyperliquidPrices] = useState<{[key: string]: string}>({});
-  const [orderbook, setOrderbook] = useState<{ asks: any[], bids: any[] }>({ asks: [], bids: [] });
 
   // Fetch platform data
   useEffect(() => {
@@ -67,7 +66,7 @@ export default function ExampleTradingPage() {
     fetchPlatformData();
   }, []);
 
-  // Fetch Hyperliquid market data and order book
+  // Fetch Hyperliquid market data
   useEffect(() => {
     const fetchHyperliquidData = async () => {
       try {
@@ -89,26 +88,7 @@ export default function ExampleTradingPage() {
           });
         }
         
-        // Fetch order book data
-        const orderbookResponse = await fetch(`/api/hyperliquid/orderbook/${selectedMarket}`);
-        if (orderbookResponse.ok) {
-          const orderbookData = await orderbookResponse.json();
-          
-          // Format orderbook data
-          const formattedAsks = orderbookData.levels[0].map((ask: any[]) => ({
-            price: formatPrice(parseFloat(ask[0])),
-            amount: parseFloat(ask[1]).toFixed(4),
-            total: formatPrice(parseFloat(ask[0]) * parseFloat(ask[1]))
-          })).slice(0, 10);
-          
-          const formattedBids = orderbookData.levels[1].map((bid: any[]) => ({
-            price: formatPrice(parseFloat(bid[0])),
-            amount: parseFloat(bid[1]).toFixed(4),
-            total: formatPrice(parseFloat(bid[0]) * parseFloat(bid[1]))
-          })).slice(0, 10);
-          
-          setOrderbook({ asks: formattedAsks, bids: formattedBids });
-        }
+
         
         setIsLoading(false);
       } catch (error) {
@@ -271,65 +251,30 @@ export default function ExampleTradingPage() {
             </div>
           </div>
 
-            {/* Order Book and Trading Panel */}
+            {/* Trading Panel */}
             <div className="w-[340px] bg-[#0f0f0f] border-l border-gray-800 flex flex-col h-full">
-              {/* Order Book */}
-              <div className="flex-1 overflow-y-auto">
+              {/* Trading Form */}
+              <div className="flex-1">
                 <div className="p-3 border-b border-gray-800">
-                  <h3 className="text-sm font-medium">Order Book</h3>
-                </div>
-                <div className="px-3 py-1">
-                  <div className="grid grid-cols-3 text-xs text-gray-400 mb-1">
-                    <span>Price (USD)</span>
-                    <span className="text-right">Amount</span>
-                    <span className="text-right">Total</span>
-                  </div>
-                </div>
-                <div className="px-3 space-y-0.5">
-                  {orderbook.asks.reverse().map((ask, i) => (
-                    <div key={i} className="grid grid-cols-3 text-xs relative">
-                      <div className="absolute inset-0 bg-red-500/10" style={{width: `${(i + 1) * 15}%`}} />
-                      <span className="text-red-400 z-10">{ask.price}</span>
-                      <span className="text-gray-300 text-right z-10">{ask.amount}</span>
-                      <span className="text-gray-300 text-right z-10">{ask.total}</span>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Current Price */}
-                <div className="px-3 py-2 border-y border-gray-800 my-1">
-                  <div className="text-center">
+                  <h3 className="text-sm font-medium">Trade {selectedMarket}-USD</h3>
+                  <div className="mt-2">
                     {isLoading ? (
-                      <div className="flex items-center justify-center space-x-2">
+                      <div className="flex items-center space-x-2">
                         <span className="inline-block w-20 h-5 bg-gray-700 animate-pulse rounded" />
                         <span className="inline-block w-16 h-4 bg-gray-700 animate-pulse rounded" />
                       </div>
                     ) : (
-                      <>
+                      <div className="flex items-center space-x-2">
                         <span className={`text-lg font-semibold ${marketStats.change24h.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
                           ${marketStats.price}
                         </span>
-                        <span className="text-xs text-gray-400 ml-2">≈ ${marketStats.price}</span>
-                      </>
+                        <span className={`text-xs ${marketStats.change24h.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
+                          {marketStats.change24h}
+                        </span>
+                      </div>
                     )}
                   </div>
                 </div>
-                
-                {/* Bids */}
-                <div className="px-3 space-y-0.5">
-                  {orderbook.bids.map((bid, i) => (
-                    <div key={i} className="grid grid-cols-3 text-xs relative">
-                      <div className="absolute inset-0 bg-green-500/10" style={{width: `${(6 - i) * 15}%`}} />
-                      <span className="text-green-400 z-10">{bid.price}</span>
-                      <span className="text-gray-300 text-right z-10">{bid.amount}</span>
-                      <span className="text-gray-300 text-right z-10">{bid.total}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Trading Form - Compact */}
-              <div className="border-t border-gray-800">
                 <HyperliquidTradeForm 
                   selectedMarket={selectedMarket}
                   currentPrice={parseFloat(marketStats.price.replace(/,/g, ''))}
