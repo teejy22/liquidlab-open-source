@@ -7,6 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import templatePreview from "@assets/Trade_1752276632533.png";
+import { useAuth } from "@/hooks/useAuth";
+import { apiRequest } from "@/lib/queryClient";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
+import { useLocation } from "wouter";
 import { 
   Eye,
   Save,
@@ -26,6 +31,8 @@ import {
 
 export default function Builder() {
   const { toast } = useToast();
+  const { user, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
   const [platformName, setPlatformName] = useState("");
   const [customDomain, setCustomDomain] = useState("");
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
@@ -33,11 +40,39 @@ export default function Builder() {
   const [logoUrl, setLogoUrl] = useState("");
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [payoutWallet, setPayoutWallet] = useState("");
+  const [savingPlatform, setSavingPlatform] = useState(false);
 
   // Fixed LiquidLab builder code
   const LIQUIDLAB_BUILDER_CODE = "LIQUIDLAB2025";
 
-  const handleSave = () => {
+  // Redirect if not authenticated
+  if (!isAuthenticated) {
+    setLocation('/login');
+    return null;
+  }
+
+  const savePlatformMutation = useMutation({
+    mutationFn: async (data: any) => {
+      return apiRequest("POST", "/api/platforms", data);
+    },
+    onSuccess: () => {
+      setSavedChanges(true);
+      toast({
+        title: "Platform Saved",
+        description: "Your platform configuration has been saved successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/platforms'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Save Failed",
+        description: error.message || "Failed to save platform. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleSave = async () => {
     if (!platformName) {
       toast({
         title: "Platform Name Required",
@@ -67,11 +102,23 @@ export default function Builder() {
       return;
     }
 
-    setSavedChanges(true);
-    toast({
-      title: "Platform Saved",
-      description: "Your platform configuration has been saved.",
-    });
+    setSavingPlatform(true);
+    
+    const platformData = {
+      userId: user?.id,
+      name: platformName,
+      customDomain: customDomain || null,
+      builderCode: LIQUIDLAB_BUILDER_CODE,
+      payoutWallet: payoutWallet,
+      config: {
+        logo: logoUrl || null,
+        template: "hyperliquid", // We only have one template now
+      },
+      isPublished: false, // Save as draft initially
+    };
+
+    await savePlatformMutation.mutateAsync(platformData);
+    setSavingPlatform(false);
   };
 
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,9 +203,13 @@ export default function Builder() {
             </p>
           </div>
           <div className="flex items-center space-x-4">
-            <Button variant="outline" onClick={handleSave}>
+            <Button 
+              variant="outline" 
+              onClick={handleSave}
+              disabled={savingPlatform}
+            >
               <Save className="w-4 h-4 mr-2" />
-              Save Platform
+              {savingPlatform ? "Saving..." : "Save Platform"}
             </Button>
             <Button 
               className="bg-liquid-green text-white hover:bg-liquid-accent"

@@ -15,6 +15,8 @@ import Education from "@/pages/education";
 import ChartDemo from "@/pages/chart-demo";
 import Example from "@/pages/example";
 import NotFound from "@/pages/not-found";
+import Login from "@/pages/login";
+import Signup from "@/pages/signup";
 
 function Router() {
   return (
@@ -29,6 +31,8 @@ function Router() {
       <Route path="/education" component={Education} />
       <Route path="/chart-demo" component={ChartDemo} />
       <Route path="/example" component={Example} />
+      <Route path="/login" component={Login} />
+      <Route path="/signup" component={Signup} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -36,7 +40,7 @@ function Router() {
 
 function AppContent() {
   const [location] = useLocation();
-  const hideHeaderFooter = location === '/example';
+  const hideHeaderFooter = location === '/example' || location === '/login' || location === '/signup';
 
   return (
     <TooltipProvider>

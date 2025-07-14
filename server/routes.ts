@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
@@ -7,6 +7,14 @@ import { HyperliquidService } from "./services/hyperliquid";
 import multer from "multer";
 import path from "path";
 import fs from "fs/promises";
+import bcrypt from "bcryptjs";
+
+// Extend Express session types
+declare module "express-session" {
+  interface SessionData {
+    userId?: number;
+  }
+}
 
 const hyperliquidService = new HyperliquidService();
 
@@ -63,17 +71,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Username already taken" });
       }
       
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 10);
+      
       // Create new user
       const userData = insertUserSchema.parse({
         username,
         email,
-        password,
+        password: hashedPassword,
       });
       
       const user = await storage.createUser(userData);
       
       // Generate builder and referral codes
       await storage.generateBuilderCode(user.id);
+      
+      // Set session
+      req.session.userId = user.id;
       
       res.json({ 
         user: {
@@ -93,10 +107,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { email, password } = req.body;
       
-      const user = await storage.authenticateUser(email, password);
+      const user = await storage.getUserByEmail(email);
       if (!user) {
         return res.status(401).json({ error: "Invalid credentials" });
       }
+      
+      // Check password
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+      
+      // Set session
+      req.session.userId = user.id;
       
       res.json({ 
         user: {
@@ -114,9 +137,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/auth/user", async (req, res) => {
     try {
-      // This would normally check session/token, but for now we'll return null
-      // In a real app, you'd validate the session and return the current user
-      res.json(null);
+      if (!req.session.userId) {
+        return res.json(null);
+      }
+      
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.json(null);
+      }
+      
+      res.json({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        builderCode: user.builderCode,
+        referralCode: user.referralCode
+      });
     } catch (error) {
       res.status(500).json({ error: handleError(error) });
     }
@@ -124,8 +160,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/auth/logout", async (req, res) => {
     try {
-      // Clear session/token
-      res.json({ success: true });
+      req.session.destroy((err) => {
+        if (err) {
+          return res.status(500).json({ error: "Failed to logout" });
+        }
+        res.json({ success: true });
+      });
     } catch (error) {
       res.status(500).json({ error: handleError(error) });
     }

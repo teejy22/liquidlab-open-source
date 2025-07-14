@@ -5,7 +5,6 @@ import { walletService } from "@/lib/wallet";
 import { WalletState } from "@/types";
 import { Wallet, Menu, X, User, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import AuthModal from "@/components/auth/auth-modal";
 import { useToast } from "@/hooks/use-toast";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import logoImage from "@assets/Trade (5)_1752280465910.png";
@@ -14,7 +13,7 @@ export default function Header() {
   const [location] = useLocation();
   const [walletState, setWalletState] = useState<WalletState>(walletService.getWalletState());
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -40,15 +39,18 @@ export default function Header() {
 
   const handleLogout = async () => {
     try {
-      // Clear user session
+      await logout();
       toast({
         title: "Logged out successfully",
         description: "You have been logged out of LiquidLab",
       });
-      // In a real app, you would call an API to invalidate the session
-      window.location.reload();
     } catch (error) {
       console.error('Logout error:', error);
+      toast({
+        title: "Logout failed",
+        description: "Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -128,12 +130,14 @@ export default function Header() {
               </>
             ) : (
               <>
-                {/* Auth Modal */}
-                <AuthModal>
+                <Link href="/login">
+                  <Button variant="outline">Sign In</Button>
+                </Link>
+                <Link href="/signup">
                   <Button className="bg-liquid-green text-white hover:bg-liquid-accent transition-colors">
-                    Sign In / Sign Up
+                    Sign Up
                   </Button>
-                </AuthModal>
+                </Link>
               </>
             )}
 

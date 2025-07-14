@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { 
   TrendingUp, 
   Users, 
@@ -18,15 +18,27 @@ import {
   PieChart,
   Calendar
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useEffect } from "react";
 
 export default function Dashboard() {
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const [, setLocation] = useLocation();
+
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      setLocation('/login');
+    }
+  }, [authLoading, isAuthenticated, setLocation]);
+
   const { data: platforms, isLoading: platformsLoading } = useQuery({
-    queryKey: ['/api/platforms'],
+    queryKey: ['/api/platforms', user?.id],
     queryFn: async () => {
-      const response = await fetch('/api/platforms');
+      const response = await fetch(`/api/platforms?userId=${user?.id}`);
       if (!response.ok) throw new Error('Failed to fetch platforms');
       return response.json();
-    }
+    },
+    enabled: !!user?.id
   });
 
   const { data: analytics, isLoading: analyticsLoading } = useQuery({
@@ -57,7 +69,7 @@ export default function Dashboard() {
     }
   });
 
-  if (platformsLoading || analyticsLoading) {
+  if (authLoading || platformsLoading || analyticsLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
