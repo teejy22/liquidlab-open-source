@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
+import { RevenueCalculator } from "@/components/RevenueCalculator";
 
 export default function Pricing() {
   return (
@@ -127,6 +128,11 @@ export default function Pricing() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Revenue Calculator */}
+        <div className="mb-16">
+          <RevenueCalculator />
+        </div>
 
         {/* Features Grid */}
         <div className="mb-16">
