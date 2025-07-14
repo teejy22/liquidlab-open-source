@@ -47,10 +47,22 @@ export default function AdminDashboard() {
     checkAdmin();
   }, []);
 
-  const { data: dashboardData, isLoading } = useQuery({
+  const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ['/api/admin/dashboard'],
     enabled: !isChecking,
   });
+  
+  // Show error if dashboard fetch fails
+  useEffect(() => {
+    if (error) {
+      console.error("Dashboard fetch error:", error);
+      toast({
+        title: "Failed to load dashboard",
+        description: error.message || "Could not fetch admin data",
+        variant: "destructive",
+      });
+    }
+  }, [error]);
 
   const handleLogout = async () => {
     try {

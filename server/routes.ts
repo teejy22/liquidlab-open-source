@@ -119,6 +119,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Admin dashboard data
   app.get("/api/admin/dashboard", requireAdmin, async (req, res) => {
+    console.log("Admin dashboard request - session:", req.session);
     try {
       // Get all platforms with user info
       const allPlatforms = await storage.getTradingPlatforms();
@@ -151,8 +152,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       });
     } catch (error) {
-      console.error("Admin dashboard error:", error);
-      res.status(500).json({ message: "Failed to fetch admin data" });
+      console.error("Admin dashboard error - detailed:", error);
+      res.status(500).json({ message: "Failed to fetch admin data", error: error.message });
     }
   });
 
