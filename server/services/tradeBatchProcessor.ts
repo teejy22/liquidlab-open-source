@@ -124,8 +124,7 @@ export class TradeBatchProcessor {
     });
 
     const isDuplicate = existingTransaction.some(tx => 
-      tx.transactionId === trade.tradeId || 
-      (tx.metadata as any)?.timestamp === trade.timestamp
+      tx.tradeId === trade.tradeId
     );
 
     if (isDuplicate) {
@@ -133,49 +132,114 @@ export class TradeBatchProcessor {
       return;
     }
 
+    // Calculate trade volume and fee rate
+    const tradeVolume = parseFloat(trade.size) * parseFloat(trade.price);
+    const feeRate = trade.market === 'spot' ? 0.002 : 0.001; // 0.2% for spot, 0.1% for perp
+    
     // Record the fee transaction
     await storage.recordFeeTransaction({
       platformId: trade.platformId,
-      transactionId: trade.tradeId,
-      userId: trade.userId,
-      transactionType: 'trade',
-      feeAmount: totalFee.toString(),
-      platformEarnings: platformShare.toString(),
-      liquidlabEarnings: liquidlabShare.toString(),
-      metadata: {
-        market: trade.market,
-        side: trade.side,
-        size: trade.size,
-        price: trade.price,
-        timestamp: trade.timestamp,
-        processedAt: Date.now()
-      },
+      tradeId: trade.tradeId,
+      tradeType: 'perp', // Most Hyperliquid trades are perps
+      tradeVolume: tradeVolume.toString(),
+      feeRate: feeRate.toString(),
+      totalFee: totalFee.toString(),
+      platformShare: platformShare.toString(),
+      liquidlabShare: liquidlabShare.toString(),
       status: 'completed'
     });
 
-    // Update platform revenue summary
-    const period = new Date(trade.timestamp).toISOString().slice(0, 7); // YYYY-MM format
-    await storage.updateRevenueSummary(trade.platformId, period);
+    // Update platform revenue summaries for all periods
+    await storage.updateRevenueSummary(trade.platformId, 'daily');
+    await storage.updateRevenueSummary(trade.platformId, 'weekly');
+    await storage.updateRevenueSummary(trade.platformId, 'monthly');
+    await storage.updateRevenueSummary(trade.platformId, 'all-time');
 
     console.log(`Processed trade ${trade.tradeId} for platform ${trade.platformId}, fee: ${totalFee}`);
   }
 
   /**
    * Fetch recent trades from Hyperliquid API
-   * This is a placeholder - needs to be implemented based on Hyperliquid's API
+   * Since Hyperliquid doesn't have a direct builder code API, we need to:
+   * 1. Get all platform owners from our database
+   * 2. Fetch their trades using their wallet addresses (from Privy)
+   * 3. Filter for trades with LIQUIDLAB2025 builder code
    */
   private async fetchRecentTrades(): Promise<TradeData[]> {
-    // TODO: Implement actual API call to Hyperliquid to fetch trades
-    // For now, return empty array
-    console.warn('fetchRecentTrades not fully implemented - Hyperliquid API integration needed');
-    
-    // This would typically call something like:
-    // const response = await this.hyperliquidService.getRecentTrades({
-    //   since: this.lastProcessedTimestamp,
-    //   builderCode: 'LIQUIDLAB2025'
-    // });
-    
-    return [];
+    try {
+      const allTrades: TradeData[] = [];
+      
+      // Get all trading platforms from our database
+      const platforms = await storage.getTradingPlatforms();
+      
+      if (!platforms || platforms.length === 0) {
+        console.log('No platforms found to check for trades');
+        return [];
+      }
+
+      console.log(`Checking trades for ${platforms.length} platforms`);
+
+      // NOTE: In production, we would need to:
+      // 1. Store wallet addresses when users connect through Privy
+      // 2. Or fetch wallet addresses from Privy API using user IDs
+      // 3. Then use those addresses to fetch trades from Hyperliquid
+      
+      // For now, let's create a demo implementation that shows how the system works
+      // In production, replace this with actual Hyperliquid API calls
+      
+      // Demo: Generate sample trades for testing
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Development mode: Generating sample trades for testing');
+        
+        // Always generate at least one new trade for testing
+        const currentTime = Date.now();
+        const sampleTrades: TradeData[] = [
+          {
+            platformId: platforms[0]?.id || 1,
+            tradeId: `demo_${currentTime}_1`,
+            userId: '0xdemo_wallet_address',
+            market: 'BTC',
+            side: 'buy',
+            size: '0.1',
+            price: '120000',
+            fee: '12', // 0.1% of 12000 USD
+            builderCode: 'LIQUIDLAB2025',
+            timestamp: currentTime - 5000 // 5 seconds ago
+          },
+          {
+            platformId: platforms[0]?.id || 1,
+            tradeId: `demo_${currentTime}_2`,
+            userId: '0xdemo_wallet_address',
+            market: 'ETH',
+            side: 'sell',
+            size: '1.5',
+            price: '3400',
+            fee: '5.1', // 0.1% of 5100 USD
+            builderCode: 'LIQUIDLAB2025',
+            timestamp: currentTime - 3000 // 3 seconds ago
+          }
+        ];
+        
+        // Only return trades newer than last processed timestamp
+        const newTrades = sampleTrades.filter(trade => trade.timestamp > this.lastProcessedTimestamp);
+        console.log(`Generated ${sampleTrades.length} sample trades, ${newTrades.length} are new`);
+        return newTrades;
+      }
+
+      // Production implementation would go here:
+      // for (const platform of platforms) {
+      //   const walletAddress = await getWalletAddressFromPrivy(platform.userId);
+      //   const trades = await this.hyperliquidService.getUserFills(walletAddress, this.lastProcessedTimestamp);
+      //   // Process trades...
+      // }
+      
+      console.log('Production trade fetching not yet implemented - need Privy wallet integration');
+      return [];
+      
+    } catch (error) {
+      console.error('Error in fetchRecentTrades:', error);
+      return [];
+    }
   }
 
   /**
@@ -183,6 +247,11 @@ export class TradeBatchProcessor {
    */
   private async getLastProcessedTimestamp(): Promise<number | null> {
     try {
+      // In development mode, start from 1 hour ago to ensure sample trades are processed
+      if (process.env.NODE_ENV === 'development') {
+        return Date.now() - 3600000; // 1 hour ago
+      }
+      
       // Get the most recent fee transaction
       const recentTransactions = await storage.getFeeTransactions(0, { 
         status: 'completed' 

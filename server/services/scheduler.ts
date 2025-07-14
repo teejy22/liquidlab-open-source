@@ -5,6 +5,35 @@ export class Scheduler {
   private intervals: Map<string, NodeJS.Timeout> = new Map();
   
   /**
+   * Schedule a job to run at specified intervals
+   */
+  private scheduleJob(name: string, intervalMs: number, task: () => Promise<void>) {
+    if (this.intervals.has(name)) {
+      console.log(`Job ${name} already scheduled, skipping...`);
+      return;
+    }
+    
+    const interval = setInterval(async () => {
+      try {
+        await task();
+      } catch (error) {
+        console.error(`Error in scheduled job ${name}:`, error);
+        await createAuditLog({
+          action: 'scheduler_job_error',
+          resource: 'scheduler',
+          metadata: {
+            job: name,
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        });
+      }
+    }, intervalMs);
+    
+    this.intervals.set(name, interval);
+    console.log(`Scheduled job: ${name} (every ${intervalMs}ms)`);
+  }
+  
+  /**
    * Start all scheduled jobs
    */
   async start() {
@@ -49,36 +78,7 @@ export class Scheduler {
       metadata: {}
     });
   }
-
-  /**
-   * Schedule a recurring job
-   */
-  private scheduleJob(name: string, intervalMs: number, handler: () => Promise<void>) {
-    // Clear existing job if it exists
-    if (this.intervals.has(name)) {
-      clearInterval(this.intervals.get(name)!);
-    }
-
-    // Create new interval
-    const interval = setInterval(async () => {
-      try {
-        await handler();
-      } catch (error) {
-        console.error(`Error in scheduled job ${name}:`, error);
-        await createAuditLog({
-          action: 'scheduled_job_error',
-          resource: 'scheduler',
-          metadata: {
-            job: name,
-            error: error instanceof Error ? error.message : 'Unknown error'
-          }
-        });
-      }
-    }, intervalMs);
-
-    this.intervals.set(name, interval);
-    console.log(`Scheduled job: ${name} (every ${intervalMs / 1000}s)`);
-  }
 }
 
+// Singleton instance
 export const scheduler = new Scheduler();

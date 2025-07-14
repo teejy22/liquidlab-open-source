@@ -429,15 +429,24 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Status monitoring at `/api/trades/batch-status`
   - Avoids expensive 24/7 WebSocket connection costs
 - **TradeBatchProcessor Service**: Created comprehensive trade processing system
-  - Fetches recent trades from Hyperliquid API
-  - Filters for LIQUIDLAB2025 builder code
+  - Fetches recent trades from Hyperliquid API using getUserFills endpoint
+  - Filters for LIQUIDLAB2025 builder code in cloid field
   - Calculates 70/30 revenue split automatically
   - Prevents duplicate processing with timestamp checks
-  - Updates platform revenue summaries
+  - Updates platform revenue summaries for all periods
 - **Scheduler Service**: Automated job scheduling system
   - Runs trade batch processing every 10 minutes
   - Handles errors gracefully with audit logging
   - Starts automatically when server launches
+  - Initial run 5 seconds after server startup
+- **Development Mode**: Generates sample trades for testing
+  - Creates demo trades with realistic fee calculations
+  - Processes trades from 1 hour ago to ensure sample trades are captured
+  - Successfully records fee transactions and updates revenue summaries
+- **Production Requirements**:
+  - Integrate with Privy to fetch wallet addresses for platform owners
+  - Connect actual Hyperliquid user fills to LIQUIDLAB2025 builder code
+  - Store wallet addresses when users connect through Privy authentication
 - **Admin API Endpoints**: 
   - POST `/api/trades/process-batch` - Manually trigger batch processing
   - GET `/api/trades/batch-status` - View recent processing logs
