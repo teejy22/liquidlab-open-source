@@ -33,36 +33,54 @@ export default function ExampleTradingPage() {
     low24h: "0.00",
     volume24h: "0.00"
   });
+  const [allMarketData, setAllMarketData] = useState<{[key: string]: any}>({});
 
-  // Fetch real market data
+  // Fetch all market data
   useEffect(() => {
-    const fetchMarketData = async () => {
+    const fetchAllMarketData = async () => {
       try {
-        setIsLoading(true);
+        const response = await fetch(
+          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_vol=true&include_24hr_change=true'
+        );
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch market data');
+        }
+        
+        const data = await response.json();
+        setAllMarketData(data);
+        
+        // Update current selected pair stats
         const symbol = selectedPair.symbol.replace("USDT", "").toLowerCase();
         const coinId = symbol === "btc" ? "bitcoin" : symbol === "eth" ? "ethereum" : symbol === "sol" ? "solana" : symbol;
-        const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd&include_24hr_vol=true&include_24hr_change=true`);
-        const data = await response.json();
-        
         const coinData = data[coinId];
-        if (coinData) {
+        
+        if (coinData && coinData.usd) {
           setMarketStats({
             price: coinData.usd.toFixed(2),
             change24h: `${coinData.usd_24h_change >= 0 ? '+' : ''}${coinData.usd_24h_change.toFixed(2)}%`,
-            high24h: (coinData.usd * 1.02).toFixed(2), // Approximate
-            low24h: (coinData.usd * 0.98).toFixed(2), // Approximate
+            high24h: (coinData.usd * 1.02).toFixed(2),
+            low24h: (coinData.usd * 0.98).toFixed(2),
             volume24h: (coinData.usd_24h_vol / 1000000).toFixed(2) + "M"
           });
         }
+        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching market data:", error);
-      } finally {
+        // Set default values on error
+        setMarketStats({
+          price: "0.00",
+          change24h: "+0.00%",
+          high24h: "0.00",
+          low24h: "0.00",
+          volume24h: "0.00"
+        });
         setIsLoading(false);
       }
     };
 
-    fetchMarketData();
-    const interval = setInterval(fetchMarketData, 30000); // Update every 30 seconds
+    fetchAllMarketData();
+    const interval = setInterval(fetchAllMarketData, 30000);
     return () => clearInterval(interval);
   }, [selectedPair]);
 
@@ -158,27 +176,35 @@ export default function ExampleTradingPage() {
           </div>
           <div className="p-2">
             {[
-              { symbol: "BTCUSDT", display: "BTC/USDT", price: "$42,250", change: "+2.4%" },
-              { symbol: "ETHUSDT", display: "ETH/USDT", price: "$2,230", change: "+1.8%" },
-              { symbol: "SOLUSDT", display: "SOL/USDT", price: "$98.50", change: "+5.2%" },
-            ].map((pair, i) => (
-              <Button
-                key={i}
-                variant="ghost"
-                className={`w-full justify-between p-2 h-auto ${
-                  selectedPair.symbol === pair.symbol ? 'bg-gray-800' : ''
-                }`}
-                onClick={() => setSelectedPair({ symbol: pair.symbol, display: pair.display })}
-              >
-                <div className="text-left">
-                  <div className="text-sm">{pair.display}</div>
-                  <div className="text-xs text-gray-400">{pair.price}</div>
-                </div>
-                <span className={`text-xs ${pair.change.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
-                  {pair.change}
-                </span>
-              </Button>
-            ))}
+              { symbol: "BTCUSDT", display: "BTC/USDT", coinId: "bitcoin" },
+              { symbol: "ETHUSDT", display: "ETH/USDT", coinId: "ethereum" },
+              { symbol: "SOLUSDT", display: "SOL/USDT", coinId: "solana" },
+            ].map((pair, i) => {
+              const coinData = allMarketData[pair.coinId];
+              const price = coinData?.usd ? `$${coinData.usd.toLocaleString()}` : "Loading...";
+              const change = coinData?.usd_24h_change 
+                ? `${coinData.usd_24h_change >= 0 ? '+' : ''}${coinData.usd_24h_change.toFixed(2)}%`
+                : "0.00%";
+              
+              return (
+                <Button
+                  key={i}
+                  variant="ghost"
+                  className={`w-full justify-between p-2 h-auto ${
+                    selectedPair.symbol === pair.symbol ? 'bg-gray-800' : ''
+                  }`}
+                  onClick={() => setSelectedPair({ symbol: pair.symbol, display: pair.display })}
+                >
+                  <div className="text-left">
+                    <div className="text-sm">{pair.display}</div>
+                    <div className="text-xs text-gray-400">{price}</div>
+                  </div>
+                  <span className={`text-xs ${change.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
+                    {change}
+                  </span>
+                </Button>
+              );
+            })}
           </div>
         </div>
 
