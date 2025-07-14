@@ -105,14 +105,15 @@ export default function Builder() {
     setSavingPlatform(true);
     
     const platformData = {
-      userId: user?.id,
+      userId: user?.id || 1, // Default to userId 1 for demo
       name: platformName,
       customDomain: customDomain || null,
-      builderCode: LIQUIDLAB_BUILDER_CODE,
       payoutWallet: payoutWallet,
+      logoUrl: logoUrl || null,
       config: {
         logo: logoUrl || null,
         template: "hyperliquid", // We only have one template now
+        builderCode: LIQUIDLAB_BUILDER_CODE,
       },
       isPublished: false, // Save as draft initially
     };
