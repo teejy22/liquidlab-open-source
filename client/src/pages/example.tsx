@@ -321,17 +321,25 @@ export default function ExampleTradingPage() {
                   <div className="grid grid-cols-2 gap-2">
                     <Button
                       size="sm"
-                      variant={side === "buy" ? "default" : "outline"}
+                      variant="outline"
                       onClick={() => setSide("buy")}
-                      className={`h-8 ${side === "buy" ? "bg-green-600 hover:bg-green-700" : ""}`}
+                      className={`h-8 transition-colors ${
+                        side === "buy" 
+                          ? "!bg-green-600 hover:!bg-green-700 !text-white !border-green-600" 
+                          : "text-gray-300 border-gray-700 hover:border-green-600 hover:text-green-400"
+                      }`}
                     >
                       Buy
                     </Button>
                     <Button
                       size="sm"
-                      variant={side === "sell" ? "default" : "outline"}
+                      variant="outline"
                       onClick={() => setSide("sell")}
-                      className={`h-8 ${side === "sell" ? "bg-red-600 hover:bg-red-700 text-white border-red-600" : "text-gray-300 border-gray-700 hover:border-red-600 hover:text-red-400"}`}
+                      className={`h-8 transition-colors ${
+                        side === "sell" 
+                          ? "!bg-red-600 hover:!bg-red-700 !text-white !border-red-600" 
+                          : "text-gray-300 border-gray-700 hover:border-red-600 hover:text-red-400"
+                      }`}
                     >
                       Sell
                     </Button>
