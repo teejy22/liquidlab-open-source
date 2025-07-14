@@ -50,19 +50,30 @@ export default function AdminDashboard() {
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ['/api/admin/dashboard'],
     enabled: !isChecking,
+    retry: false,
   });
   
   // Show error if dashboard fetch fails
   useEffect(() => {
     if (error) {
       console.error("Dashboard fetch error:", error);
-      toast({
-        title: "Failed to load dashboard",
-        description: error.message || "Could not fetch admin data",
-        variant: "destructive",
-      });
+      const errorMessage = error?.message || "Could not fetch admin data";
+      if (errorMessage.includes("401") || errorMessage.includes("Admin access required")) {
+        toast({
+          title: "Access Denied",
+          description: "Admin authentication required. Redirecting to login...",
+          variant: "destructive",
+        });
+        setTimeout(() => setLocation("/admin/login"), 1500);
+      } else {
+        toast({
+          title: "Failed to load dashboard",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
     }
-  }, [error]);
+  }, [error, setLocation, toast]);
 
   const handleLogout = async () => {
     try {
