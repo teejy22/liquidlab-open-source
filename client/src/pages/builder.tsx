@@ -32,6 +32,7 @@ export default function Builder() {
   const [savedChanges, setSavedChanges] = useState(false);
   const [logoUrl, setLogoUrl] = useState("");
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [payoutWallet, setPayoutWallet] = useState("");
 
   // Fixed LiquidLab builder code
   const LIQUIDLAB_BUILDER_CODE = "LIQUIDLAB2025";
@@ -41,6 +42,26 @@ export default function Builder() {
       toast({
         title: "Platform Name Required",
         description: "Please enter a name for your trading platform.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!payoutWallet) {
+      toast({
+        title: "Wallet Address Required",
+        description: "Please enter your wallet address to receive revenue payouts.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Basic wallet validation (Ethereum address format)
+    const walletRegex = /^0x[a-fA-F0-9]{40}$/;
+    if (!walletRegex.test(payoutWallet)) {
+      toast({
+        title: "Invalid Wallet Address",
+        description: "Please enter a valid Ethereum wallet address.",
         variant: "destructive",
       });
       return;
@@ -189,6 +210,20 @@ export default function Builder() {
                       />
                       <p className="text-xs text-gray-500 mt-1">
                         Configure your own domain for the platform
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="payout-wallet">Revenue Payout Wallet</Label>
+                      <Input
+                        id="payout-wallet"
+                        placeholder="0x..."
+                        value={payoutWallet}
+                        onChange={(e) => setPayoutWallet(e.target.value)}
+                        className="mt-1 font-mono"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Your Ethereum wallet address where you'll receive your 70% share of trading fees
                       </p>
                     </div>
 

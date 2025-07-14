@@ -24,6 +24,7 @@ export const tradingPlatforms = pgTable("trading_platforms", {
   isPublished: boolean("is_published").default(false),
   customDomain: text("custom_domain"),
   logoUrl: text("logo_url"),
+  payoutWallet: text("payout_wallet"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
