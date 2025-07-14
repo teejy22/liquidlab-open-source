@@ -8,7 +8,7 @@ interface SecurityFooterProps {
 
 export function SecurityFooter({ platformName, platformId, builderCode }: SecurityFooterProps) {
   return (
-    <footer className="bg-black text-white py-8 mt-auto">
+    <footer className="bg-[#0a0a0a] text-white py-8 mt-auto">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Security Info */}
