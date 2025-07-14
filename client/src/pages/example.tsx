@@ -877,13 +877,14 @@ export default function Example() {
           </div>
 
         </div>
-        
-        {/* Security Footer */}
-        <SecurityFooter 
-          platformName="Example Trading Platform"
-          platformId={1}
-          builderCode="LIQUIDLAB2025"
-        />
       </div>
+      
+      {/* Security Footer */}
+      <SecurityFooter 
+        platformName="Example Trading Platform"
+        platformId={1}
+        builderCode="LIQUIDLAB2025"
+      />
+    </div>
   );
 }
