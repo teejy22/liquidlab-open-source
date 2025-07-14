@@ -54,23 +54,4 @@ export default function TradingViewWidget({
       </div>
     </div>
   );
-
-  return (
-    <div className={`tradingview-widget-container h-full ${className}`}>
-      <div 
-        ref={containerRef}
-        className="h-full border rounded-lg overflow-hidden bg-gray-50"
-      />
-      <div className="tradingview-widget-copyright mt-1">
-        <a 
-          href="https://www.tradingview.com/" 
-          rel="noopener nofollow" 
-          target="_blank"
-          className="text-xs text-gray-400 hover:text-liquid-green"
-        >
-          Track all markets on TradingView
-        </a>
-      </div>
-    </div>
-  );
 }
