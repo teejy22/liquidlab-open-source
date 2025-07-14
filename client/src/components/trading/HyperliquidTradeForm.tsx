@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Slider } from "@/components/ui/slider";
 import { useHyperliquidTrading } from "@/hooks/useHyperliquidTrading";
 import { Loader2 } from "lucide-react";
 
@@ -18,7 +19,7 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice }: Hyperliqu
   const [price, setPrice] = useState("");
   const [size, setSize] = useState("");
   const [sizeMode, setSizeMode] = useState<"asset" | "usd">("asset");
-  const [leverage, setLeverage] = useState("1");
+  const [leverage, setLeverage] = useState(1);
   const [reduceOnly, setReduceOnly] = useState(false);
   const [postOnly, setPostOnly] = useState(false);
 
@@ -193,19 +194,25 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice }: Hyperliqu
 
       {/* Leverage Selector */}
       <div>
-        <Label className="text-xs text-gray-400">Leverage</Label>
-        <Select value={leverage} onValueChange={setLeverage}>
-          <SelectTrigger className="w-full h-8 bg-gray-900 border-gray-700 text-sm">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {["1", "2", "5", "10", "20", "50", "100"].map((lev) => (
-              <SelectItem key={lev} value={lev}>
-                {lev}x
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center justify-between mb-2">
+          <Label className="text-xs text-gray-400">Leverage</Label>
+          <span className="text-sm font-medium text-white">{leverage}x</span>
+        </div>
+        <Slider
+          value={[leverage]}
+          onValueChange={(value) => setLeverage(value[0])}
+          max={100}
+          min={1}
+          step={1}
+          className="w-full"
+        />
+        <div className="flex justify-between text-[10px] text-gray-500 mt-1">
+          <span>1x</span>
+          <span>25x</span>
+          <span>50x</span>
+          <span>75x</span>
+          <span>100x</span>
+        </div>
       </div>
 
       {/* Order Summary */}
