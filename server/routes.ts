@@ -475,44 +475,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get properly mapped market prices with symbol names using orderbook mid prices
+  // Get properly mapped market prices with symbol names using orderbook mid prices and volume data
   app.get("/api/hyperliquid/market-prices", async (req, res) => {
     try {
-      // Get market metadata
+      // Get market metadata with volume data
       const metaData = await hyperliquidService.getMetaAndAssetCtxs();
       
       if (!metaData || !metaData[0] || !metaData[0].universe) {
         return res.json({});
       }
 
-      // Get mid prices from orderbooks for main markets
+      // Create a map of symbol to volume and price from asset contexts
+      const marketDataMap: { [key: string]: { price: number; volume24h: string } } = {};
+      
+      if (metaData[1]) {
+        metaData[0].universe.forEach((market: any, index: number) => {
+          if (metaData[1][index]) {
+            // Asset context contains volume and price data
+            const assetCtx = metaData[1][index];
+            const price = parseFloat(assetCtx.markPx || assetCtx.midPx || "0");
+            marketDataMap[market.name] = {
+              price: price,
+              volume24h: assetCtx.volume || "0"
+            };
+          }
+        });
+      }
+
+      // For main markets, get more accurate prices from orderbooks
       const mainMarkets = ['BTC', 'ETH', 'SOL', 'ARB', 'MATIC', 'AVAX', 'BNB', 'DOGE', 'SUI', 'APT'];
-      const pricePromises = mainMarkets.map(async (symbol) => {
+      const orderbookPromises = mainMarkets.map(async (symbol) => {
         try {
           const orderbook = await hyperliquidService.getOrderbook(symbol);
           if (orderbook && orderbook.levels) {
             const bestAsk = parseFloat(orderbook.levels[0][0]?.px || '0');
             const bestBid = parseFloat(orderbook.levels[1][0]?.px || '0');
             const midPrice = bestAsk && bestBid ? (bestAsk + bestBid) / 2 : bestAsk || bestBid;
-            return { symbol, price: midPrice };
+            if (midPrice > 0) {
+              // Update with more accurate orderbook price
+              marketDataMap[symbol] = {
+                ...marketDataMap[symbol],
+                price: midPrice
+              };
+            }
           }
-          return { symbol, price: 0 };
         } catch (error) {
-          console.error(`Error fetching ${symbol} price:`, error);
-          return { symbol, price: 0 };
+          console.error(`Error fetching ${symbol} orderbook:`, error);
         }
       });
 
-      const prices = await Promise.all(pricePromises);
-      const mappedPrices: { [key: string]: number } = {};
-      
-      prices.forEach(({ symbol, price }) => {
-        if (price > 0) {
-          mappedPrices[symbol] = price;
-        }
-      });
+      await Promise.all(orderbookPromises);
 
-      res.json(mappedPrices);
+      res.json(marketDataMap);
     } catch (error) {
       res.status(500).json({ error: handleError(error) });
     }

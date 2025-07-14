@@ -14,7 +14,7 @@ interface HyperliquidMarket {
 interface MarketPrice {
   price: string;
   change24h: number;
-  volume24h?: string;
+  volume24h: string;
 }
 
 export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market: string) => void }) {
@@ -94,21 +94,11 @@ export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market
     market.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Sort by volume (if available) or by main markets
-  const mainMarkets = ['BTC', 'ETH', 'SOL', 'ARB', 'MATIC', 'AVAX', 'BNB', 'DOGE', 'SUI', 'APT'];
+  // Sort by volume from highest to lowest
   const sortedMarkets = filteredMarkets.sort((a, b) => {
-    // First sort by volume if available
     const aVolume = prices[a.name]?.volume24h ? parseFloat(prices[a.name].volume24h) : 0;
     const bVolume = prices[b.name]?.volume24h ? parseFloat(prices[b.name].volume24h) : 0;
-    if (aVolume !== bVolume) return bVolume - aVolume;
-    
-    // Then by main markets order
-    const aIndex = mainMarkets.indexOf(a.name);
-    const bIndex = mainMarkets.indexOf(b.name);
-    if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
-    if (aIndex !== -1) return -1;
-    if (bIndex !== -1) return 1;
-    return a.name.localeCompare(b.name);
+    return bVolume - aVolume;
   });
 
   return (
@@ -152,10 +142,10 @@ export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market
                 </div>
                 <div className="text-right">
                   <div className="font-mono text-xs">
-                    ${price?.price ? parseFloat(price.price).toLocaleString() : '---'}
+                    ${price?.price && parseFloat(price.price) > 0 ? parseFloat(price.price).toLocaleString() : '0.00'}
                   </div>
-                  <div className={`text-[10px] ${price?.change24h && price.change24h > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    {price?.change24h ? `${price.change24h > 0 ? '+' : ''}${price.change24h.toFixed(2)}%` : '0.00%'}
+                  <div className="text-[10px] text-gray-400">
+                    Vol: ${price?.volume24h ? (parseFloat(price.volume24h) / 1e6).toFixed(1) : '0'}M
                   </div>
                 </div>
               </div>

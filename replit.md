@@ -267,9 +267,14 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Thin 6px width scrollbar
   - Black track with dark gray thumb
   - Hover state for better visibility
-- **Volume Sorting**: Prepared for volume-based sorting
-  - Markets will sort by 24h volume when data is available
-  - Currently falls back to predefined order of major markets
+- **Volume-Based Sorting**: Implemented default sorting by 24h trading volume
+  - Markets automatically sorted from highest to lowest volume
+  - Volume displayed in millions (e.g., Vol: $123.4M)
+  - Markets without price data show $0.00 instead of loading indicator
+- **Market Data Integration**: Enhanced price fetching from Hyperliquid
+  - Fetches mark prices from asset contexts for all markets
+  - Orderbook prices for major markets (BTC, ETH, SOL, etc.) for accuracy
+  - Volume data displayed for all markets when available
 
 ### Centralized Fee Tracking System
 - **Single Builder Code**: All platforms now use unified "LIQUIDLAB2025" builder code
