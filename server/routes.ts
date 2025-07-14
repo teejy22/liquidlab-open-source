@@ -349,6 +349,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Fee tracking endpoints
+  app.post("/api/fees/record", async (req, res) => {
+    try {
+      const { platformId, tradeType, tradeVolume, tradeDetails } = req.body;
+      
+      // Calculate fees based on trade type
+      const feePercentage = tradeType === 'spot' ? 0.002 : 0.001; // 0.2% for spot, 0.1% for perp
+      const totalFee = parseFloat(tradeVolume) * feePercentage;
+      const platformShare = totalFee * 0.7; // 70% to platform owner
+      const liquidlabShare = totalFee * 0.3; // 30% to LiquidLab
+      
+      const feeTransaction = await storage.recordFeeTransaction({
+        platformId,
+        tradeType,
+        tradeVolume: tradeVolume.toString(),
+        totalFee: totalFee.toFixed(8),
+        platformShare: platformShare.toFixed(8),
+        liquidlabShare: liquidlabShare.toFixed(8),
+        tradeDetails: tradeDetails || {},
+        status: 'pending',
+      });
+      
+      res.json(feeTransaction);
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+  
+  app.get("/api/fees/platform/:platformId", async (req, res) => {
+    try {
+      const { platformId } = req.params;
+      const { status, startDate, endDate } = req.query;
+      
+      const options: any = {};
+      if (status) options.status = status as string;
+      if (startDate) options.startDate = new Date(startDate as string);
+      if (endDate) options.endDate = new Date(endDate as string);
+      
+      const transactions = await storage.getFeeTransactions(parseInt(platformId), options);
+      res.json(transactions);
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+  
+  app.get("/api/fees/summary/:platformId/:period", async (req, res) => {
+    try {
+      const { platformId, period } = req.params;
+      const summary = await storage.getRevenueSummary(parseInt(platformId), period);
+      res.json(summary || { message: "No summary found for this period" });
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+  
+  app.get("/api/fees/all-platforms", async (req, res) => {
+    try {
+      const { period, minRevenue } = req.query;
+      const options: any = {};
+      if (period) options.period = period as string;
+      if (minRevenue) options.minRevenue = parseFloat(minRevenue as string);
+      
+      const revenues = await storage.getAllPlatformRevenues(options);
+      res.json(revenues);
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
   // CoinGecko price proxy endpoint
   app.get("/api/prices", async (req, res) => {
     try {

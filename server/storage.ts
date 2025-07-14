@@ -4,6 +4,8 @@ import {
   templates, 
   revenueRecords, 
   referrals,
+  feeTransactions,
+  platformRevenueSummary,
   type User, 
   type InsertUser,
   type TradingPlatform,
@@ -13,7 +15,10 @@ import {
   type RevenueRecord,
   type InsertRevenueRecord,
   type Referral,
-  type InsertReferral
+  type InsertReferral,
+  type FeeTransaction,
+  type InsertFeeTransaction,
+  type PlatformRevenueSummary
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, lte } from "drizzle-orm";
@@ -53,6 +58,16 @@ export interface IStorage {
   // Referrals
   createReferral(referrerId: number, referredUserId: number): Promise<Referral>;
   getReferrals(userId: number): Promise<Referral[]>;
+  
+  // Fee tracking
+  recordFeeTransaction(transaction: InsertFeeTransaction): Promise<FeeTransaction>;
+  getFeeTransactions(platformId: number, options?: { status?: string; startDate?: Date; endDate?: Date }): Promise<FeeTransaction[]>;
+  updateFeeTransactionStatus(transactionId: number, status: string, distributedAt?: Date): Promise<void>;
+  
+  // Revenue summaries
+  updateRevenueSummary(platformId: number, period: string): Promise<void>;
+  getRevenueSummary(platformId: number, period: string): Promise<PlatformRevenueSummary | undefined>;
+  getAllPlatformRevenues(options?: { period?: string; minRevenue?: number }): Promise<PlatformRevenueSummary[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -236,6 +251,155 @@ export class DatabaseStorage implements IStorage {
 
   async getReferrals(userId: number): Promise<Referral[]> {
     return await db.select().from(referrals).where(eq(referrals.referrerId, userId));
+  }
+
+  // Fee tracking implementation
+  async recordFeeTransaction(transaction: InsertFeeTransaction): Promise<FeeTransaction> {
+    const [feeTransaction] = await db
+      .insert(feeTransactions)
+      .values(transaction)
+      .returning();
+    
+    // Update revenue summary after recording transaction
+    await this.updateRevenueSummary(transaction.platformId, 'daily');
+    await this.updateRevenueSummary(transaction.platformId, 'weekly');
+    await this.updateRevenueSummary(transaction.platformId, 'monthly');
+    await this.updateRevenueSummary(transaction.platformId, 'all-time');
+    
+    return feeTransaction;
+  }
+
+  async getFeeTransactions(
+    platformId: number, 
+    options?: { status?: string; startDate?: Date; endDate?: Date }
+  ): Promise<FeeTransaction[]> {
+    let query = db.select().from(feeTransactions).where(eq(feeTransactions.platformId, platformId));
+    
+    if (options?.status) {
+      query = query.where(eq(feeTransactions.status, options.status));
+    }
+    
+    if (options?.startDate) {
+      query = query.where(gte(feeTransactions.createdAt, options.startDate));
+    }
+    
+    if (options?.endDate) {
+      query = query.where(lte(feeTransactions.createdAt, options.endDate));
+    }
+    
+    return await query.orderBy(desc(feeTransactions.createdAt));
+  }
+
+  async updateFeeTransactionStatus(
+    transactionId: number, 
+    status: string, 
+    distributedAt?: Date
+  ): Promise<void> {
+    await db
+      .update(feeTransactions)
+      .set({ 
+        status, 
+        distributedAt: distributedAt || new Date() 
+      })
+      .where(eq(feeTransactions.id, transactionId));
+  }
+
+  async updateRevenueSummary(platformId: number, period: string): Promise<void> {
+    const now = new Date();
+    let startDate: Date;
+    let endDate = now;
+    
+    switch (period) {
+      case 'daily':
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        break;
+      case 'weekly':
+        const weekAgo = new Date(now);
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        startDate = weekAgo;
+        break;
+      case 'monthly':
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        break;
+      case 'all-time':
+        startDate = new Date('2024-01-01');
+        break;
+      default:
+        throw new Error(`Invalid period: ${period}`);
+    }
+    
+    // Get all transactions for the period
+    const transactions = await this.getFeeTransactions(platformId, { startDate, endDate });
+    
+    // Calculate totals
+    const totalVolume = transactions.reduce((sum, tx) => sum + parseFloat(tx.tradeVolume), 0);
+    const totalFees = transactions.reduce((sum, tx) => sum + parseFloat(tx.totalFee), 0);
+    const platformEarnings = transactions.reduce((sum, tx) => sum + parseFloat(tx.platformShare), 0);
+    const liquidlabEarnings = transactions.reduce((sum, tx) => sum + parseFloat(tx.liquidlabShare), 0);
+    
+    // Upsert the summary
+    await db
+      .insert(platformRevenueSummary)
+      .values({
+        platformId,
+        period,
+        startDate,
+        endDate,
+        totalVolume: totalVolume.toFixed(8),
+        totalFees: totalFees.toFixed(8),
+        platformEarnings: platformEarnings.toFixed(8),
+        liquidlabEarnings: liquidlabEarnings.toFixed(8),
+        tradeCount: transactions.length,
+      })
+      .onConflictDoUpdate({
+        target: [platformRevenueSummary.platformId, platformRevenueSummary.period, platformRevenueSummary.startDate],
+        set: {
+          endDate,
+          totalVolume: totalVolume.toFixed(8),
+          totalFees: totalFees.toFixed(8),
+          platformEarnings: platformEarnings.toFixed(8),
+          liquidlabEarnings: liquidlabEarnings.toFixed(8),
+          tradeCount: transactions.length,
+          lastUpdated: new Date(),
+        },
+      });
+  }
+
+  async getRevenueSummary(
+    platformId: number, 
+    period: string
+  ): Promise<PlatformRevenueSummary | undefined> {
+    const [summary] = await db
+      .select()
+      .from(platformRevenueSummary)
+      .where(
+        and(
+          eq(platformRevenueSummary.platformId, platformId),
+          eq(platformRevenueSummary.period, period)
+        )
+      )
+      .orderBy(desc(platformRevenueSummary.startDate))
+      .limit(1);
+    
+    return summary;
+  }
+
+  async getAllPlatformRevenues(
+    options?: { period?: string; minRevenue?: number }
+  ): Promise<PlatformRevenueSummary[]> {
+    let query = db.select().from(platformRevenueSummary);
+    
+    if (options?.period) {
+      query = query.where(eq(platformRevenueSummary.period, options.period));
+    }
+    
+    const results = await query.orderBy(desc(platformRevenueSummary.platformEarnings));
+    
+    if (options?.minRevenue) {
+      return results.filter(r => parseFloat(r.platformEarnings) >= options.minRevenue);
+    }
+    
+    return results;
   }
 
   private generateRandomCode(prefix: string): string {

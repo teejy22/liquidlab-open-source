@@ -26,19 +26,11 @@ export default function Builder() {
   const { toast } = useToast();
   const [platformName, setPlatformName] = useState("");
   const [customDomain, setCustomDomain] = useState("");
-  const [builderCode, setBuilderCode] = useState("");
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
   const [savedChanges, setSavedChanges] = useState(false);
 
-  // Generate a sample builder code
-  const generateBuilderCode = () => {
-    const code = `BLD-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
-    setBuilderCode(code);
-    toast({
-      title: "Builder Code Generated",
-      description: "Your unique builder code has been created.",
-    });
-  };
+  // Fixed LiquidLab builder code
+  const LIQUIDLAB_BUILDER_CODE = "LIQUIDLAB2025";
 
   const handleSave = () => {
     if (!platformName) {
@@ -170,38 +162,29 @@ export default function Builder() {
                   
                   <TabsContent value="revenue" className="space-y-4 mt-4">
                     <div>
-                      <Label>Builder Code</Label>
+                      <Label>LiquidLab Builder Code</Label>
                       <div className="flex gap-2 mt-1">
                         <Input
-                          value={builderCode}
+                          value={LIQUIDLAB_BUILDER_CODE}
                           readOnly
-                          placeholder="Generate your code"
+                          className="font-mono"
                         />
                         <Button
                           variant="outline"
                           size="icon"
-                          onClick={generateBuilderCode}
+                          onClick={() => {
+                            navigator.clipboard.writeText(LIQUIDLAB_BUILDER_CODE);
+                            toast({
+                              title: "Copied!",
+                              description: "Builder code copied to clipboard.",
+                            });
+                          }}
                         >
-                          <Code className="w-4 h-4" />
+                          <Copy className="w-4 h-4" />
                         </Button>
-                        {builderCode && (
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => {
-                              navigator.clipboard.writeText(builderCode);
-                              toast({
-                                title: "Copied!",
-                                description: "Builder code copied to clipboard.",
-                              });
-                            }}
-                          >
-                            <Copy className="w-4 h-4" />
-                          </Button>
-                        )}
                       </div>
                       <p className="text-xs text-gray-500 mt-1">
-                        Your unique code for earning fees
+                        All platforms use this single code for fee tracking
                       </p>
                     </div>
 

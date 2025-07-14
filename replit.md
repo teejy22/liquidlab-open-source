@@ -107,6 +107,22 @@ The application uses a monorepo structure with shared types and schemas, enablin
 - **Preview Modes**: Desktop and mobile preview capabilities retained
 - **Revenue Display**: Clear 70/30 revenue share information displayed
 
+### Centralized Fee Tracking System
+- **Single Builder Code**: All platforms now use unified "LIQUIDLAB2025" builder code
+- **Fee Collection**: Centralized revenue collection system tracks all platform trades
+- **Database Schema**: Added feeTransactions and platformRevenueSummary tables
+- **Storage Implementation**: Added comprehensive fee tracking methods:
+  - recordFeeTransaction: Records individual trade fees
+  - getFeeTransactions: Retrieves platform-specific transactions
+  - updateRevenueSummary: Aggregates revenue data by period
+  - getAllPlatformRevenues: Returns platform earnings summaries
+- **API Endpoints**: New fee tracking endpoints:
+  - POST /api/fees/record: Records new fee transactions
+  - GET /api/fees/platform/:platformId: Gets platform transactions
+  - GET /api/fees/summary/:platformId/:period: Gets revenue summaries
+  - GET /api/fees/all-platforms: Gets all platform revenues
+- **Revenue Distribution**: Automatic calculation of 70% platform / 30% LiquidLab split
+
 ## Recent Changes (January 2025)
 
 ### Pricing Model Update (January 13, 2025)

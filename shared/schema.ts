@@ -137,6 +137,42 @@ export const platformMetrics = pgTable("platform_metrics", {
   index("idx_platform_metrics_platform_date").on(table.platformId, table.date),
 ]);
 
+// Fee tracking for revenue distribution
+export const feeTransactions = pgTable("fee_transactions", {
+  id: serial("id").primaryKey(),
+  platformId: integer("platform_id").notNull().references(() => tradingPlatforms.id, { onDelete: "cascade" }),
+  tradeId: varchar("trade_id", { length: 255 }).notNull(), // External trade ID from Hyperliquid
+  tradeType: text("trade_type").notNull(), // 'spot' or 'perp'
+  tradeVolume: decimal("trade_volume", { precision: 20, scale: 8 }).notNull(),
+  feeRate: decimal("fee_rate", { precision: 10, scale: 6 }).notNull(), // 0.002 for spot, 0.001 for perp
+  totalFee: decimal("total_fee", { precision: 20, scale: 8 }).notNull(),
+  platformShare: decimal("platform_share", { precision: 20, scale: 8 }).notNull(), // 70% of total fee
+  liquidlabShare: decimal("liquidlab_share", { precision: 20, scale: 8 }).notNull(), // 30% of total fee
+  status: text("status").notNull().default("pending"), // pending, distributed, failed
+  distributedAt: timestamp("distributed_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_fee_platform_date").on(table.platformId, table.createdAt),
+  index("idx_fee_status").on(table.status),
+]);
+
+// Platform revenue summary for easy dashboard display
+export const platformRevenueSummary = pgTable("platform_revenue_summary", {
+  id: serial("id").primaryKey(),
+  platformId: integer("platform_id").notNull().references(() => tradingPlatforms.id, { onDelete: "cascade" }),
+  period: varchar("period", { length: 20 }).notNull(), // 'daily', 'weekly', 'monthly', 'all-time'
+  startDate: date("start_date").notNull(),
+  endDate: date("end_date").notNull(),
+  totalVolume: decimal("total_volume", { precision: 20, scale: 8 }).notNull().default('0'),
+  totalFees: decimal("total_fees", { precision: 20, scale: 8 }).notNull().default('0'),
+  platformEarnings: decimal("platform_earnings", { precision: 20, scale: 8 }).notNull().default('0'), // 70% share
+  liquidlabEarnings: decimal("liquidlab_earnings", { precision: 20, scale: 8 }).notNull().default('0'), // 30% share
+  tradeCount: integer("trade_count").notNull().default(0),
+  lastUpdated: timestamp("last_updated").defaultNow().notNull(),
+}, (table) => [
+  unique("idx_platform_period_unique").on(table.platformId, table.period, table.startDate),
+]);
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   platforms: many(tradingPlatforms),
@@ -159,6 +195,8 @@ export const tradingPlatformsRelations = relations(tradingPlatforms, ({ one, man
   domains: many(platformDomains),
   metrics: many(platformMetrics),
   auditLogs: many(auditLogs),
+  feeTransactions: many(feeTransactions),
+  revenueSummaries: many(platformRevenueSummary),
 }));
 
 export const templatesRelations = relations(templates, ({ many }) => ({
@@ -221,6 +259,20 @@ export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
   }),
 }));
 
+export const feeTransactionsRelations = relations(feeTransactions, ({ one }) => ({
+  platform: one(tradingPlatforms, {
+    fields: [feeTransactions.platformId],
+    references: [tradingPlatforms.id],
+  }),
+}));
+
+export const platformRevenueSummaryRelations = relations(platformRevenueSummary, ({ one }) => ({
+  platform: one(tradingPlatforms, {
+    fields: [platformRevenueSummary.platformId],
+    references: [tradingPlatforms.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -278,6 +330,17 @@ export const insertPlatformMetricSchema = createInsertSchema(platformMetrics).om
   createdAt: true,
 });
 
+export const insertFeeTransactionSchema = createInsertSchema(feeTransactions).omit({
+  id: true,
+  createdAt: true,
+  distributedAt: true,
+});
+
+export const insertPlatformRevenueSummarySchema = createInsertSchema(platformRevenueSummary).omit({
+  id: true,
+  lastUpdated: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -299,3 +362,7 @@ export type AuditLog = typeof auditLogs.$inferSelect;
 export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
 export type PlatformMetric = typeof platformMetrics.$inferSelect;
 export type InsertPlatformMetric = z.infer<typeof insertPlatformMetricSchema>;
+export type FeeTransaction = typeof feeTransactions.$inferSelect;
+export type InsertFeeTransaction = z.infer<typeof insertFeeTransactionSchema>;
+export type PlatformRevenueSummary = typeof platformRevenueSummary.$inferSelect;
+export type InsertPlatformRevenueSummary = z.infer<typeof insertPlatformRevenueSummarySchema>;
