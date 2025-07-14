@@ -1094,6 +1094,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Save wallet address from Privy
+  app.post("/api/privy/wallet", async (req, res) => {
+    try {
+      const { walletAddress, email } = req.body;
+      
+      if (!walletAddress || !email) {
+        return res.status(400).json({ error: "Wallet address and email required" });
+      }
+
+      // Check if user exists by email
+      let user = await storage.getUserByEmail(email);
+      
+      if (user) {
+        // Update existing user with wallet address
+        user = await storage.updateUserWallet(user.id, walletAddress);
+      } else {
+        // Create new user with wallet address
+        user = await storage.createUser({
+          email,
+          username: email.split('@')[0], // Simple username from email
+          password: 'privy-wallet-user', // Placeholder for wallet users
+          walletAddress
+        });
+      }
+
+      res.json({ success: true, userId: user.id });
+    } catch (error) {
+      console.error("Error saving wallet address:", error);
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

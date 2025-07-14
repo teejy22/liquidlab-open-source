@@ -2,6 +2,7 @@ import { usePrivy } from '@privy-io/react-auth';
 import { Button } from '@/components/ui/button';
 import { Wallet } from 'lucide-react';
 import { useEffect } from 'react';
+import { apiRequest } from '@/lib/queryClient';
 
 export function WalletConnect() {
   const { ready, authenticated, user, login, logout } = usePrivy();
@@ -17,6 +18,28 @@ export function WalletConnect() {
     window.addEventListener('privy:login', handlePrivyLogin);
     return () => window.removeEventListener('privy:login', handlePrivyLogin);
   }, [ready, authenticated, login]);
+
+  // Save wallet address when user connects
+  useEffect(() => {
+    const saveWalletAddress = async () => {
+      if (authenticated && user && user.wallet?.address && user.email?.address) {
+        try {
+          await apiRequest('/api/privy/wallet', {
+            method: 'POST',
+            body: JSON.stringify({
+              walletAddress: user.wallet.address,
+              email: user.email.address
+            })
+          });
+          console.log('Wallet address saved successfully');
+        } catch (error) {
+          console.error('Error saving wallet address:', error);
+        }
+      }
+    };
+
+    saveWalletAddress();
+  }, [authenticated, user]);
 
   if (!ready) {
     return (

@@ -226,15 +226,64 @@ export class TradeBatchProcessor {
         return newTrades;
       }
 
-      // Production implementation would go here:
-      // for (const platform of platforms) {
-      //   const walletAddress = await getWalletAddressFromPrivy(platform.userId);
-      //   const trades = await this.hyperliquidService.getUserFills(walletAddress, this.lastProcessedTimestamp);
-      //   // Process trades...
-      // }
+      // Production implementation: Fetch trades from real wallet addresses
+      for (const platform of platforms) {
+        // Get the platform owner's wallet address
+        const user = await storage.getUser(platform.userId);
+        if (!user || !user.walletAddress) {
+          console.log(`No wallet address found for platform ${platform.id} owner`);
+          continue;
+        }
+
+        console.log(`Checking trades for wallet ${user.walletAddress} (platform: ${platform.name})`);
+        
+        try {
+          // Fetch trades from Hyperliquid for this wallet
+          const userFills = await this.hyperliquidService.getUserFills(user.walletAddress);
+          
+          if (!userFills || userFills.length === 0) {
+            continue;
+          }
+
+          // Filter for trades with LIQUIDLAB2025 builder code and after last processed timestamp
+          const platformTrades = userFills
+            .filter((fill: any) => {
+              const hasBuilderCode = fill.cloid && fill.cloid.includes('LIQUIDLAB2025');
+              const isNewTrade = new Date(fill.time).getTime() > this.lastProcessedTimestamp;
+              return hasBuilderCode && isNewTrade;
+            })
+            .map((fill: any) => {
+              const tradeSize = parseFloat(fill.sz);
+              const tradePrice = parseFloat(fill.px);
+              const tradeValue = tradeSize * tradePrice;
+              
+              // Calculate fee based on crossed property (true = taker, false = maker)
+              const feeRate = fill.crossed ? 0.001 : 0.0002; // 0.1% taker, 0.02% maker
+              const fee = tradeValue * feeRate;
+              
+              return {
+                platformId: platform.id,
+                tradeId: fill.tid,
+                userId: user.walletAddress,
+                market: fill.coin,
+                side: fill.side === 'B' ? 'buy' : 'sell',
+                size: fill.sz,
+                price: fill.px,
+                fee: fee.toFixed(2),
+                builderCode: 'LIQUIDLAB2025',
+                timestamp: new Date(fill.time).getTime()
+              };
+            });
+
+          allTrades.push(...platformTrades);
+          
+        } catch (error) {
+          console.error(`Error fetching trades for wallet ${user.walletAddress}:`, error);
+        }
+      }
       
-      console.log('Production trade fetching not yet implemented - need Privy wallet integration');
-      return [];
+      console.log(`Found ${allTrades.length} total trades from ${platforms.length} platforms`);
+      return allTrades;
       
     } catch (error) {
       console.error('Error in fetchRecentTrades:', error);

@@ -34,8 +34,10 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByWallet(walletAddress: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<User>): Promise<User>;
+  updateUserWallet(userId: number, walletAddress: string): Promise<User>;
   authenticateUser(email: string, password: string): Promise<User | undefined>;
   
   // Trading platforms
@@ -105,6 +107,11 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
+  async getUserByWallet(walletAddress: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.walletAddress, walletAddress));
+    return user || undefined;
+  }
+
   async authenticateUser(email: string, password: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(
       and(eq(users.email, email), eq(users.password, password))
@@ -129,6 +136,15 @@ export class DatabaseStorage implements IStorage {
       .update(users)
       .set({ ...updates, updatedAt: new Date() })
       .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async updateUserWallet(userId: number, walletAddress: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ walletAddress, updatedAt: new Date() })
+      .where(eq(users.id, userId))
       .returning();
     return user;
   }

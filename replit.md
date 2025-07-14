@@ -509,3 +509,21 @@ The application uses a monorepo structure with shared types and schemas, enablin
   3. Owner adds TXT record "_liquidlab" with token to their DNS
   4. Owner clicks "Verify Domain" after DNS propagation
   5. Once verified, platform accessible at custom domain
+
+### Wallet Address Storage for Real Trade Processing (January 16, 2025)
+- **Database Update**: Added walletAddress field to users table for storing Privy-connected wallet addresses
+- **API Endpoint**: Created `/api/privy/wallet` endpoint to save wallet addresses when users connect
+  - Automatically creates or updates user records with wallet addresses
+  - Triggered when users connect through Privy authentication
+- **WalletConnect Component**: Enhanced to automatically save wallet addresses on connection
+  - Sends wallet address and email to backend when user authenticates
+  - Enables real trade tracking for each platform owner
+- **Trade Batch Processor**: Updated to use real wallet addresses for production
+  - Fetches wallet addresses from database for each platform owner
+  - Queries Hyperliquid API using actual wallet addresses
+  - Filters trades with LIQUIDLAB2025 builder code
+  - Processes real trading fees with 70/30 revenue split
+- **Production Ready**: System now ready to process real trades once users connect wallets
+  - Users must include "LIQUIDLAB2025" in the cloid field when placing trades
+  - Trade batch runs every 10 minutes to check for new trades
+  - Real-time revenue tracking and distribution enabled
