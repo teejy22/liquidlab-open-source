@@ -73,19 +73,6 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice }: Hyperliqu
 
   return (
     <div className="p-4 space-y-3">
-      {/* Show Connect Wallet button prominently when not authenticated */}
-      {!authenticated && (
-        <div className="bg-gray-900 border border-gray-700 rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-400 mb-3">Connect your wallet to start trading</p>
-          <Button
-            onClick={() => window.dispatchEvent(new CustomEvent('privy:login'))}
-            className="w-full bg-[#00d4ff] hover:bg-[#00a8cc] text-black"
-          >
-            Connect Wallet to Trade
-          </Button>
-        </div>
-      )}
-
       {/* Buy/Sell Toggle */}
       <Tabs value={side} onValueChange={(v) => setSide(v as "buy" | "sell")}>
         <TabsList className="grid w-full grid-cols-2 h-8 bg-gray-900 p-0.5">
@@ -199,13 +186,14 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice }: Hyperliqu
       {/* Submit Button */}
       <Button
         size="sm"
-        disabled={!authenticated || isPlacingOrder || !size}
-        onClick={handleSubmit}
+        disabled={isPlacingOrder || (!authenticated ? false : !size)}
+        onClick={!authenticated ? () => window.dispatchEvent(new CustomEvent('privy:login')) : handleSubmit}
         className={`w-full h-9 ${
+          !authenticated ? "bg-[#00d4ff] hover:bg-[#00a8cc] text-black" :
           side === "buy"
             ? "bg-green-600 hover:bg-green-700"
             : "bg-red-600 hover:bg-red-700"
-        } ${(!authenticated || isPlacingOrder) ? "opacity-50 cursor-not-allowed" : ""}`}
+        } ${isPlacingOrder ? "opacity-50 cursor-not-allowed" : ""}`}
       >
         {isPlacingOrder ? (
           <>
@@ -213,7 +201,7 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice }: Hyperliqu
             Placing Order...
           </>
         ) : !authenticated ? (
-          "Connect Wallet to Trade"
+          "Connect Wallet"
         ) : (
           `${side === "buy" ? "Buy Long" : "Sell Short"} ${size || "0"} ${selectedMarket}`
         )}
