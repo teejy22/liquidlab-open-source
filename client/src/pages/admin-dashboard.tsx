@@ -18,60 +18,50 @@ import {
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [isChecking, setIsChecking] = useState(true);
-
-  // Check if admin is authenticated
-  useEffect(() => {
-    const checkAdmin = async () => {
-      try {
-        const response = await apiRequest("GET", "/api/admin/check");
-        if (!response.isAdmin) {
-          toast({
-            title: "Access Denied",
-            description: "Admin authentication required",
-            variant: "destructive",
-          });
-          setLocation("/admin/login");
-        }
-      } catch (error) {
-        setLocation("/admin/login");
-      } finally {
-        setIsChecking(false);
-      }
-    };
-    checkAdmin();
-  }, []);
 
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ['/api/admin/dashboard'],
-    enabled: !isChecking,
     retry: false,
+    queryFn: async () => {
+      console.log("Fetching admin dashboard...");
+      const response = await fetch('/api/admin/dashboard', {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Dashboard fetch failed:", response.status, errorData);
+        throw new Error(errorData.message || `Error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("Dashboard data received:", data);
+      return data;
+    },
   });
   
-  // Show error if dashboard fetch fails
+  // Handle authentication and other errors
   useEffect(() => {
     if (error) {
       console.error("Dashboard fetch error:", error);
       const errorMessage = error?.message || "Could not fetch admin data";
-      if (errorMessage.includes("401") || errorMessage.includes("Admin access required")) {
-        toast({
-          title: "Access Denied",
-          description: "Admin authentication required. Redirecting to login...",
-          variant: "destructive",
-        });
-        setTimeout(() => setLocation("/admin/login"), 1500);
-      } else {
-        toast({
-          title: "Failed to load dashboard",
-          description: errorMessage,
-          variant: "destructive",
-        });
-      }
+      
+      // Always redirect to login on any error for admin dashboard
+      toast({
+        title: "Authentication Required",
+        description: "Please log in as admin to access this page",
+        variant: "destructive",
+      });
+      
+      setLocation("/admin/login");
     }
   }, [error, setLocation, toast]);
 
