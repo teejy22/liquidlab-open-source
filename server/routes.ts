@@ -530,6 +530,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Platform verification endpoints
+  app.get("/api/platforms/verify/:platformId", async (req, res) => {
+    try {
+      const { platformId } = req.params;
+      const platform = await storage.getTradingPlatform(parseInt(platformId));
+      
+      if (!platform) {
+        return res.status(404).json({ error: "Platform not found" });
+      }
+      
+      res.json({
+        id: platform.id,
+        name: platform.name,
+        isVerified: platform.isVerified || false,
+        verificationDate: platform.verificationDate,
+        customDomain: platform.customDomain,
+        builderCode: 'LIQUIDLAB2025'
+      });
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  app.post("/api/admin/platforms/:platformId/verify", requireAdmin, async (req, res) => {
+    try {
+      const { platformId } = req.params;
+      const { notes } = req.body;
+      
+      const updatedPlatform = await storage.updateTradingPlatform(parseInt(platformId), {
+        isVerified: true,
+        verificationDate: new Date(),
+        verificationNotes: notes
+      });
+      
+      res.json({ success: true, platform: updatedPlatform });
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
   // MoonPay revenue endpoints
   app.get("/api/moonpay/revenue/:platformId", async (req, res) => {
     try {

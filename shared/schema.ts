@@ -25,6 +25,9 @@ export const tradingPlatforms = pgTable("trading_platforms", {
   customDomain: text("custom_domain"),
   logoUrl: text("logo_url"),
   payoutWallet: text("payout_wallet"),
+  isVerified: boolean("is_verified").default(false),
+  verificationDate: timestamp("verification_date"),
+  verificationNotes: text("verification_notes"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

@@ -10,6 +10,9 @@ import { ArrowUp, ArrowDown, Settings, BarChart3, Star, ArrowLeft, Home } from "
 import TradingViewWidget from "@/components/charts/tradingview-widget";
 import liquidLabLogo from "@assets/Trade (6)_1752423674786.png";
 import { Link } from "wouter";
+import { TrustIndicators } from "@/components/TrustIndicators";
+import { PlatformVerificationBadge } from "@/components/PlatformVerificationBadge";
+import { SecurityFooter } from "@/components/SecurityFooter";
 
 interface MarketData {
   price: string;
@@ -187,6 +190,12 @@ export default function Example() {
           
           {/* Right Section */}
           <div className="flex items-center space-x-4">
+            <PlatformVerificationBadge 
+              platformId={1}
+              platformName="Example Trading Platform"
+              isVerified={true}
+              compactMode={true}
+            />
             <div className="hidden md:flex items-center space-x-2 text-sm">
               <span className="text-gray-400">Network:</span>
               <span className="text-green-400">●</span>
@@ -199,8 +208,18 @@ export default function Example() {
         </div>
       </header>
 
+      {/* Trust Indicators */}
+      <div className="px-4 pt-4">
+        <TrustIndicators 
+          platformName="Example Trading Platform"
+          platformId={1}
+          builderCode="LIQUIDLAB2025"
+          customDomain="example.liquidlab.app"
+        />
+      </div>
+
       {/* Main Trading Interface */}
-      <div className="flex h-[calc(100vh-112px)]">
+      <div className="flex h-[calc(100vh-200px)]">
         {/* Left Sidebar - Market List */}
         <div className="w-48 bg-[#0f0f0f] border-r border-gray-800 overflow-y-auto hidden lg:block">
           <div className="p-4">
@@ -571,6 +590,13 @@ export default function Example() {
           </div>
         </div>
       </div>
+      
+      {/* Security Footer */}
+      <SecurityFooter 
+        platformName="Example Trading Platform"
+        platformId={1}
+        builderCode="LIQUIDLAB2025"
+      />
     </div>
   );
 }

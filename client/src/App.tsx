@@ -19,6 +19,7 @@ import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import AdminLogin from "@/pages/admin-login";
 import AdminDashboard from "@/pages/admin-dashboard";
+import Security from "@/pages/security";
 
 function Router() {
   return (
@@ -37,6 +38,7 @@ function Router() {
       <Route path="/signup" component={Signup} />
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
+      <Route path="/security" component={Security} />
       <Route component={NotFound} />
     </Switch>
   );
