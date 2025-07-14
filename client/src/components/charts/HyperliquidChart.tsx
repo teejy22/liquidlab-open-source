@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { createChart, ColorType, IChartApi, ISeriesApi, CandlestickData, Time } from 'lightweight-charts';
+import * as LightweightCharts from 'lightweight-charts';
 
 interface HyperliquidChartProps {
   symbol: string;
@@ -19,8 +19,8 @@ export default function HyperliquidChart({
   className = ""
 }: HyperliquidChartProps) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<IChartApi | null>(null);
-  const candleSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
+  const chartRef = useRef<LightweightCharts.IChartApi | null>(null);
+  const candleSeriesRef = useRef<LightweightCharts.ISeriesApi<"Candlestick"> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPrice, setCurrentPrice] = useState<number | null>(null);
 
@@ -28,9 +28,9 @@ export default function HyperliquidChart({
     if (!chartContainerRef.current) return;
 
     // Create chart with Hyperliquid-style dark theme
-    const chart = createChart(chartContainerRef.current, {
+    const chart = LightweightCharts.createChart(chartContainerRef.current, {
       layout: {
-        background: { type: ColorType.Solid, color: '#0a0a0a' },
+        background: { type: LightweightCharts.ColorType.Solid, color: '#0a0a0a' },
         textColor: '#d1d4dc',
       },
       grid: {
@@ -74,7 +74,7 @@ export default function HyperliquidChart({
 
     chartRef.current = chart;
 
-    // Create candlestick series with Hyperliquid colors
+    // Create candlestick series with Hyperliquid colors  
     const candleSeries = chart.addCandlestickSeries({
       upColor: '#22c55e',
       downColor: '#ef4444',
