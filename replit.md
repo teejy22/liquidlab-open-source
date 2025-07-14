@@ -175,6 +175,18 @@ The application uses a monorepo structure with shared types and schemas, enablin
 - **API Endpoint**: POST /api/upload-logo endpoint handles file uploads
 - **Visual Integration**: Logo appears alongside platform name in the preview section
 
+### Trading Interface Layout Updates (January 14, 2025)
+- **Layout Simplification**: Reverted from dropdown market selector back to markets sidebar
+  - Markets sidebar remains on the left side with BTC/ETH/SOL pairs
+  - Chart positioned in the center with market stats bar
+  - Order book and trading form on the right side
+  - Fixed height containers (450px) to ensure positions area is visible
+- **Compact Trading Form**: Streamlined trading interface
+  - Removed tabs for spot/cross/isolated trading
+  - Smaller input fields and buttons for space efficiency
+  - Buy/sell buttons with clear green/red visual states
+  - Compact leverage selector and order type controls
+
 ### Builder Simplification
 - **Removed Drag-and-Drop**: Eliminated complex drag-and-drop builder functionality
 - **Single Template System**: Now offers one professional Hyperliquid-style template

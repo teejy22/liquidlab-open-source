@@ -329,7 +329,7 @@ export default function ExampleTradingPage() {
                     </Button>
                     <Button
                       size="sm"
-                      variant="outline"
+                      variant={side === "sell" ? "default" : "outline"}
                       onClick={() => setSide("sell")}
                       className={`h-8 ${side === "sell" ? "bg-red-600 hover:bg-red-700 text-white border-red-600" : "text-gray-300 border-gray-700 hover:border-red-600 hover:text-red-400"}`}
                     >
