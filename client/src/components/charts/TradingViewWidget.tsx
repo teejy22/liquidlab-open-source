@@ -59,11 +59,6 @@ function TradingViewWidget({
       "details": true,
       "hotlist": true,
       "calendar": true,
-      "studies": [
-        "MASimple@tv-basicstudies",
-        "RSI@tv-basicstudies",
-        "MACD@tv-basicstudies"
-      ],
       "show_popup_button": true,
       "popup_width": "1000",
       "popup_height": "650",
