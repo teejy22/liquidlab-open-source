@@ -265,63 +265,16 @@ export default function Example() {
       </div>
 
       {/* Main Trading Interface */}
-      <div className="flex flex-col h-[calc(100vh-180px)]">
-        <div className="flex flex-1">
-
-
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col">
+      <div className="flex flex-col h-[calc(100vh-240px)]">
+        {/* Desktop Layout */}
+        <div className="hidden md:flex flex-1">
+          {/* Main Content Area */}
+          <div className="flex-1 flex flex-col">
           {/* Top Bar - Asset Info */}
           <div className="bg-[#0f0f0f] border-b border-gray-800 px-3 md:px-4 py-2">
-            {/* Mobile Market Selector */}
-            <div className="md:hidden mb-2">
-              <Button 
-                onClick={() => setShowMarkets(!showMarkets)}
-                className="w-full justify-between bg-gray-800 hover:bg-gray-700 border-gray-700"
-                variant="outline"
-                size="sm"
-              >
-                <div className="flex items-center space-x-2">
-                  <span className="font-medium">{selectedPair.name}</span>
-                  <span className="text-xs bg-gray-700 px-2 py-0.5 rounded">Perp</span>
-                </div>
-                <ChevronDown className={`w-4 h-4 transition-transform ${showMarkets ? 'rotate-180' : ''}`} />
-              </Button>
-              
-              {/* Mobile Markets Dropdown */}
-              {showMarkets && (
-                <div className="absolute z-50 mt-2 w-[calc(100%-24px)] bg-gray-900 border border-gray-700 rounded-lg shadow-lg max-h-80 overflow-y-auto">
-                  {tradingPairs.map(pair => {
-                    const coinData = pricesData[pair.coinId];
-                    const change = coinData?.usd_24h_change || 0;
-                    
-                    return (
-                      <div
-                        key={pair.symbol}
-                        onClick={() => {
-                          setSelectedPair(pair);
-                          setShowMarkets(false);
-                        }}
-                        className={`p-3 border-b border-gray-800 last:border-0 cursor-pointer hover:bg-gray-800 ${
-                          selectedPair.symbol === pair.symbol ? 'bg-gray-800' : ''
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium">{pair.name}</span>
-                          <span className={`text-sm ${change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                            {formatChange(change)}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-            
             <div className="flex items-center justify-between">
               {/* Desktop Asset Info */}
-              <div className="hidden md:flex items-center space-x-6">
+              <div className="flex items-center space-x-6">
                 <div className="flex items-center space-x-2">
                   <Select value={selectedPair.symbol} onValueChange={(value) => {
                     const pair = tradingPairs.find(p => p.symbol === value);
@@ -416,35 +369,8 @@ export default function Example() {
             </div>
           </div>
 
-          {/* Mobile Tabs */}
-          <div className="md:hidden bg-[#0f0f0f] border-b border-gray-800 sticky top-0 z-40">
-            <div className="flex justify-around">
-              <Button
-                variant="ghost"
-                onClick={() => setMobileTab('chart')}
-                className={`flex-1 rounded-none py-3 ${mobileTab === 'chart' ? 'bg-gray-800 text-white' : 'text-gray-400'}`}
-              >
-                Chart
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => setMobileTab('orderbook')}
-                className={`flex-1 rounded-none py-3 ${mobileTab === 'orderbook' ? 'bg-gray-800 text-white' : 'text-gray-400'}`}
-              >
-                Order Book
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => setMobileTab('trade')}
-                className={`flex-1 rounded-none py-3 ${mobileTab === 'trade' ? 'bg-gray-800 text-white' : 'text-gray-400'}`}
-              >
-                Trade
-              </Button>
-            </div>
-          </div>
-
           {/* Main Trading Area - Desktop */}
-          <div className="flex-1 hidden md:flex">
+          <div className="flex-1 flex">
             {/* Chart Area */}
             <div className="flex-1 flex flex-col">
               {/* Chart Time Intervals */}
@@ -637,9 +563,86 @@ export default function Example() {
               </div>
             </div>
           </div>
+          </div>
+        </div>
+
+        {/* Mobile Layout */}
+        <div className="flex md:hidden flex-col flex-1">
+          {/* Mobile Market Selector */}
+          <div className="bg-[#0f0f0f] border-b border-gray-800 px-3 py-2">
+            <Button 
+              onClick={() => setShowMarkets(!showMarkets)}
+              className="w-full justify-between bg-gray-800 hover:bg-gray-700 border-gray-700"
+              variant="outline"
+              size="sm"
+            >
+              <div className="flex items-center space-x-2">
+                <span className="font-medium">{selectedPair.name}</span>
+                <span className="text-xs bg-gray-700 px-2 py-0.5 rounded">Perp</span>
+              </div>
+              <ChevronDown className={`w-4 h-4 transition-transform ${showMarkets ? 'rotate-180' : ''}`} />
+            </Button>
+            
+            {/* Mobile Markets Dropdown */}
+            {showMarkets && (
+              <div className="absolute z-50 mt-2 w-[calc(100%-24px)] bg-gray-900 border border-gray-700 rounded-lg shadow-lg max-h-80 overflow-y-auto">
+                {tradingPairs.map(pair => {
+                  const coinData = pricesData[pair.coinId];
+                  const change = coinData?.usd_24h_change || 0;
+                  
+                  return (
+                    <div
+                      key={pair.symbol}
+                      onClick={() => {
+                        setSelectedPair(pair);
+                        setShowMarkets(false);
+                      }}
+                      className={`p-3 border-b border-gray-800 last:border-0 cursor-pointer hover:bg-gray-800 ${
+                        selectedPair.symbol === pair.symbol ? 'bg-gray-800' : ''
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium">{pair.name}</span>
+                        <span className={`text-sm ${change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {formatChange(change)}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Tabs */}
+          <div className="bg-[#0f0f0f] border-b border-gray-800 sticky top-0 z-40">
+            <div className="flex justify-around">
+              <Button
+                variant="ghost"
+                onClick={() => setMobileTab('chart')}
+                className={`flex-1 rounded-none py-3 ${mobileTab === 'chart' ? 'bg-gray-800 text-white' : 'text-gray-400'}`}
+              >
+                Chart
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => setMobileTab('orderbook')}
+                className={`flex-1 rounded-none py-3 ${mobileTab === 'orderbook' ? 'bg-gray-800 text-white' : 'text-gray-400'}`}
+              >
+                Order Book
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => setMobileTab('trade')}
+                className={`flex-1 rounded-none py-3 ${mobileTab === 'trade' ? 'bg-gray-800 text-white' : 'text-gray-400'}`}
+              >
+                Trade
+              </Button>
+            </div>
+          </div>
 
           {/* Mobile Trading Area */}
-          <div className="flex-1 flex flex-col md:hidden">
+          <div className="flex-1 flex flex-col">
             {mobileTab === 'chart' && (
               <div className="flex-1 flex flex-col">
                 {/* Chart Time Intervals */}
@@ -833,44 +836,44 @@ export default function Example() {
         </div>
         
         {/* Bottom Section - Positions */}
-        <div className="bg-[#0f0f0f] border-t border-gray-800">
-          <div className="p-4">
+        <div className="bg-[#0f0f0f] border-t border-gray-800 h-48">
+          <div className="p-2">
             <Tabs defaultValue="positions" className="w-full">
               <TabsList className="bg-transparent border-b border-gray-800 rounded-none h-auto p-0">
                 <TabsTrigger 
                   value="positions" 
-                  className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none pb-2"
+                  className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none pb-2 text-sm"
                 >
                   Positions
                 </TabsTrigger>
                 <TabsTrigger 
                   value="orders" 
-                  className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none pb-2"
+                  className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none pb-2 text-sm"
                 >
                   Orders
                 </TabsTrigger>
                 <TabsTrigger 
                   value="history" 
-                  className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none pb-2"
+                  className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none pb-2 text-sm"
                 >
                   Trade History
                 </TabsTrigger>
               </TabsList>
               
-              <TabsContent value="positions" className="mt-4">
-                <div className="text-center py-8 text-gray-400">
+              <TabsContent value="positions" className="mt-2">
+                <div className="text-center py-4 text-gray-400 text-sm">
                   <p>No open positions</p>
                 </div>
               </TabsContent>
               
-              <TabsContent value="orders" className="mt-4">
-                <div className="text-center py-8 text-gray-400">
+              <TabsContent value="orders" className="mt-2">
+                <div className="text-center py-4 text-gray-400 text-sm">
                   <p>No open orders</p>
                 </div>
               </TabsContent>
               
-              <TabsContent value="history" className="mt-4">
-                <div className="text-center py-8 text-gray-400">
+              <TabsContent value="history" className="mt-2">
+                <div className="text-center py-4 text-gray-400 text-sm">
                   <p>No trade history</p>
                 </div>
               </TabsContent>
@@ -885,6 +888,5 @@ export default function Example() {
           builderCode="LIQUIDLAB2025"
         />
       </div>
-    </div>
   );
 }
