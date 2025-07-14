@@ -424,9 +424,9 @@ export default function ExampleTradingPage() {
       {/* Positions Area - Hyperliquid Style */}
       <div className="bg-[#0a0a0a] border-t border-gray-900">
         {/* Account Summary Bar */}
-        <div className="bg-[#0f0f0f] border-b border-gray-900 px-4 py-2">
-          <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center space-x-8">
+        <div className="bg-[#0f0f0f] border-b border-gray-900 px-4 py-3">
+          <div className="flex flex-wrap items-center justify-between gap-4 text-xs">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
               <div className="flex items-center space-x-2">
                 <span className="text-gray-500">Account Value:</span>
                 <span className="font-mono text-white">$125,430.45</span>
@@ -460,20 +460,20 @@ export default function ExampleTradingPage() {
         {/* Positions Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
-            <thead className="bg-[#0f0f0f] border-b border-gray-900 sticky top-0">
+            <thead className="bg-[#0f0f0f] border-b border-gray-900">
               <tr className="text-gray-500">
-                <th className="text-left py-2 px-4 font-normal">Market</th>
-                <th className="text-center py-2 px-2 font-normal">Side</th>
-                <th className="text-right py-2 px-2 font-normal">Size</th>
-                <th className="text-right py-2 px-2 font-normal">Value</th>
-                <th className="text-right py-2 px-2 font-normal">Entry</th>
-                <th className="text-right py-2 px-2 font-normal">Mark</th>
-                <th className="text-right py-2 px-2 font-normal">Liq</th>
-                <th className="text-right py-2 px-2 font-normal">PnL</th>
-                <th className="text-right py-2 px-2 font-normal">PnL %</th>
-                <th className="text-right py-2 px-2 font-normal">Margin</th>
-                <th className="text-center py-2 px-2 font-normal">TP/SL</th>
-                <th className="text-center py-2 px-4 font-normal">Close</th>
+                <th className="text-left py-3 px-4 font-normal whitespace-nowrap">Market</th>
+                <th className="text-center py-3 px-3 font-normal whitespace-nowrap">Side</th>
+                <th className="text-right py-3 px-3 font-normal whitespace-nowrap">Size</th>
+                <th className="text-right py-3 px-3 font-normal whitespace-nowrap">Value</th>
+                <th className="text-right py-3 px-3 font-normal whitespace-nowrap">Entry</th>
+                <th className="text-right py-3 px-3 font-normal whitespace-nowrap">Mark</th>
+                <th className="text-right py-3 px-3 font-normal whitespace-nowrap">Liq</th>
+                <th className="text-right py-3 px-3 font-normal whitespace-nowrap">PnL</th>
+                <th className="text-right py-3 px-3 font-normal whitespace-nowrap">PnL %</th>
+                <th className="text-right py-3 px-3 font-normal whitespace-nowrap">Margin</th>
+                <th className="text-center py-3 px-3 font-normal whitespace-nowrap">TP/SL</th>
+                <th className="text-center py-3 px-4 font-normal whitespace-nowrap">Close</th>
               </tr>
             </thead>
             <tbody>
