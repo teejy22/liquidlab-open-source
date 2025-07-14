@@ -78,20 +78,39 @@ export class HyperliquidService {
     }
   }
 
-  async placeOrder(userAddress: string, order: any) {
+  async placeOrder(orderRequest: any) {
     try {
       const response = await fetch(`${this.baseUrl}/exchange`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(orderRequest),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Hyperliquid error response:", errorText);
+        throw new Error(`Order failed: ${errorText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error placing order:", error);
+      throw error;
+    }
+  }
+
+  async getUserPositions(address: string) {
+    try {
+      const response = await fetch(`${this.baseUrl}/info`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
-          action: {
-            type: "order",
-            orders: [order],
-          },
-          nonce: Date.now(),
-          signature: "", // This would need to be properly signed
+          type: "clearinghouseState",
+          user: address,
         }),
       });
 
@@ -101,7 +120,31 @@ export class HyperliquidService {
 
       return await response.json();
     } catch (error) {
-      console.error("Error placing order:", error);
+      console.error("Error fetching user positions:", error);
+      throw error;
+    }
+  }
+
+  async getUserOpenOrders(address: string) {
+    try {
+      const response = await fetch(`${this.baseUrl}/info`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "openOrders",
+          user: address,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching open orders:", error);
       throw error;
     }
   }

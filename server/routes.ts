@@ -614,11 +614,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/hyperliquid/place-order", async (req, res) => {
     try {
-      const { userAddress, order } = req.body;
-      const result = await hyperliquidService.placeOrder(userAddress, order);
+      // The order request should already be signed on the client side
+      const { orderRequest } = req.body;
+      const result = await hyperliquidService.placeOrder(orderRequest);
       res.json(result);
     } catch (error) {
       res.status(400).json({ error: handleError(error) });
+    }
+  });
+
+  app.get("/api/hyperliquid/user-positions/:address", async (req, res) => {
+    try {
+      const { address } = req.params;
+      const data = await hyperliquidService.getUserPositions(address);
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  app.get("/api/hyperliquid/open-orders/:address", async (req, res) => {
+    try {
+      const { address } = req.params;
+      const data = await hyperliquidService.getUserOpenOrders(address);
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
     }
   });
 

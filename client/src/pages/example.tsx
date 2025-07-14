@@ -14,6 +14,10 @@ import { PlatformVerificationBadge } from "@/components/PlatformVerificationBadg
 import { PrivyProvider } from "@/components/PrivyProvider";
 import { WalletConnect } from "@/components/WalletConnect";
 import { HyperliquidMarkets } from "@/components/trading/HyperliquidMarkets";
+import { useHyperliquidTrading } from "@/hooks/useHyperliquidTrading";
+import { HyperliquidOrder } from "@/lib/hyperliquid-signing";
+import { HyperliquidTradeForm } from "@/components/trading/HyperliquidTradeForm";
+import { HyperliquidPositions } from "@/components/trading/HyperliquidPositions";
 
 interface MarketData {
   price: string;
@@ -325,157 +329,18 @@ export default function ExampleTradingPage() {
               </div>
 
               {/* Trading Form - Compact */}
-              <div className="border-t border-gray-800 p-3">
-                <div className="space-y-2">
-                  {/* Buy/Sell Toggle */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setSide("buy")}
-                      className="h-8 transition-colors !bg-green-600 hover:!bg-green-700 !text-white !border-green-600"
-                    >
-                      Buy
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setSide("sell")}
-                      className="h-8 transition-colors !bg-red-600 hover:!bg-red-700 !text-white !border-red-600"
-                    >
-                      Sell
-                    </Button>
-                  </div>
-
-                  {/* Order Type */}
-                  <div>
-                    <Label className="text-xs text-gray-400">Order Type</Label>
-                    <Select value={orderType} onValueChange={setOrderType}>
-                      <SelectTrigger className="w-full h-8 bg-gray-900 border-gray-700 text-sm">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="limit">Limit</SelectItem>
-                        <SelectItem value="market">Market</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Price Input */}
-                  {orderType === "limit" && (
-                    <div>
-                      <Label className="text-xs text-gray-400">Price</Label>
-                      <Input 
-                        type="number" 
-                        placeholder="0.00"
-                        className="bg-gray-900 border-gray-700 h-8 text-sm"
-                      />
-                    </div>
-                  )}
-
-                  {/* Amount Input */}
-                  <div>
-                    <Label className="text-xs text-gray-400">Amount</Label>
-                    <Input 
-                      type="number" 
-                      placeholder="0.00"
-                      className="bg-gray-900 border-gray-700 h-8 text-sm"
-                    />
-                  </div>
-
-                  {/* Leverage */}
-                  <div>
-                    <Label className="text-xs text-gray-400">Leverage</Label>
-                    <Select defaultValue="1">
-                      <SelectTrigger className="w-full h-8 bg-gray-900 border-gray-700 text-sm">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {['1', '2', '5', '10', '20', '50'].map(lev => (
-                          <SelectItem key={lev} value={lev}>{lev}x</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Submit Button */}
-                  <Button 
-                    size="sm"
-                    className={`w-full h-9 ${
-                      side === "buy" 
-                        ? "bg-green-600 hover:bg-green-700" 
-                        : "bg-red-600 hover:bg-red-700"
-                    }`}
-                  >
-                    {side === "buy" ? "Buy Long" : "Sell Short"}
-                  </Button>
-                </div>
+              <div className="border-t border-gray-800">
+                <HyperliquidTradeForm 
+                  selectedMarket={selectedMarket}
+                  currentPrice={parseFloat(marketStats.price.replace(/,/g, ''))}
+                />
               </div>
             </div>
           </div>
         </div>
 
       {/* Positions Area - Hyperliquid Style */}
-      <div className="bg-[#0a0a0a] border-t border-gray-900">
-        {/* Account Summary Bar */}
-        <div className="bg-[#0f0f0f] border-b border-gray-900 px-4 py-3">
-          <div className="flex flex-wrap items-center justify-between gap-4 text-xs">
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-              <div className="flex items-center space-x-2">
-                <span className="text-gray-500">Account Value:</span>
-                <span className="font-mono text-white">$125,430.45</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-gray-500">Margin Used:</span>
-                <span className="font-mono text-white">$80,200.33</span>
-                <span className="text-gray-400">(63.9%)</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-gray-500">Free Collateral:</span>
-                <span className="font-mono text-white">$45,230.12</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-gray-500">uPnL:</span>
-                <span className="font-mono text-green-400">+$1,910.00</span>
-                <span className="text-green-400">(+1.54%)</span>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-gray-400 hover:text-white">
-                Deposit
-              </Button>
-              <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-gray-400 hover:text-white">
-                Withdraw
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Positions Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead className="bg-[#0f0f0f] border-b border-gray-900">
-              <tr className="text-gray-500">
-                <th className="text-left py-3 px-4 font-normal whitespace-nowrap">Market</th>
-                <th className="text-center py-3 px-3 font-normal whitespace-nowrap">Side</th>
-                <th className="text-right py-3 px-3 font-normal whitespace-nowrap">Size</th>
-                <th className="text-right py-3 px-3 font-normal whitespace-nowrap">Value</th>
-                <th className="text-right py-3 px-3 font-normal whitespace-nowrap">Entry</th>
-                <th className="text-right py-3 px-3 font-normal whitespace-nowrap">Mark</th>
-                <th className="text-right py-3 px-3 font-normal whitespace-nowrap">Liq</th>
-                <th className="text-right py-3 px-3 font-normal whitespace-nowrap">PnL</th>
-                <th className="text-right py-3 px-3 font-normal whitespace-nowrap">PnL %</th>
-                <th className="text-right py-3 px-3 font-normal whitespace-nowrap">Margin</th>
-                <th className="text-center py-3 px-3 font-normal whitespace-nowrap">TP/SL</th>
-                <th className="text-center py-3 px-4 font-normal whitespace-nowrap">Close</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* Empty positions table - ready for real positions */}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <HyperliquidPositions />
       </div>
     </PrivyProvider>
   );
