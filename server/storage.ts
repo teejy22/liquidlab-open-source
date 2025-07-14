@@ -422,7 +422,8 @@ export class DatabaseStorage implements IStorage {
     const results = await query.orderBy(desc(platformRevenueSummary.platformEarnings));
     
     if (options?.minRevenue !== undefined) {
-      return results.filter(r => parseFloat(r.platformEarnings) >= options.minRevenue);
+      const minRev = options.minRevenue;
+      return results.filter(r => parseFloat(r.platformEarnings) >= minRev);
     }
     
     return results;
