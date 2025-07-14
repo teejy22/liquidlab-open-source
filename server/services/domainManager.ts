@@ -45,9 +45,7 @@ export class DomainManager {
         platformId,
         domain,
         verificationToken,
-        verificationMethod: 'dns_txt',
-        status: 'pending',
-        createdAt: new Date()
+        isVerified: false
       });
 
       await createAuditLog({
@@ -100,7 +98,7 @@ export class DomainManager {
         await db
           .update(platformDomains)
           .set({
-            status: 'active',
+            isVerified: true,
             verifiedAt: new Date()
           })
           .where(eq(platformDomains.id, domainRecord.id));
@@ -158,7 +156,7 @@ export class DomainManager {
         .from(platformDomains)
         .where(and(
           eq(platformDomains.domain, domain),
-          eq(platformDomains.status, 'active')
+          eq(platformDomains.isVerified, true)
         ));
 
       return result?.platformId || null;

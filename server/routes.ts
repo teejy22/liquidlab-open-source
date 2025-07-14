@@ -438,7 +438,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { domainManager } = await import('./services/domainManager');
       const domains = await domainManager.getPlatformDomains(platformId);
       
-      res.json(domains);
+      // Transform data to match frontend expectations
+      const transformedDomains = domains.map(domain => ({
+        ...domain,
+        status: domain.isVerified ? 'active' : 'pending'
+      }));
+      
+      res.json(transformedDomains);
     } catch (error) {
       res.status(500).json({ error: handleError(error) });
     }
