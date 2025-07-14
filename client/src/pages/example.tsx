@@ -267,9 +267,7 @@ export default function Example() {
       {/* Main Trading Interface */}
       <div className="flex flex-col h-[calc(100vh-240px)]">
         {/* Desktop Layout */}
-        <div className="hidden md:flex flex-1">
-          {/* Main Content Area */}
-          <div className="flex-1 flex flex-col">
+        <div className="hidden md:flex flex-col flex-1">
           {/* Top Bar - Asset Info */}
           <div className="bg-[#0f0f0f] border-b border-gray-800 px-3 md:px-4 py-2">
             <div className="flex items-center justify-between">
@@ -563,6 +561,51 @@ export default function Example() {
               </div>
             </div>
           </div>
+          
+          {/* Bottom Section - Positions */}
+          <div className="bg-[#0f0f0f] border-t border-gray-800 h-48">
+            <div className="p-2">
+              <Tabs defaultValue="positions" className="w-full">
+                <TabsList className="bg-transparent border-b border-gray-800 rounded-none h-auto p-0">
+                  <TabsTrigger 
+                    value="positions" 
+                    className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none pb-2 text-sm"
+                  >
+                    Positions
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="orders" 
+                    className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none pb-2 text-sm"
+                  >
+                    Orders
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="history" 
+                    className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none pb-2 text-sm"
+                  >
+                    Trade History
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="positions" className="mt-2">
+                  <div className="text-center py-4 text-gray-400 text-sm">
+                    <p>No open positions</p>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="orders" className="mt-2">
+                  <div className="text-center py-4 text-gray-400 text-sm">
+                    <p>No open orders</p>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="history" className="mt-2">
+                  <div className="text-center py-4 text-gray-400 text-sm">
+                    <p>No trade history</p>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </div>
           </div>
         </div>
 
@@ -833,52 +876,6 @@ export default function Example() {
             )}
           </div>
 
-        </div>
-        
-        {/* Bottom Section - Positions */}
-        <div className="bg-[#0f0f0f] border-t border-gray-800 h-48">
-          <div className="p-2">
-            <Tabs defaultValue="positions" className="w-full">
-              <TabsList className="bg-transparent border-b border-gray-800 rounded-none h-auto p-0">
-                <TabsTrigger 
-                  value="positions" 
-                  className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none pb-2 text-sm"
-                >
-                  Positions
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="orders" 
-                  className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none pb-2 text-sm"
-                >
-                  Orders
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="history" 
-                  className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none pb-2 text-sm"
-                >
-                  Trade History
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="positions" className="mt-2">
-                <div className="text-center py-4 text-gray-400 text-sm">
-                  <p>No open positions</p>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="orders" className="mt-2">
-                <div className="text-center py-4 text-gray-400 text-sm">
-                  <p>No open orders</p>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="history" className="mt-2">
-                <div className="text-center py-4 text-gray-400 text-sm">
-                  <p>No trade history</p>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
         </div>
         
         {/* Security Footer */}
