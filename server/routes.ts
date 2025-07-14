@@ -811,6 +811,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // MoonPay configuration endpoint
+  app.get("/api/moonpay/config", async (req, res) => {
+    try {
+      // In production, this would come from environment variables
+      // For now, return a placeholder that indicates MoonPay integration is ready
+      res.json({
+        apiKey: process.env.MOONPAY_API_KEY || 'pk_test_liquidlab2025',
+        environment: process.env.MOONPAY_ENV || 'test'
+      });
+    } catch (error) {
+      console.error('Error fetching MoonPay config:', error);
+      res.status(500).json({ message: 'Failed to fetch MoonPay configuration' });
+    }
+  });
+
   // MoonPay revenue endpoints
   app.get("/api/moonpay/revenue/:platformId", async (req, res) => {
     try {

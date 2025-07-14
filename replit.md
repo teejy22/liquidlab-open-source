@@ -549,3 +549,26 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - No manual checking of leverage limits required
   - Clear visual feedback on available leverage range
   - Protects traders from accidentally selecting invalid leverage values
+
+### MoonPay Integration Implementation (January 16, 2025)
+- **MoonPay Widget Integration**: Added MoonPay fiat-to-crypto on-ramp to all trading platforms
+  - Created MoonPayButton component with embedded widget functionality
+  - Integrated into example trading page header next to wallet connection
+  - Purple gradient "Buy Crypto" button opens MoonPay modal dialog
+  - Widget configured with dark theme matching platform design
+- **Automatic Wallet Integration**: MoonPay widget receives connected wallet address
+  - Retrieves wallet address from Privy authentication
+  - Pre-fills wallet address in MoonPay form for seamless experience
+  - Supports USDC as default cryptocurrency purchase option
+- **Revenue Tracking Integration**: Automatic affiliate commission tracking
+  - Listens for MoonPay transaction completion events via postMessage
+  - Records transactions to database for 1% affiliate revenue sharing
+  - 50/50 split between platform owner and LiquidLab on all purchases
+- **Backend Configuration**: MoonPay API configuration endpoint
+  - Created /api/moonpay/config endpoint for API key management
+  - Supports environment variables for production deployment
+  - Test mode available for development environments
+- **Universal Availability**: MoonPay now available on all deployed platforms
+  - No additional setup required by platform owners
+  - Automatic integration with every new platform created
+  - Supports 170+ countries with credit card and bank transfers

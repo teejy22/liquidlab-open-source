@@ -19,6 +19,7 @@ import { HyperliquidOrder } from "@/lib/hyperliquid-signing";
 import { HyperliquidTradeForm } from "@/components/trading/HyperliquidTradeForm";
 import { HyperliquidPositions } from "@/components/trading/HyperliquidPositions";
 import { TestWalletInput } from "@/components/TestWalletInput";
+import { MoonPayButton } from "@/components/MoonPayButton";
 
 interface MarketData {
   price: string;
@@ -153,6 +154,10 @@ export default function ExampleTradingPage() {
               isVerified={true}
             />
             <WalletConnect />
+            <MoonPayButton 
+              platformId={platformData?.id}
+              className="h-9"
+            />
             <Button
               variant="outline"
               size="sm"
