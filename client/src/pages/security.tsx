@@ -118,12 +118,12 @@ export default function Security() {
                         <p className="text-gray-600 dark:text-gray-400">
                           Visit{" "}
                           <a 
-                            href="https://liquidlab.com/verify" 
+                            href="https://liquidlab.trade/verify" 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:underline"
                           >
-                            liquidlab.com/verify
+                            liquidlab.trade/verify
                           </a>
                           {" "}and enter the platform ID to confirm it's officially registered.
                         </p>

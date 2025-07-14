@@ -50,7 +50,7 @@ STRIPE_SECRET_KEY=your_stripe_key (for payment processing)
 ### 3. Custom Domain Support
 - [ ] Update `platformCors` middleware to check `platformDomains` table
 - [ ] Implement domain verification process
-- [ ] Set up wildcard SSL certificate for *.liquidlab.com
+- [ ] Set up wildcard SSL certificate for *.liquidlab.trade
 - [ ] Configure DNS for platform custom domains
 
 ### 4. Revenue Distribution System
@@ -109,8 +109,8 @@ STRIPE_SECRET_KEY=your_stripe_key (for payment processing)
    ```
 
 2. **Register Hyperliquid webhook**
-   - Contact Hyperliquid to register webhook URL: `https://api.liquidlab.com/api/webhooks/hyperliquid`
-   - Provide verification endpoint: `https://api.liquidlab.com/api/webhooks/hyperliquid/verify`
+   - Contact Hyperliquid to register webhook URL: `https://api.liquidlab.trade/api/webhooks/hyperliquid`
+   - Provide verification endpoint: `https://api.liquidlab.trade/api/webhooks/hyperliquid/verify`
    - Store provided webhook secret
 
 3. **Configure Privy for production**
@@ -167,5 +167,15 @@ STRIPE_SECRET_KEY=your_stripe_key (for payment processing)
 3. **Configure production environment variables**
 4. **Test the complete flow** from platform creation to revenue tracking
 5. **Set up monitoring** to ensure system health
+
+## Domain Configuration Notes
+
+The application is configured for **liquidlab.trade** domain:
+- Main site: `https://liquidlab.trade`
+- App subdomain: `https://app.liquidlab.trade`
+- Webhook URLs use: `https://api.liquidlab.trade/`
+- Platform subdomains: `https://[platform-name].liquidlab.trade`
+
+Make sure to update DNS records and SSL certificates for the `.trade` domain.
 
 The infrastructure is well-architected and ready for production deployment. The main missing piece is the Hyperliquid webhook registration, which will enable automatic fee tracking when trades occur on the platforms.

@@ -129,13 +129,13 @@ export function TrustIndicators({
             <h4 className="font-medium text-xs text-gray-900 dark:text-gray-100 mb-1">Verify This Platform</h4>
             
             <ol className="space-y-0.5 text-xs text-gray-600 dark:text-gray-400 list-decimal list-inside">
-              <li>Visit <a href="https://liquidlab.com/verify" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">liquidlab.com/verify</a></li>
+              <li>Visit <a href="https://liquidlab.trade/verify" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">liquidlab.trade/verify</a></li>
               <li>Enter Platform ID: <strong>#{platformId}</strong></li>
               <li>Confirm the URL matches: <strong>{customDomain || window.location.hostname}</strong></li>
             </ol>
             
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              Report suspicious platforms to <a href="mailto:security@liquidlab.com" className="text-blue-600 hover:underline">security@liquidlab.com</a>
+              Report suspicious platforms to <a href="mailto:security@liquidlab.trade" className="text-blue-600 hover:underline">security@liquidlab.trade</a>
             </p>
           </div>
         </div>

@@ -102,9 +102,9 @@ export async function platformCors(
   // In production, validate against allowed domains
   // TODO: Check against platformDomains table
   const allowedOrigins = [
-    'https://liquidlab.com',
-    'https://app.liquidlab.com',
-    /^https:\/\/[a-zA-Z0-9-]+\.liquidlab\.com$/,
+    'https://liquidlab.trade',
+    'https://app.liquidlab.trade',
+    /^https:\/\/[a-zA-Z0-9-]+\.liquidlab\.trade$/,
   ];
 
   const isAllowed = allowedOrigins.some(allowed => {

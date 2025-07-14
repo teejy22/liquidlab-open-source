@@ -74,12 +74,12 @@ export function PlatformVerificationBadge({
           </div>
           
           <a 
-            href={`https://liquidlab.com/verify/${platformId}`}
+            href={`https://liquidlab.trade/verify/${platformId}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
           >
-            Verify on LiquidLab.com →
+            Verify on LiquidLab.trade →
           </a>
         </div>
       </HoverCardContent>

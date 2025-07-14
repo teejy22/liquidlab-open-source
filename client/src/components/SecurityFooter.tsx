@@ -42,7 +42,7 @@ export function SecurityFooter({ platformName, platformId, builderCode }: Securi
               <li>Builder Code: {builderCode}</li>
               <li>
                 <a 
-                  href={`https://liquidlab.com/verify/${platformId}`}
+                  href={`https://liquidlab.trade/verify/${platformId}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:text-blue-300 flex items-center gap-1"

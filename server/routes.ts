@@ -61,7 +61,7 @@ function handleError(error: unknown): string {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Admin authentication
-  const ADMIN_EMAIL = "admin@liquidlab.com";
+  const ADMIN_EMAIL = "admin@liquidlab.trade";
   const ADMIN_PASSWORD = "$2a$10$YourHashedAdminPassword"; // In production, use environment variable
   
   app.post("/api/admin/login", async (req, res) => {

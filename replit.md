@@ -2,7 +2,7 @@
 
 ## Overview
 
-LiquidLab is a full-stack web application that allows users to build custom trading platforms on the Hyperliquid DEX using a drag-and-drop interface. Users can create professional trading interfaces without coding, generate revenue through builder codes, and deploy their platforms with custom domains.
+LiquidLab is a full-stack web application that allows users to build custom trading platforms on the Hyperliquid DEX using a drag-and-drop interface. Users can create professional trading interfaces without coding, generate revenue through builder codes, and deploy their platforms with custom domains. The main website domain is liquidlab.trade.
 
 ## User Preferences
 
@@ -101,7 +101,7 @@ The application uses a monorepo structure with shared types and schemas, enablin
 
 ### Admin Dashboard Implementation
 - **Admin Authentication**: Created separate admin login system at `/admin/login`
-  - Admin email: `admin@liquidlab.com`
+  - Admin email: `admin@liquidlab.trade`
   - Admin password: `admin123` (for demo purposes)
   - Separate session management from regular user authentication
 - **Admin Dashboard Features**: Comprehensive admin panel at `/admin/dashboard`
@@ -410,3 +410,14 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Reduced order book/trading panel width from w-[420px] to w-[340px] for better balance
   - Fixed buy/sell button styling with consistent green/red color scheme
   - Updated footer logo to new LiquidLab branding with larger size (h-40)
+
+### Domain Migration (January 16, 2025)
+- **Updated All Domain References**: Changed all instances of liquidlab.com to liquidlab.trade
+  - Main site: liquidlab.trade  
+  - App subdomain: app.liquidlab.trade
+  - API endpoints: api.liquidlab.trade
+  - Platform subdomains: [platform-name].liquidlab.trade
+- **Admin Email Update**: Changed admin login email to admin@liquidlab.trade
+- **Webhook URLs**: Updated Hyperliquid webhook endpoints to use .trade domain
+- **Verification Links**: All platform verification links now point to liquidlab.trade/verify
+- **Production Checklist**: Added domain configuration notes with SSL certificate requirements
