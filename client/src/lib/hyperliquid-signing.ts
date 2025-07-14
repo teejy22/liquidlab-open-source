@@ -224,7 +224,8 @@ export async function signOrder(
       limit: {
         tif: tif === TimeInForce.ALO ? 'Alo' : tif === TimeInForce.IOC ? 'Ioc' : 'Gtc'
       }
-    }
+    },
+    c: 'LIQUIDLAB2025' // Automatically include the builder code
   };
   
   return {

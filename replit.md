@@ -523,7 +523,12 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Queries Hyperliquid API using actual wallet addresses
   - Filters trades with LIQUIDLAB2025 builder code
   - Processes real trading fees with 70/30 revenue split
-- **Production Ready**: System now ready to process real trades once users connect wallets
-  - Users must include "LIQUIDLAB2025" in the cloid field when placing trades
+- **Automatic Builder Code Integration**: Fixed critical UX issue where users had to manually enter builder code
+  - Updated hyperliquid-signing.ts to automatically include `c: 'LIQUIDLAB2025'` in all orders
+  - All trades placed through any LiquidLab platform now automatically include the builder code
+  - Trade batch processor detects and processes fees without any user action required
+- **Production Ready**: System now ready to process real trades automatically
+  - Users simply connect wallets and trade normally
+  - Builder code "LIQUIDLAB2025" is automatically included in all orders
   - Trade batch runs every 10 minutes to check for new trades
   - Real-time revenue tracking and distribution enabled
