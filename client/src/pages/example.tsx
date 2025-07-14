@@ -265,7 +265,7 @@ export default function Example() {
       </div>
 
       {/* Main Trading Interface */}
-      <div className="flex flex-col h-[calc(100vh-120px)]">
+      <div className="flex flex-col h-[calc(100vh-180px)]">
         <div className="flex flex-1">
         {/* Left Sidebar - Market List */}
         <div className="w-48 bg-[#0f0f0f] border-r border-gray-800 overflow-y-auto hidden lg:block">

@@ -59,13 +59,13 @@ export default function Header() {
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-20">
+        <div className="flex items-center justify-between h-24 md:h-36">
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <img 
               src={logoImage} 
               alt="LiquidLab Logo" 
-              className="h-12 md:h-16 w-auto"
+              className="h-20 md:h-32 w-auto"
             />
           </Link>
           
