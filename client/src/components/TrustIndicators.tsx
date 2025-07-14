@@ -25,16 +25,16 @@ export function TrustIndicators({
   const [showDetails, setShowDetails] = useState(false);
 
   return (
-    <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg px-3 py-1.5 mb-2">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-6">
+    <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg px-3 py-2 mb-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4 text-green-600 dark:text-green-400" />
             <span className="text-xs font-medium text-green-900 dark:text-green-100">Secure Platform</span>
           </div>
           
           <TooltipProvider>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="flex items-center gap-1.5">
@@ -90,7 +90,7 @@ export function TrustIndicators({
           variant="ghost"
           size="sm"
           onClick={() => setShowDetails(!showDetails)}
-          className="text-xs text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/20 h-6 px-2"
+          className="text-xs text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/20 h-7 px-3 self-start sm:self-auto"
         >
           {showDetails ? "Hide" : "Details"}
         </Button>
