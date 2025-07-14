@@ -34,6 +34,28 @@ export default function ExampleTradingPage() {
     volume24h: "0.00"
   });
   const [allMarketData, setAllMarketData] = useState<{[key: string]: any}>({});
+  const [platformData, setPlatformData] = useState<any>(null);
+
+  // Fetch platform data
+  useEffect(() => {
+    const fetchPlatformData = async () => {
+      try {
+        const response = await fetch('/api/platforms');
+        if (response.ok) {
+          const platforms = await response.json();
+          // Get the most recent platform
+          if (platforms.length > 0) {
+            const latestPlatform = platforms[platforms.length - 1];
+            setPlatformData(latestPlatform);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching platform data:", error);
+      }
+    };
+    
+    fetchPlatformData();
+  }, []);
 
   // Fetch all market data
   useEffect(() => {
@@ -143,16 +165,24 @@ export default function ExampleTradingPage() {
                 Back to LiquidLab
               </Button>
             </Link>
-            <img 
-              src={liquidLabLogo} 
-              alt="LiquidLab" 
-              className="h-24 w-auto"
-            />
+            {platformData?.logoUrl ? (
+              <img 
+                src={platformData.logoUrl} 
+                alt={platformData.name || "Trading Platform"} 
+                className="h-24 w-auto"
+              />
+            ) : (
+              <img 
+                src={liquidLabLogo} 
+                alt="LiquidLab" 
+                className="h-24 w-auto"
+              />
+            )}
           </div>
           <div className="flex items-center space-x-4">
             <PlatformVerificationBadge
-              platformId={1}
-              platformName="Example Trading Platform"
+              platformId={platformData?.id || 1}
+              platformName={platformData?.name || "Example Trading Platform"}
               isVerified={true}
             />
             <span className="text-sm text-gray-400">Powered by LiquidLab</span>
@@ -162,9 +192,9 @@ export default function ExampleTradingPage() {
 
       {/* Trust Indicators */}
       <TrustIndicators 
-        platformName="Example Trading Platform"
-        platformId={1}
-        builderCode="LIQUIDLAB2025"
+        platformName={platformData?.name || "Example Trading Platform"}
+        platformId={platformData?.id || 1}
+        builderCode={platformData?.config?.builderCode || "LIQUIDLAB2025"}
       />
 
       {/* Main Trading Area - Fixed Height */}

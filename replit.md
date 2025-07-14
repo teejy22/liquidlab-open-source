@@ -186,6 +186,11 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Smaller input fields and buttons for space efficiency
   - Buy/sell buttons with clear green/red visual states
   - Compact leverage selector and order type controls
+- **Dynamic Logo Display**: Connected uploaded logos to example trading page
+  - Example page now fetches the most recent platform data
+  - Displays uploaded logo from builder instead of hardcoded logo
+  - Platform name and ID are dynamically displayed in verification badge
+  - Fallback to default logo if no platform exists
 
 ### Builder Simplification
 - **Removed Drag-and-Drop**: Eliminated complex drag-and-drop builder functionality
