@@ -150,32 +150,46 @@ export default function ExampleTradingPage() {
 
       {/* Main Trading Area - Fixed Height */}
       <div className="flex overflow-hidden" style={{ height: '450px' }}>
+        {/* Markets Sidebar */}
+        <div className="w-48 bg-[#0f0f0f] border-r border-gray-800 overflow-y-auto">
+          <div className="p-3 border-b border-gray-800">
+            <h3 className="text-sm font-medium">Markets</h3>
+          </div>
+          <div className="p-2">
+            {[
+              { symbol: "BTCUSDT", display: "BTC/USDT", price: "$42,250", change: "+2.4%" },
+              { symbol: "ETHUSDT", display: "ETH/USDT", price: "$2,230", change: "+1.8%" },
+              { symbol: "SOLUSDT", display: "SOL/USDT", price: "$98.50", change: "+5.2%" },
+            ].map((pair, i) => (
+              <Button
+                key={i}
+                variant="ghost"
+                className={`w-full justify-between p-2 h-auto ${
+                  selectedPair.symbol === pair.symbol ? 'bg-gray-800' : ''
+                }`}
+                onClick={() => setSelectedPair({ symbol: pair.symbol, display: pair.display })}
+              >
+                <div className="text-left">
+                  <div className="text-sm">{pair.display}</div>
+                  <div className="text-xs text-gray-400">{pair.price}</div>
+                </div>
+                <span className={`text-xs ${pair.change.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
+                  {pair.change}
+                </span>
+              </Button>
+            ))}
+          </div>
+        </div>
+
         {/* Chart and Trading Area */}
         <div className="flex-1 flex h-full">
           {/* Chart Section */}
           <div className="flex-1 flex flex-col">
-            {/* Market Stats Bar with Dropdown */}
+            {/* Market Stats Bar */}
             <div className="bg-[#0f0f0f] border-b border-gray-800 px-4 py-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  {/* Market Selector Dropdown */}
-                  <Select value={selectedPair.symbol} onValueChange={(value) => {
-                    const pair = [
-                      { symbol: "BTCUSDT", display: "BTC/USDT" },
-                      { symbol: "ETHUSDT", display: "ETH/USDT" },
-                      { symbol: "SOLUSDT", display: "SOL/USDT" },
-                    ].find(p => p.symbol === value);
-                    if (pair) setSelectedPair(pair);
-                  }}>
-                    <SelectTrigger className="w-32 h-8 bg-gray-900 border-gray-700">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="BTCUSDT">BTC/USDT</SelectItem>
-                      <SelectItem value="ETHUSDT">ETH/USDT</SelectItem>
-                      <SelectItem value="SOLUSDT">SOL/USDT</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <h2 className="text-lg font-semibold">{selectedPair.display}</h2>
                   <div>
                     <div className="text-xs text-gray-400">Last Price</div>
                     {isLoading ? (
