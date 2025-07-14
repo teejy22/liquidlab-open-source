@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, BarChart3, Volume2, Activity } from "lucide-react";
 import liquidLabLogo from "@assets/Trade (6)_1752434284086.png";
-import CandlestickChart from "@/components/charts/CandlestickChart";
+import TradingViewWidget from "@/components/charts/TradingViewWidget";
 import { TrustIndicators } from "@/components/TrustIndicators";
 import { PlatformVerificationBadge } from "@/components/PlatformVerificationBadge";
 import { PrivyProvider } from "@/components/PrivyProvider";
@@ -254,13 +254,15 @@ export default function ExampleTradingPage() {
               </div>
             </div>
             
-            {/* Hyperliquid Chart */}
-            <div className="flex-1 bg-[#131313]">
-              <CandlestickChart
-                symbol={selectedPair.symbol}
-                interval={timeInterval}
-                height={450}
-                className="w-full"
+            {/* TradingView Chart */}
+            <div className="flex-1 bg-[#131313] h-full">
+              <TradingViewWidget
+                symbol={`BINANCE:${selectedPair.symbol}USDT`}
+                theme="dark"
+                interval={timeInterval === '1m' ? '1' : timeInterval === '5m' ? '5' : timeInterval === '15m' ? '15' : timeInterval === '1h' ? '60' : timeInterval === '4h' ? '240' : 'D'}
+                autosize={true}
+                allow_symbol_change={true}
+                toolbar_bg="#131313"
               />
             </div>
           </div>
