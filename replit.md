@@ -175,14 +175,16 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Created PrivyProvider component that wraps trading interface
   - WalletConnect button shows connected wallet address with logout functionality
   - Integrated into example trading page template
+  - API endpoint `/api/privy/config` securely passes Privy app ID from backend
 - **User Benefits**:
   - Traders can connect with MetaMask, WalletConnect, or social accounts
   - Embedded wallet creation for users without existing wallets
   - Secure authentication without platform owners managing private keys
 - **Technical Details**:
   - Uses @privy-io/react-auth for frontend integration
-  - Placeholder App ID included for demo purposes
-  - Production platforms will use unique Privy App IDs
+  - Privy app ID fetched from server environment variables (PRIVY_APP_ID)
+  - PrivyProvider dynamically loads configuration from backend
+  - Production platforms will use unique Privy App IDs per platform
 
 ### Logo Upload Feature
 - **File Upload Implementation**: Added multer-based logo upload system with 5MB size limit
