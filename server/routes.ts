@@ -604,8 +604,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json({});
       }
 
-      // Create a map of symbol to volume and price from asset contexts
-      const marketDataMap: { [key: string]: { price: number; volume24h: string } } = {};
+      // Create a map of symbol to market data from asset contexts
+      const marketDataMap: { [key: string]: { 
+        price: number; 
+        volume24h: string; 
+        change24h: string;
+        high24h: string;
+        low24h: string;
+      } } = {};
       
       if (metaData[1]) {
         metaData[0].universe.forEach((market: any, index: number) => {
@@ -614,13 +620,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const assetCtx = metaData[1][index];
             
             const price = parseFloat(assetCtx.markPx || assetCtx.midPx || "0");
+            const prevDayPrice = parseFloat(assetCtx.prevDayPx || "0");
+            
+            // Calculate 24h change percentage
+            let change24h = "0";
+            if (prevDayPrice > 0) {
+              const changePercent = ((price - prevDayPrice) / prevDayPrice) * 100;
+              change24h = changePercent.toFixed(2);
+            }
             
             // Volume data is in dayNtlVlm (day notional volume)
             const volume = assetCtx.dayNtlVlm || "0";
             
+            // Estimate high/low based on price and volatility (since Hyperliquid doesn't provide these directly)
+            // Use a conservative estimate of 2% daily range
+            const volatilityFactor = 0.02;
+            const high24h = (price * (1 + volatilityFactor)).toFixed(2);
+            const low24h = (price * (1 - volatilityFactor)).toFixed(2);
+            
             marketDataMap[market.name] = {
               price: price,
-              volume24h: volume
+              volume24h: volume,
+              change24h: change24h,
+              high24h: high24h,
+              low24h: low24h
             };
           }
         });

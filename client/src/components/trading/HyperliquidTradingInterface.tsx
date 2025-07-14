@@ -28,6 +28,13 @@ export function HyperliquidTradingInterface() {
   const [selectedPerpMarket, setSelectedPerpMarket] = useState<Market | null>(null);
   const [selectedSpotMarket, setSelectedSpotMarket] = useState<SpotMarket | null>(null);
   const [showTransfer, setShowTransfer] = useState(false);
+  const [liveMarketData, setLiveMarketData] = useState<{
+    price: string;
+    volume24h: string;
+    change24h: string;
+    high24h: string;
+    low24h: string;
+  } | null>(null);
 
   const address = user?.wallet?.address || '';
 
@@ -41,10 +48,43 @@ export function HyperliquidTradingInterface() {
     return 'BTCUSDT';
   }, [tradingMode, selectedPerpMarket?.name, selectedSpotMarket?.token]);
 
+  // Fetch live market data
+  useEffect(() => {
+    if (!selectedPerpMarket && !selectedSpotMarket) return;
+
+    const fetchLiveData = async () => {
+      try {
+        const marketName = tradingMode === 'perp' ? selectedPerpMarket?.name : selectedSpotMarket?.token;
+        if (!marketName) return;
+
+        const response = await fetch('/api/hyperliquid/market-prices');
+        const data = await response.json();
+        
+        if (data[marketName]) {
+          const marketData = data[marketName];
+          setLiveMarketData({
+            price: marketData.price?.toString() || '0',
+            volume24h: marketData.volume24h || '0',
+            change24h: marketData.change24h?.toString() || '0',
+            high24h: marketData.high24h?.toString() || '0',
+            low24h: marketData.low24h?.toString() || '0'
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching live market data:', error);
+      }
+    };
+
+    fetchLiveData();
+    const interval = setInterval(fetchLiveData, 2000); // Update every 2 seconds
+
+    return () => clearInterval(interval);
+  }, [selectedPerpMarket, selectedSpotMarket, tradingMode]);
+
   return (
     <div className="flex flex-col bg-black text-white" style={{ height: '600px' }}>
       {/* Mode Selector */}
-      <div className="bg-gray-900 border-b border-gray-800 p-2">
+      <div className="border-b border-gray-800 p-2 bg-[#000000]">
         <div className="flex items-center justify-between">
           <Tabs value={tradingMode} onValueChange={(v) => setTradingMode(v as 'perp' | 'spot')}>
             <TabsList className="bg-gray-800">
@@ -70,7 +110,6 @@ export function HyperliquidTradingInterface() {
           )}
         </div>
       </div>
-
       {/* Main Trading Area */}
       <div className="flex flex-1 overflow-hidden">
         {/* Markets Sidebar */}
@@ -97,28 +136,47 @@ export function HyperliquidTradingInterface() {
                 <h2 className="text-lg font-semibold">
                   {tradingMode === 'perp' ? selectedPerpMarket?.name || 'Select Market' : selectedSpotMarket?.token || 'Select Market'} / USD
                 </h2>
-                {selectedPerpMarket && tradingMode === 'perp' && (
+                {liveMarketData && (selectedPerpMarket || selectedSpotMarket) && (
                   <>
                     <div>
                       <div className="text-xs text-gray-400">Last Price</div>
-                      <div className="text-lg font-semibold">${selectedPerpMarket.markPx}</div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-gray-400">24h Volume</div>
-                      <div className="text-sm">${parseFloat(selectedPerpMarket.dayNtlVlm).toLocaleString()}</div>
-                    </div>
-                  </>
-                )}
-                {selectedSpotMarket && tradingMode === 'spot' && (
-                  <>
-                    <div>
-                      <div className="text-xs text-gray-400">Last Price</div>
-                      <div className="text-lg font-semibold">${selectedSpotMarket.markPrice}</div>
+                      <div className="text-lg font-semibold">
+                        ${parseFloat(liveMarketData.price).toLocaleString(undefined, { 
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6 
+                        })}
+                      </div>
                     </div>
                     <div>
                       <div className="text-xs text-gray-400">24h Change</div>
-                      <div className={`text-sm ${parseFloat(selectedSpotMarket.change24h) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                        {parseFloat(selectedSpotMarket.change24h) >= 0 ? '+' : ''}{selectedSpotMarket.change24h}%
+                      <div className={`text-sm ${parseFloat(liveMarketData.change24h) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {parseFloat(liveMarketData.change24h) >= 0 ? '+' : ''}{parseFloat(liveMarketData.change24h).toFixed(2)}%
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-400">24h Volume</div>
+                      <div className="text-sm">
+                        ${parseFloat(liveMarketData.volume24h).toLocaleString(undefined, { 
+                          maximumFractionDigits: 0 
+                        })}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-400">24h High</div>
+                      <div className="text-sm text-green-400">
+                        ${parseFloat(liveMarketData.high24h).toLocaleString(undefined, { 
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6 
+                        })}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-400">24h Low</div>
+                      <div className="text-sm text-red-400">
+                        ${parseFloat(liveMarketData.low24h).toLocaleString(undefined, { 
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6 
+                        })}
                       </div>
                     </div>
                   </>
