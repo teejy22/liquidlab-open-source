@@ -90,6 +90,36 @@ export default function Pricing() {
               </div>
             </div>
 
+            {/* MoonPay Affiliate Revenue */}
+            <div className="border rounded-lg p-6 mb-8">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                MoonPay Fiat On-Ramp Revenue
+              </h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center pb-2 border-b">
+                  <span className="text-sm text-muted-foreground">Affiliate Commission</span>
+                  <span className="font-semibold">1% <span className="text-xs text-muted-foreground">(of fiat purchases)</span></span>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">50%</div>
+                    <div className="text-xs font-medium">You Keep</div>
+                    <div className="text-xs text-muted-foreground mt-1">0.5% of purchases</div>
+                  </div>
+                  <div className="text-center p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">50%</div>
+                    <div className="text-xs font-medium">LiquidLab</div>
+                    <div className="text-xs text-muted-foreground mt-1">0.5% of purchases</div>
+                  </div>
+                </div>
+                <div className="text-sm text-muted-foreground bg-muted p-3 rounded">
+                  Example: $10,000 crypto purchase = $100 commission
+                  <br />You earn: $50 • LiquidLab: $50
+                </div>
+              </div>
+            </div>
+            
             <div className="text-center p-6 bg-purple-50 dark:bg-purple-950 rounded-lg">
               <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">$0</div>
               <div className="text-sm font-medium mt-2">Upfront Cost</div>
@@ -203,7 +233,7 @@ export default function Pricing() {
             <div>
               <h3 className="font-semibold mb-2">How do I get paid?</h3>
               <p className="text-muted-foreground">
-                Your 70% share of builder fees is automatically deposited to your connected wallet in real-time. This equals 0.14% on spot trades and 0.07% on perp trades. No minimum payout thresholds.
+                Your earnings are automatically deposited to your connected wallet in real-time. You earn 70% of trading fees (0.14% on spot trades, 0.07% on perp trades) plus 50% of MoonPay affiliate commissions (0.5% of fiat purchases). No minimum payout thresholds.
               </p>
             </div>
             <div>
@@ -234,6 +264,12 @@ export default function Pricing() {
               <h3 className="font-semibold mb-2">How much can I earn?</h3>
               <p className="text-muted-foreground">
                 Your earnings scale with trading volume. A platform doing $1M daily spot volume generates $1,400/day (0.14%). For perp trading, $1M daily volume generates $700/day (0.07%). Many platforms trade both types.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-2">How does MoonPay revenue work?</h3>
+              <p className="text-muted-foreground">
+                When users buy crypto through MoonPay on your platform, you earn 0.5% of the purchase amount (50% of the 1% affiliate commission). For example, if users purchase $100,000 worth of crypto per month, you earn an additional $500/month on top of trading fees.
               </p>
             </div>
           </div>

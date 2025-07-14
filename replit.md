@@ -99,6 +99,13 @@ The application uses a monorepo structure with shared types and schemas, enablin
 
 ## Recent Changes (January 14, 2025)
 
+### MoonPay Affiliate Revenue Update
+- **Additional Revenue Stream**: Added MoonPay affiliate commission information to pricing page
+- **Revenue Split**: 1% affiliate commission on fiat purchases split 50/50 between platform owner and LiquidLab
+- **Earnings Example**: $100,000 in monthly crypto purchases generates $500 for platform owner
+- **FAQ Updates**: Added detailed explanations about dual revenue streams (trading fees + MoonPay commissions)
+- **Automatic Integration**: MoonPay already built into every platform, no additional setup required
+
 ### Logo Upload Feature
 - **File Upload Implementation**: Added multer-based logo upload system with 5MB size limit
 - **Supported Formats**: PNG, JPG, JPEG, GIF, and WebP images
