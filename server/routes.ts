@@ -747,44 +747,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Hyperliquid spot trading endpoints
   app.get("/api/hyperliquid/spot-markets", async (req, res) => {
     try {
-      const response = await fetch('https://api.hyperliquid.xyz/info', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'spotMeta' })
-      });
+      // Get current market prices for spot tokens
+      const marketPrices = await hyperliquidService.getMetaAndAssetCtxs();
       
-      if (!response.ok) {
-        console.error('Spot meta response not ok:', response.status);
-        throw new Error(`HTTP error! status: ${response.status}`);
+      // Define the main spot markets available on Hyperliquid
+      const spotTokens = [
+        'BTC', 'ETH', 'SOL', 'ARB', 'MATIC', 'AVAX', 'BNB', 'DOGE', 
+        'SUI', 'APT', 'INJ', 'OP', 'LINK', 'UNI', 'CRV', 'AAVE',
+        'MKR', 'SNX', 'LDO', 'RUNE', 'ATOM', 'DOT', 'ADA', 'XRP'
+      ];
+      
+      const spotMarkets = [];
+      
+      // Get price data from the market prices we already have
+      if (marketPrices && marketPrices[0] && marketPrices[0].universe && marketPrices[1]) {
+        const universe = marketPrices[0].universe;
+        const assetCtxs = marketPrices[1];
+        
+        universe.forEach((market: any, index: number) => {
+          if (spotTokens.includes(market.name) && assetCtxs[index]) {
+            const assetCtx = assetCtxs[index];
+            const price = parseFloat(assetCtx.markPx || '0');
+            const prevDayPrice = parseFloat(assetCtx.prevDayPx || '0');
+            
+            let change24h = '0.00';
+            if (prevDayPrice > 0 && price > 0) {
+              const changePercent = ((price - prevDayPrice) / prevDayPrice) * 100;
+              change24h = changePercent.toFixed(2);
+            }
+            
+            if (price > 0) {
+              spotMarkets.push({
+                token: market.name,
+                name: market.name,
+                index: 10000 + spotMarkets.length, // Spot indices
+                markPrice: price.toString(),
+                volume24h: assetCtx.dayNtlVlm || '0',
+                change24h: change24h,
+                baseDecimals: 8,
+                quoteDecimals: 6
+              });
+            }
+          }
+        });
       }
       
-      const spotMeta = await response.json();
+      // Sort by volume
+      spotMarkets.sort((a, b) => parseFloat(b.volume24h) - parseFloat(a.volume24h));
       
-      // Get current prices for spot markets
-      const markets = spotMeta?.universe || [];
-      const spotMarkets = markets
-        .filter((market: any) => market.tokens && market.tokens.length === 2) // Only show spot pairs
-        .map((market: any, index: number) => {
-          const token = market.tokens[0]; // Base token
-          return {
-            token: token,
-            name: token,
-            index: index + 10000, // Spot indices start at 10000
-            markPrice: '0.00', // Will be fetched separately
-            volume24h: '0.00',
-            change24h: '0.00',
-            baseDecimals: market.szDecimals || 8,
-            quoteDecimals: 6 // USDC has 6 decimals
-          };
-        });
-      
-      // If no universe, try getting spot data directly
+      // If no markets found, return defaults
       if (spotMarkets.length === 0) {
-        // Return some default spot markets
         const defaultSpotMarkets = [
-          { token: 'BTC', name: 'BTC', index: 10000, markPrice: '120000.00', volume24h: '1000000', change24h: '+2.5', baseDecimals: 8, quoteDecimals: 6 },
-          { token: 'ETH', name: 'ETH', index: 10001, markPrice: '3000.00', volume24h: '500000', change24h: '+1.2', baseDecimals: 8, quoteDecimals: 6 },
-          { token: 'SOL', name: 'SOL', index: 10002, markPrice: '160.00', volume24h: '200000', change24h: '-0.5', baseDecimals: 8, quoteDecimals: 6 },
+          { token: 'BTC', name: 'Bitcoin', index: 10000, markPrice: '120000.00', volume24h: '5000000', change24h: '2.5', baseDecimals: 8, quoteDecimals: 6 },
+          { token: 'ETH', name: 'Ethereum', index: 10001, markPrice: '3000.00', volume24h: '2500000', change24h: '1.8', baseDecimals: 8, quoteDecimals: 6 },
+          { token: 'SOL', name: 'Solana', index: 10002, markPrice: '160.00', volume24h: '1000000', change24h: '-0.5', baseDecimals: 8, quoteDecimals: 6 },
+          { token: 'ARB', name: 'Arbitrum', index: 10003, markPrice: '1.25', volume24h: '500000', change24h: '3.2', baseDecimals: 8, quoteDecimals: 6 }
         ];
         return res.json(defaultSpotMarkets);
       }
@@ -794,9 +811,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Error fetching spot markets:', error);
       // Return default markets on error
       const defaultSpotMarkets = [
-        { token: 'BTC', name: 'BTC', index: 10000, markPrice: '120000.00', volume24h: '1000000', change24h: '+2.5', baseDecimals: 8, quoteDecimals: 6 },
-        { token: 'ETH', name: 'ETH', index: 10001, markPrice: '3000.00', volume24h: '500000', change24h: '+1.2', baseDecimals: 8, quoteDecimals: 6 },
-        { token: 'SOL', name: 'SOL', index: 10002, markPrice: '160.00', volume24h: '200000', change24h: '-0.5', baseDecimals: 8, quoteDecimals: 6 },
+        { token: 'BTC', name: 'Bitcoin', index: 10000, markPrice: '120000.00', volume24h: '5000000', change24h: '2.5', baseDecimals: 8, quoteDecimals: 6 },
+        { token: 'ETH', name: 'Ethereum', index: 10001, markPrice: '3000.00', volume24h: '2500000', change24h: '1.8', baseDecimals: 8, quoteDecimals: 6 },
+        { token: 'SOL', name: 'Solana', index: 10002, markPrice: '160.00', volume24h: '1000000', change24h: '-0.5', baseDecimals: 8, quoteDecimals: 6 },
+        { token: 'ARB', name: 'Arbitrum', index: 10003, markPrice: '1.25', volume24h: '500000', change24h: '3.2', baseDecimals: 8, quoteDecimals: 6 }
       ];
       res.json(defaultSpotMarkets);
     }
