@@ -1,167 +1,77 @@
-import { useState, useEffect } from "react";
-import { useParams } from "wouter";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import LiveComponentRenderer from "@/components/builder/live-component-renderer";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import templatePreview from "@assets/Trade_1752276632533.png";
 import { 
-  BarChart3, 
-  List, 
-  ArrowUpDown, 
-  Wallet, 
-  PieChart,
-  Settings,
   Eye,
   Save,
-  Play,
-  Zap,
-  TrendingUp,
-  Layout,
+  Settings,
+  Globe,
+  Code,
+  Palette,
+  DollarSign,
   Monitor,
   Smartphone,
-  Check
+  Check,
+  Copy,
+  ExternalLink
 } from "lucide-react";
 
-interface ComponentConfig {
-  id: string;
-  type: string;
-  name: string;
-  icon: any;
-  color: string;
-  description: string;
-  settings?: any;
-};
-
-const templateLayouts = [
-  {
-    id: 'professional',
-    name: 'Professional Trader',
-    description: 'Full-featured trading layout with charts, order book, and portfolio',
-    components: [
-      {
-        id: 'chart-1',
-        type: 'tradingview-chart',
-        name: 'TradingView Chart',
-        icon: BarChart3,
-        color: 'border-liquid-green',
-        description: 'BTC/USD 1H Chart',
-        settings: { symbol: 'BINANCE:BTCUSDT', interval: '60', theme: 'light' }
-      },
-      {
-        id: 'orderbook-1',
-        type: 'orderbook',
-        name: 'Order Book',
-        icon: List,
-        color: 'border-blue-500',
-        description: 'Live order book',
-        settings: { symbol: 'BTC/USD' }
-      },
-      {
-        id: 'portfolio-1',
-        type: 'portfolio',
-        name: 'Portfolio',
-        icon: Wallet,
-        color: 'border-orange-500',
-        description: 'Account overview',
-        settings: {}
-      },
-      {
-        id: 'trade-form-1',
-        type: 'trade-form',
-        name: 'Trade Form',
-        icon: ArrowUpDown,
-        color: 'border-purple-500',
-        description: 'Quick buy/sell',
-        settings: { defaultPair: 'BTC/USD' }
-      }
-    ]
-  },
-  {
-    id: 'minimal',
-    name: 'Minimal Setup',
-    description: 'Clean and simple with chart and trading interface',
-    components: [
-      {
-        id: 'chart-2',
-        type: 'tradingview-chart',
-        name: 'TradingView Chart',
-        icon: BarChart3,
-        color: 'border-liquid-green',
-        description: 'ETH/USD Daily Chart',
-        settings: { symbol: 'BINANCE:ETHUSDT', interval: 'D', theme: 'light' }
-      },
-      {
-        id: 'trade-form-2',
-        type: 'trade-form',
-        name: 'Trade Form',
-        icon: ArrowUpDown,
-        color: 'border-purple-500',
-        description: 'Trade interface',
-        settings: { defaultPair: 'ETH/USD' }
-      }
-    ]
-  },
-  {
-    id: 'multi-chart',
-    name: 'Multi-Chart Analysis',
-    description: 'Multiple timeframe analysis with different chart views',
-    components: [
-      {
-        id: 'chart-3',
-        type: 'tradingview-chart',
-        name: 'TradingView Chart',
-        icon: BarChart3,
-        color: 'border-liquid-green',
-        description: 'BTC 15m Chart',
-        settings: { symbol: 'BINANCE:BTCUSDT', interval: '15', theme: 'light' }
-      },
-      {
-        id: 'chart-4',
-        type: 'tradingview-chart',
-        name: 'TradingView Chart',
-        icon: BarChart3,
-        color: 'border-liquid-green',
-        description: 'BTC 1H Chart',
-        settings: { symbol: 'BINANCE:BTCUSDT', interval: '60', theme: 'light' }
-      },
-      {
-        id: 'chart-5',
-        type: 'tradingview-chart',
-        name: 'TradingView Chart',
-        icon: BarChart3,
-        color: 'border-liquid-green',
-        description: 'BTC Daily Chart',
-        settings: { symbol: 'BINANCE:BTCUSDT', interval: 'D', theme: 'light' }
-      }
-    ]
-  }
-];
-
 export default function Builder() {
-  const { templateId } = useParams();
-  const [selectedTemplate, setSelectedTemplate] = useState<string>('professional');
-  const [selectedComponents, setSelectedComponents] = useState<ComponentConfig[]>([]);
+  const { toast } = useToast();
+  const [platformName, setPlatformName] = useState("");
+  const [customDomain, setCustomDomain] = useState("");
+  const [builderCode, setBuilderCode] = useState("");
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
+  const [savedChanges, setSavedChanges] = useState(false);
 
-  // Load template components when template changes
-  const handleSelectTemplate = (templateId: string) => {
-    setSelectedTemplate(templateId);
-    const template = templateLayouts.find(t => t.id === templateId);
-    if (template) {
-      setSelectedComponents(template.components);
-    }
+  // Generate a sample builder code
+  const generateBuilderCode = () => {
+    const code = `BLD-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    setBuilderCode(code);
+    toast({
+      title: "Builder Code Generated",
+      description: "Your unique builder code has been created.",
+    });
   };
 
-  // Initialize with first template
-  useEffect(() => {
-    const template = templateLayouts[0];
-    if (template) {
-      setSelectedComponents(template.components);
+  const handleSave = () => {
+    if (!platformName) {
+      toast({
+        title: "Platform Name Required",
+        description: "Please enter a name for your trading platform.",
+        variant: "destructive",
+      });
+      return;
     }
-  }, []);
+
+    setSavedChanges(true);
+    toast({
+      title: "Platform Saved",
+      description: "Your platform configuration has been saved.",
+    });
+  };
+
+  const handlePublish = () => {
+    if (!savedChanges) {
+      toast({
+        title: "Save Required",
+        description: "Please save your platform before publishing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Platform Published!",
+      description: "Your trading platform is now live and accessible.",
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -170,135 +80,142 @@ export default function Builder() {
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Platform Builder</h1>
             <p className="text-gray-600">
-              Choose a template and customize your trading platform
+              Create your trading platform based on the Hyperliquid template
             </p>
           </div>
           <div className="flex items-center space-x-4">
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleSave}>
               <Save className="w-4 h-4 mr-2" />
               Save Platform
             </Button>
-            <Button className="bg-liquid-green text-white hover:bg-liquid-accent">
+            <Button 
+              className="bg-liquid-green text-white hover:bg-liquid-accent"
+              onClick={handlePublish}
+            >
               <Eye className="w-4 h-4 mr-2" />
               Publish
             </Button>
           </div>
         </div>
 
-        <div className="flex gap-6">
-          {/* Template Selection Sidebar */}
-          <div className="w-96 flex-shrink-0">
-            <Card className="h-full">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Configuration Panel */}
+          <div className="lg:col-span-1">
+            <Card className="sticky top-4">
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <Layout className="w-5 h-5 mr-2" />
-                  Templates
+                  <Settings className="w-5 h-5 mr-2" />
+                  Platform Configuration
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-4">
-                <Tabs defaultValue="templates" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 mb-4">
-                    <TabsTrigger value="templates">Templates</TabsTrigger>
-                    <TabsTrigger value="settings">Settings</TabsTrigger>
+              <CardContent className="space-y-6">
+                <Tabs defaultValue="basic" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="basic">Basic</TabsTrigger>
+                    <TabsTrigger value="revenue">Revenue</TabsTrigger>
                   </TabsList>
                   
-                  <TabsContent value="templates" className="space-y-4">
-                    <p className="text-sm text-gray-600 mb-4">
-                      Select a template to preview it
-                    </p>
-                    
-                    <RadioGroup 
-                      value={selectedTemplate} 
-                      onValueChange={handleSelectTemplate}
-                      className="space-y-3"
-                    >
-                      {templateLayouts.map((template) => (
-                        <div key={template.id} className="relative">
-                          <Label
-                            htmlFor={template.id}
-                            className={`block cursor-pointer rounded-lg border-2 p-4 transition-all hover:shadow-md ${
-                              selectedTemplate === template.id 
-                                ? 'border-liquid-green bg-liquid-green/5' 
-                                : 'border-gray-200 hover:border-gray-300'
-                            }`}
-                          >
-                            <RadioGroupItem
-                              value={template.id}
-                              id={template.id}
-                              className="sr-only"
-                            />
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <h4 className="font-semibold text-sm mb-1">{template.name}</h4>
-                                <p className="text-xs text-gray-600 mb-2">{template.description}</p>
-                                <div className="flex items-center gap-2">
-                                  <Badge variant="secondary" className="text-xs">
-                                    <Zap className="w-3 h-3 mr-1" />
-                                    {template.components.length} components
-                                  </Badge>
-                                  {selectedTemplate === template.id && (
-                                    <Badge className="bg-liquid-green text-white text-xs">
-                                      <Check className="w-3 h-3 mr-1" />
-                                      Active
-                                    </Badge>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </Label>
-                        </div>
-                      ))}
-                    </RadioGroup>
-                    
-                    <div className="mt-6 p-4 bg-liquid-green/10 rounded-lg">
-                      <div className="flex items-center mb-2">
-                        <TrendingUp className="w-5 h-5 mr-2 text-liquid-green" />
-                        <h4 className="font-semibold text-sm">Market Data</h4>
-                      </div>
-                      <p className="text-xs text-gray-600">
-                        All templates include TradingView charts and market data from major exchanges
+                  <TabsContent value="basic" className="space-y-4 mt-4">
+                    <div>
+                      <Label htmlFor="platform-name">Platform Name</Label>
+                      <Input
+                        id="platform-name"
+                        placeholder="My Trading Platform"
+                        value={platformName}
+                        onChange={(e) => setPlatformName(e.target.value)}
+                        className="mt-1"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="custom-domain">Custom Domain (Optional)</Label>
+                      <Input
+                        id="custom-domain"
+                        placeholder="trading.example.com"
+                        value={customDomain}
+                        onChange={(e) => setCustomDomain(e.target.value)}
+                        className="mt-1"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Configure your own domain for the platform
                       </p>
+                    </div>
+
+                    <div className="pt-4">
+                      <h4 className="font-medium mb-3">Included Features</h4>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-green-500" />
+                          <span className="text-sm">TradingView Charts</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-green-500" />
+                          <span className="text-sm">Real-time Order Book</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-green-500" />
+                          <span className="text-sm">Spot & Perpetual Trading</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-green-500" />
+                          <span className="text-sm">Privy Wallet Integration</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-green-500" />
+                          <span className="text-sm">MoonPay Fiat On-Ramp</span>
+                        </div>
+                      </div>
                     </div>
                   </TabsContent>
                   
-                  <TabsContent value="settings" className="space-y-3">
-                    <p className="text-xs text-gray-600 mb-3">Platform settings</p>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="text-sm font-medium">Platform Name</label>
-                        <input
-                          type="text"
-                          className="w-full mt-1 p-2 border rounded-md"
-                          placeholder="My Trading Platform"
+                  <TabsContent value="revenue" className="space-y-4 mt-4">
+                    <div>
+                      <Label>Builder Code</Label>
+                      <div className="flex gap-2 mt-1">
+                        <Input
+                          value={builderCode}
+                          readOnly
+                          placeholder="Generate your code"
                         />
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={generateBuilderCode}
+                        >
+                          <Code className="w-4 h-4" />
+                        </Button>
+                        {builderCode && (
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => {
+                              navigator.clipboard.writeText(builderCode);
+                              toast({
+                                title: "Copied!",
+                                description: "Builder code copied to clipboard.",
+                              });
+                            }}
+                          >
+                            <Copy className="w-4 h-4" />
+                          </Button>
+                        )}
                       </div>
-                      
-                      <div>
-                        <label className="text-sm font-medium">Builder Code</label>
-                        <input
-                          type="text"
-                          className="w-full mt-1 p-2 border rounded-md"
-                          placeholder="LIQUIDLAB2024"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="text-sm font-medium">Commission Rate</label>
-                        <select className="w-full mt-1 p-2 border rounded-md">
-                          <option value="0.5">0.5%</option>
-                          <option value="1.0">1.0%</option>
-                          <option value="1.5">1.5%</option>
-                          <option value="2.0">2.0%</option>
-                        </select>
-                      </div>
-                      
-                      <div>
-                        <label className="text-sm font-medium">Theme</label>
-                        <select className="w-full mt-1 p-2 border rounded-md">
-                          <option value="light">Light</option>
-                          <option value="dark">Dark</option>
-                          <option value="auto">Auto</option>
-                        </select>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Your unique code for earning fees
+                      </p>
+                    </div>
+
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <h4 className="font-medium mb-2 flex items-center">
+                        <DollarSign className="w-4 h-4 mr-1" />
+                        Revenue Share
+                      </h4>
+                      <div className="space-y-1 text-sm">
+                        <p><strong>Spot Trading:</strong> 0.14% (of 0.2% fee)</p>
+                        <p><strong>Perp Trading:</strong> 0.07% (of 0.1% fee)</p>
+                        <p className="text-gray-600 text-xs mt-2">
+                          You keep 70% of all builder fees
+                        </p>
                       </div>
                     </div>
                   </TabsContent>
@@ -307,383 +224,91 @@ export default function Builder() {
             </Card>
           </div>
 
-          {/* Preview Canvas */}
-          <div className="flex-1 min-w-0">
-            <Card className="h-full">
+          {/* Preview Panel */}
+          <div className="lg:col-span-2">
+            <Card>
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <span>Preview</span>
-                    <Badge className="bg-liquid-green text-white">
-                      <Eye className="w-3 h-3 mr-1" />
-                      Template Preview
-                    </Badge>
-                  </div>
-                  <div className="flex items-center space-x-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center">
+                    <Eye className="w-5 h-5 mr-2" />
+                    Template Preview
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
                     <Button
                       variant={previewMode === 'desktop' ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setPreviewMode('desktop')}
                     >
-                      <Monitor className="w-4 h-4 mr-2" />
-                      Desktop
+                      <Monitor className="w-4 h-4" />
                     </Button>
                     <Button
                       variant={previewMode === 'mobile' ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setPreviewMode('mobile')}
                     >
-                      <Smartphone className="w-4 h-4 mr-2" />
-                      Mobile
+                      <Smartphone className="w-4 h-4" />
                     </Button>
                   </div>
-                </CardTitle>
+                </div>
               </CardHeader>
-              <CardContent className="p-6 bg-gray-50" style={{ minHeight: '700px' }}>
-                <div className={`transition-all ${
-                  previewMode === 'mobile' ? 'max-w-md mx-auto' : 'w-full'
-                }`}>
-                  {selectedComponents.length > 0 ? (
-                    <>
-                      {/* Professional Trader Layout */}
-                      {selectedTemplate === 'professional' && (
-                        <div className="bg-gray-900 text-white p-8 rounded-lg min-h-[600px] relative">
-                          {/* Header */}
-                          <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center space-x-4">
-                              <h2 className="text-xl font-bold">My Trading Platform</h2>
-                              <Badge className="bg-liquid-green text-white">Professional</Badge>
-                            </div>
-                            <div className="text-green-400 font-mono text-lg">$67,845.32</div>
-                          </div>
-
-                          {/* Mock Trading Interface */}
-                          <div className={`grid ${previewMode === 'mobile' ? 'grid-cols-1 gap-4' : 'grid-cols-12 gap-4'} h-96`}>
-                            {/* Left Panel - Market Data */}
-                            <div className={previewMode === 'mobile' ? 'col-span-1' : 'col-span-3 space-y-4'}>
-                              <div className="bg-black/20 p-4 rounded">
-                                <h3 className="text-sm font-semibold mb-2">Market Data</h3>
-                                <div className="space-y-2">
-                                  <div className="flex justify-between text-xs">
-                                    <span>ETH/USD</span>
-                                    <span className="text-green-400">+2.34%</span>
-                                  </div>
-                                  <div className="flex justify-between text-xs">
-                                    <span>BTC/USD</span>
-                                    <span className="text-red-400">-1.23%</span>
-                                  </div>
-                                  <div className="flex justify-between text-xs">
-                                    <span>SOL/USD</span>
-                                    <span className="text-green-400">+5.67%</span>
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              {previewMode === 'desktop' && (
-                                <div className="bg-black/20 p-4 rounded">
-                                  <h3 className="text-sm font-semibold mb-2">Order Book</h3>
-                                  <div className="space-y-1">
-                                    <div className="flex justify-between text-xs">
-                                      <span className="text-red-400">67,845</span>
-                                      <span>0.234</span>
-                                    </div>
-                                    <div className="flex justify-between text-xs">
-                                      <span className="text-red-400">67,840</span>
-                                      <span>0.156</span>
-                                    </div>
-                                    <div className="flex justify-between text-xs">
-                                      <span className="text-green-400">67,850</span>
-                                      <span>0.891</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Center - Chart */}
-                            <div className={previewMode === 'mobile' ? 'col-span-1' : 'col-span-6'}>
-                              <div className="bg-black/20 p-4 rounded h-full">
-                                <div className="flex justify-between items-center mb-4">
-                                  <h3 className="text-sm font-semibold">ETH/USD Chart</h3>
-                                  <div className="flex space-x-2">
-                                    <span className="text-xs bg-liquid-green px-2 py-1 rounded">1H</span>
-                                    <span className="text-xs bg-gray-600 px-2 py-1 rounded">4H</span>
-                                    <span className="text-xs bg-gray-600 px-2 py-1 rounded">1D</span>
-                                  </div>
-                                </div>
-                                <div className="h-64 bg-gradient-to-br from-green-500/20 to-blue-500/20 rounded flex items-center justify-center">
-                                  <div className="text-center">
-                                    <BarChart3 className="w-16 h-16 mx-auto mb-2 opacity-50" />
-                                    <p className="text-sm opacity-70">TradingView Chart</p>
-                                    <p className="text-xs opacity-50 mt-2">Chart data will be shown here</p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Right Panel - Trading */}
-                            <div className={previewMode === 'mobile' ? 'col-span-1' : 'col-span-3 space-y-4'}>
-                              <div className="bg-black/20 p-4 rounded">
-                                <h3 className="text-sm font-semibold mb-2">Trade</h3>
-                                <div className="space-y-2">
-                                  <div className="flex space-x-2">
-                                    <button className="flex-1 bg-green-600 text-white py-1 px-2 rounded text-xs">Buy</button>
-                                    <button className="flex-1 bg-red-600 text-white py-1 px-2 rounded text-xs">Sell</button>
-                                  </div>
-                                  <div className="text-xs">
-                                    <div className="flex justify-between mb-1">
-                                      <span>Amount:</span>
-                                      <span>0.5 ETH</span>
-                                    </div>
-                                    <div className="flex justify-between mb-1">
-                                      <span>Price:</span>
-                                      <span>$67,845</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                      <span>Total:</span>
-                                      <span>$33,922.50</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {previewMode === 'desktop' && (
-                                <div className="bg-black/20 p-4 rounded">
-                                  <h3 className="text-sm font-semibold mb-2">Portfolio</h3>
-                                  <div className="space-y-1 text-xs">
-                                    <div className="flex justify-between">
-                                      <span>ETH</span>
-                                      <span>2.34</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                      <span>BTC</span>
-                                      <span>0.045</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                      <span>USDC</span>
-                                      <span>1,247.89</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Footer Stats */}
-                          <div className="mt-6 pt-4 border-t border-white/20">
-                            <div className={`grid ${previewMode === 'mobile' ? 'grid-cols-2' : 'grid-cols-4'} gap-4 text-center`}>
-                              <div>
-                                <div className="text-lg font-bold text-green-400">+12.34%</div>
-                                <div className="text-xs opacity-70">24h Change</div>
-                              </div>
-                              <div>
-                                <div className="text-lg font-bold">$2.4M</div>
-                                <div className="text-xs opacity-70">Volume</div>
-                              </div>
-                              <div>
-                                <div className="text-lg font-bold">1,247</div>
-                                <div className="text-xs opacity-70">Active Users</div>
-                              </div>
-                              <div>
-                                <div className="text-lg font-bold">$156.78</div>
-                                <div className="text-xs opacity-70">Avg Trade</div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Minimal Setup Layout */}
-                      {selectedTemplate === 'minimal' && (
-                        <div className="bg-white text-gray-900 p-8 rounded-lg min-h-[600px] relative border-2 border-gray-200">
-                          {/* Clean Header */}
-                          <div className="flex items-center justify-between mb-8 pb-4 border-b">
-                            <div className="flex items-center space-x-4">
-                              <h2 className="text-2xl font-light">Minimal Trader</h2>
-                              <Badge variant="secondary">Clean UI</Badge>
-                            </div>
-                            <div className="text-2xl font-mono">$67,845</div>
-                          </div>
-
-                          {/* Simplified Layout */}
-                          <div className={`grid ${previewMode === 'mobile' ? 'grid-cols-1 gap-6' : 'grid-cols-2 gap-8'}`}>
-                            {/* Large Chart Area */}
-                            <div className="col-span-1">
-                              <div className="border rounded-lg p-6 h-96">
-                                <div className="flex justify-between items-center mb-4">
-                                  <h3 className="text-lg font-light">ETH/USD</h3>
-                                  <div className="flex space-x-2">
-                                    <button className="px-3 py-1 bg-gray-900 text-white rounded text-sm">1D</button>
-                                    <button className="px-3 py-1 bg-gray-100 rounded text-sm">1W</button>
-                                    <button className="px-3 py-1 bg-gray-100 rounded text-sm">1M</button>
-                                  </div>
-                                </div>
-                                <div className="h-72 bg-gradient-to-br from-gray-50 to-gray-100 rounded flex items-center justify-center">
-                                  <div className="text-center">
-                                    <BarChart3 className="w-20 h-20 mx-auto mb-4 text-gray-400" />
-                                    <p className="text-gray-500">Chart Display</p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Simple Trade Panel */}
-                            <div className="col-span-1">
-                              <div className="space-y-6">
-                                {/* Quick Stats */}
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div className="border rounded-lg p-4">
-                                    <div className="text-2xl font-light text-green-600">+2.34%</div>
-                                    <div className="text-sm text-gray-500">24h Change</div>
-                                  </div>
-                                  <div className="border rounded-lg p-4">
-                                    <div className="text-2xl font-light">$2.4M</div>
-                                    <div className="text-sm text-gray-500">Volume</div>
-                                  </div>
-                                </div>
-
-                                {/* Trade Form */}
-                                <div className="border rounded-lg p-6">
-                                  <h3 className="text-lg font-light mb-4">Quick Trade</h3>
-                                  <div className="space-y-4">
-                                    <div className="grid grid-cols-2 gap-3">
-                                      <button className="py-3 bg-green-600 text-white rounded font-light">Buy</button>
-                                      <button className="py-3 bg-red-600 text-white rounded font-light">Sell</button>
-                                    </div>
-                                    <div className="space-y-3">
-                                      <div className="border rounded p-3">
-                                        <div className="text-xs text-gray-500 mb-1">Amount</div>
-                                        <div className="font-mono">0.5 ETH</div>
-                                      </div>
-                                      <div className="border rounded p-3">
-                                        <div className="text-xs text-gray-500 mb-1">Total</div>
-                                        <div className="font-mono">$33,922.50</div>
-                                      </div>
-                                    </div>
-                                    <button className="w-full py-3 bg-gray-900 text-white rounded">
-                                      Place Order
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Multi-Chart Analysis Layout */}
-                      {selectedTemplate === 'multi-chart' && (
-                        <div className="bg-indigo-900 text-white p-8 rounded-lg min-h-[600px] relative">
-                          {/* Header */}
-                          <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center space-x-4">
-                              <h2 className="text-xl font-bold">Multi-Chart Analysis</h2>
-                              <Badge className="bg-purple-600 text-white">Advanced</Badge>
-                            </div>
-                            <div className="flex items-center space-x-4">
-                              <span className="text-yellow-400 font-mono">BTC: $67,845</span>
-                              <span className="text-green-400 font-mono">ETH: $3,456</span>
-                            </div>
-                          </div>
-
-                          {/* Multi-Chart Grid */}
-                          <div className={`grid ${previewMode === 'mobile' ? 'grid-cols-1 gap-4' : 'grid-cols-2 gap-4'}`}>
-                            {/* Chart 1 - 15m */}
-                            <div className="bg-black/20 p-4 rounded">
-                              <div className="flex justify-between items-center mb-3">
-                                <h3 className="text-sm font-semibold">BTC/USD - 15m</h3>
-                                <span className="text-xs bg-green-600 px-2 py-1 rounded">Scalping</span>
-                              </div>
-                              <div className="h-48 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded flex items-center justify-center">
-                                <div className="text-center">
-                                  <BarChart3 className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                                  <p className="text-xs opacity-70">15 Minute Chart</p>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Chart 2 - 1H */}
-                            <div className="bg-black/20 p-4 rounded">
-                              <div className="flex justify-between items-center mb-3">
-                                <h3 className="text-sm font-semibold">BTC/USD - 1H</h3>
-                                <span className="text-xs bg-blue-600 px-2 py-1 rounded">Intraday</span>
-                              </div>
-                              <div className="h-48 bg-gradient-to-br from-blue-500/20 to-green-500/20 rounded flex items-center justify-center">
-                                <div className="text-center">
-                                  <BarChart3 className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                                  <p className="text-xs opacity-70">1 Hour Chart</p>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Chart 3 - Daily */}
-                            <div className="bg-black/20 p-4 rounded">
-                              <div className="flex justify-between items-center mb-3">
-                                <h3 className="text-sm font-semibold">BTC/USD - Daily</h3>
-                                <span className="text-xs bg-purple-600 px-2 py-1 rounded">Swing</span>
-                              </div>
-                              <div className="h-48 bg-gradient-to-br from-green-500/20 to-yellow-500/20 rounded flex items-center justify-center">
-                                <div className="text-center">
-                                  <BarChart3 className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                                  <p className="text-xs opacity-70">Daily Chart</p>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Analysis Panel */}
-                            <div className="bg-black/20 p-4 rounded">
-                              <h3 className="text-sm font-semibold mb-3">Multi-Timeframe Analysis</h3>
-                              <div className="space-y-2">
-                                <div className="flex justify-between text-xs">
-                                  <span>15m Trend:</span>
-                                  <span className="text-green-400">Bullish</span>
-                                </div>
-                                <div className="flex justify-between text-xs">
-                                  <span>1H Trend:</span>
-                                  <span className="text-yellow-400">Neutral</span>
-                                </div>
-                                <div className="flex justify-between text-xs">
-                                  <span>Daily Trend:</span>
-                                  <span className="text-green-400">Bullish</span>
-                                </div>
-                                <div className="mt-3 pt-3 border-t border-white/20">
-                                  <div className="text-center">
-                                    <div className="text-lg font-bold text-green-400">BUY</div>
-                                    <div className="text-xs opacity-70">Overall Signal</div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Bottom Stats Bar */}
-                          <div className="mt-6 pt-4 border-t border-white/20">
-                            <div className="flex justify-between items-center text-xs">
-                              <div className="flex space-x-6">
-                                <span>RSI: 65.4</span>
-                                <span>MACD: Bullish</span>
-                                <span>Volume: High</span>
-                              </div>
-                              <div className="flex space-x-4">
-                                <button className="px-3 py-1 bg-green-600 rounded">Long</button>
-                                <button className="px-3 py-1 bg-red-600 rounded">Short</button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <div className="bg-white rounded-lg shadow-lg p-6 h-full min-h-[600px] flex items-center justify-center">
-                      <div className="text-center text-gray-400">
-                        <Layout className="w-20 h-20 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold mb-2">Select a Template</h3>
-                        <p className="text-sm">
-                          Choose a template from the left to see it in action
-                        </p>
+              <CardContent className="p-0">
+                <div className="bg-gray-100 rounded-b-lg overflow-hidden">
+                  <div className="bg-white shadow-sm p-4 border-b">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <Badge variant="secondary">Hyperliquid Template</Badge>
+                        <span className="text-sm text-gray-600">
+                          Professional trading interface with all features included
+                        </span>
                       </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => window.open('/example', '_blank')}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        View Full Demo
+                      </Button>
                     </div>
-                  )}
+                  </div>
+                  
+                  <div className={`p-8 ${previewMode === 'mobile' ? 'max-w-sm mx-auto' : ''}`}>
+                    <img
+                      src={templatePreview}
+                      alt="Trading Platform Preview"
+                      className="w-full rounded-lg shadow-xl"
+                    />
+                    
+                    <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <Card className="p-4">
+                        <h4 className="font-medium mb-2">Trading Features</h4>
+                        <ul className="space-y-1 text-sm text-gray-600">
+                          <li>• Spot & Perpetual</li>
+                          <li>• Advanced Charts</li>
+                          <li>• Real-time Data</li>
+                        </ul>
+                      </Card>
+                      
+                      <Card className="p-4">
+                        <h4 className="font-medium mb-2">User Experience</h4>
+                        <ul className="space-y-1 text-sm text-gray-600">
+                          <li>• Social Login</li>
+                          <li>• Mobile Responsive</li>
+                          <li>• Dark/Light Mode</li>
+                        </ul>
+                      </Card>
+                      
+                      <Card className="p-4">
+                        <h4 className="font-medium mb-2">Built-in Tools</h4>
+                        <ul className="space-y-1 text-sm text-gray-600">
+                          <li>• MoonPay On-Ramp</li>
+                          <li>• Privy Wallets</li>
+                          <li>• Analytics Dashboard</li>
+                        </ul>
+                      </Card>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>

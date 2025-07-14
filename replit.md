@@ -41,10 +41,11 @@ Preferred communication style: Simple, everyday language.
 - **Wallet Integration**: MetaMask/Web3 wallet connection for user authentication
 
 #### Visual Builder
-- **Drag & Drop Interface**: Component-based builder for creating trading platforms
-- **Component Library**: Pre-built trading widgets (charts, orderbooks, trade forms)
-- **Template System**: Starting templates for different trading styles
+- **Single Template System**: Simplified builder with one professional Hyperliquid-style template
+- **Configuration Panel**: Platform name, custom domain, and builder code generation
+- **Automatic Features**: All trading features pre-included (no assembly required)
 - **Preview Modes**: Desktop and mobile preview capabilities
+- **Revenue Tracking**: Built-in builder code system for fee distribution
 
 ## Data Flow
 
@@ -95,6 +96,16 @@ Preferred communication style: Simple, everyday language.
 - **REPL_ID**: Replit-specific environment detection
 
 The application uses a monorepo structure with shared types and schemas, enabling type safety between frontend and backend while maintaining clear separation of concerns.
+
+## Recent Changes (January 14, 2025)
+
+### Builder Simplification
+- **Removed Drag-and-Drop**: Eliminated complex drag-and-drop builder functionality
+- **Single Template System**: Now offers one professional Hyperliquid-style template
+- **Streamlined Configuration**: Simple form for platform name, custom domain, and builder code
+- **Automatic Features**: All trading features are pre-included (TradingView, Order Book, Privy, MoonPay)
+- **Preview Modes**: Desktop and mobile preview capabilities retained
+- **Revenue Display**: Clear 70/30 revenue share information displayed
 
 ## Recent Changes (January 2025)
 
