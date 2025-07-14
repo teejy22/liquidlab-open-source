@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { scheduler } from "./services/scheduler";
 
 const app = express();
 app.use(express.json());
@@ -83,5 +84,10 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    
+    // Start the scheduler for batch processing
+    scheduler.start().catch(error => {
+      console.error('Failed to start scheduler:', error);
+    });
   });
 })();

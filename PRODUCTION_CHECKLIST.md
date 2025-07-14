@@ -108,10 +108,11 @@ STRIPE_SECRET_KEY=your_stripe_key (for payment processing)
    npm run db:push
    ```
 
-2. **Register Hyperliquid webhook**
-   - Contact Hyperliquid to register webhook URL: `https://api.liquidlab.trade/api/webhooks/hyperliquid`
-   - Provide verification endpoint: `https://api.liquidlab.trade/api/webhooks/hyperliquid/verify`
-   - Store provided webhook secret
+2. **Configure Batch Processing**
+   - The system now uses batch processing instead of webhooks
+   - Trades are checked every 10 minutes automatically
+   - No Hyperliquid registration required
+   - Manual processing available at `/api/trades/process-batch`
 
 3. **Configure Privy for production**
    - Create production Privy app
@@ -178,4 +179,6 @@ The application is configured for **liquidlab.trade** domain:
 
 Make sure to update DNS records and SSL certificates for the `.trade` domain.
 
-The infrastructure is well-architected and ready for production deployment. The main missing piece is the Hyperliquid webhook registration, which will enable automatic fee tracking when trades occur on the platforms.
+The infrastructure is well-architected and ready for production deployment. The batch processing system is implemented and will automatically track trades every 10 minutes, providing a cost-effective alternative to maintaining expensive 24/7 WebSocket connections.
+
+**Important Note**: Hyperliquid currently only offers WebSocket streaming (not traditional webhooks). Our batch processing approach checks for new trades periodically, which is much more cost-effective than maintaining a persistent WebSocket connection that would receive all Hyperliquid trades globally.

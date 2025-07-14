@@ -421,3 +421,23 @@ The application uses a monorepo structure with shared types and schemas, enablin
 - **Webhook URLs**: Updated Hyperliquid webhook endpoints to use .trade domain
 - **Verification Links**: All platform verification links now point to liquidlab.trade/verify
 - **Production Checklist**: Added domain configuration notes with SSL certificate requirements
+
+### Trade Batch Processing Implementation (January 16, 2025)
+- **Replaced Webhooks with Batch Processing**: Due to Hyperliquid only offering WebSocket streaming (not webhooks), implemented cost-effective batch processing
+  - Automatic processing every 10 minutes via scheduler
+  - Manual trigger endpoint at `/api/trades/process-batch` (admin only)
+  - Status monitoring at `/api/trades/batch-status`
+  - Avoids expensive 24/7 WebSocket connection costs
+- **TradeBatchProcessor Service**: Created comprehensive trade processing system
+  - Fetches recent trades from Hyperliquid API
+  - Filters for LIQUIDLAB2025 builder code
+  - Calculates 70/30 revenue split automatically
+  - Prevents duplicate processing with timestamp checks
+  - Updates platform revenue summaries
+- **Scheduler Service**: Automated job scheduling system
+  - Runs trade batch processing every 10 minutes
+  - Handles errors gracefully with audit logging
+  - Starts automatically when server launches
+- **Admin API Endpoints**: 
+  - POST `/api/trades/process-batch` - Manually trigger batch processing
+  - GET `/api/trades/batch-status` - View recent processing logs

@@ -2,15 +2,15 @@ import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
-import { insertUserSchema, insertTradingPlatformSchema, insertTemplateSchema, insertRevenueRecordSchema, feeTransactions, users } from "@shared/schema";
+import { insertUserSchema, insertTradingPlatformSchema, insertTemplateSchema, insertRevenueRecordSchema, feeTransactions, users, auditLogs } from "@shared/schema";
 import { HyperliquidService } from "./services/hyperliquid";
 import multer from "multer";
 import path from "path";
 import fs from "fs/promises";
 import bcrypt from "bcryptjs";
 import { db } from "./db";
-import { desc, sql } from "drizzle-orm";
-import { handleHyperliquidWebhook, verifyWebhookEndpoint } from "./webhooks/hyperliquid";
+import { desc, sql, eq } from "drizzle-orm";
+// Removed webhook imports - using batch processing instead
 
 // Extend Express session types
 declare module "express-session" {
@@ -851,9 +851,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Hyperliquid webhook endpoints
-  app.post("/api/webhooks/hyperliquid", handleHyperliquidWebhook);
-  app.get("/api/webhooks/hyperliquid/verify", verifyWebhookEndpoint);
+  // Trade batch processing endpoints
+  app.post("/api/trades/process-batch", requireAdmin, async (req, res) => {
+    try {
+      // Manually trigger batch processing
+      const { tradeBatchProcessor } = await import('./services/tradeBatchProcessor');
+      
+      // Run async without waiting
+      tradeBatchProcessor.processTradeBatch().catch(error => {
+        console.error('Manual batch processing error:', error);
+      });
+      
+      res.json({ 
+        success: true, 
+        message: 'Batch processing started in background' 
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to start batch processing' });
+    }
+  });
+  
+  app.get("/api/trades/batch-status", requireAdmin, async (req, res) => {
+    try {
+      // Get recent batch processing logs
+      const recentLogs = await db
+        .select()
+        .from(auditLogs)
+        .where(eq(auditLogs.resource, 'trade_batch_processor'))
+        .orderBy(desc(auditLogs.createdAt))
+        .limit(10);
+      
+      res.json({ 
+        success: true,
+        logs: recentLogs 
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get batch status' });
+    }
+  });
 
   // Privy configuration endpoint
   app.get("/api/privy/config", async (req, res) => {
