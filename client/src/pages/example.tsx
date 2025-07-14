@@ -150,110 +150,98 @@ export default function ExampleTradingPage() {
 
       {/* Main Trading Area - Fixed Height */}
       <div className="flex overflow-hidden" style={{ height: '450px' }}>
-        {/* Markets Sidebar */}
-        <div className="w-48 bg-[#0f0f0f] border-r border-gray-800 flex flex-col h-full">
-          <div className="p-2 border-b border-gray-800">
-            <h3 className="text-xs font-medium text-gray-400">Markets</h3>
-          </div>
-          <div className="p-1 overflow-y-auto flex-1">
-            {[
-              { symbol: "BTCUSDT", display: "BTC/USDT" },
-              { symbol: "ETHUSDT", display: "ETH/USDT" },
-              { symbol: "SOLUSDT", display: "SOL/USDT" },
-            ].map((pair) => (
-              <button
-                key={pair.symbol}
-                onClick={() => setSelectedPair(pair)}
-                className={`w-full text-left p-2 rounded text-sm hover:bg-gray-800 transition-colors ${
-                  selectedPair.symbol === pair.symbol ? 'bg-gray-800' : ''
-                }`}
-              >
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">{pair.display}</span>
-                  <span className="text-xs text-green-400">+2.3%</span>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* Chart and Trading Area */}
-        <div className="flex-1 flex flex-col h-full">
-          {/* Market Stats Bar */}
-          <div className="bg-[#0f0f0f] border-b border-gray-800 px-4 py-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-6">
-                <div>
-                  <span className="text-xl font-semibold">{selectedPair.display}</span>
-                </div>
-                <div>
-                  <div className="text-xs text-gray-400">Last Price</div>
-                  {isLoading ? (
-                    <div className="w-20 h-6 bg-gray-700 animate-pulse rounded" />
-                  ) : (
-                    <div className={`text-lg font-semibold ${marketStats.change24h.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
-                      ${marketStats.price}
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <div className="text-xs text-gray-400">24h Change</div>
-                  <div className={`text-sm ${marketStats.change24h.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
-                    {marketStats.change24h}
+        <div className="flex-1 flex h-full">
+          {/* Chart Section */}
+          <div className="flex-1 flex flex-col">
+            {/* Market Stats Bar with Dropdown */}
+            <div className="bg-[#0f0f0f] border-b border-gray-800 px-4 py-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  {/* Market Selector Dropdown */}
+                  <Select value={selectedPair.symbol} onValueChange={(value) => {
+                    const pair = [
+                      { symbol: "BTCUSDT", display: "BTC/USDT" },
+                      { symbol: "ETHUSDT", display: "ETH/USDT" },
+                      { symbol: "SOLUSDT", display: "SOL/USDT" },
+                    ].find(p => p.symbol === value);
+                    if (pair) setSelectedPair(pair);
+                  }}>
+                    <SelectTrigger className="w-32 h-8 bg-gray-900 border-gray-700">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="BTCUSDT">BTC/USDT</SelectItem>
+                      <SelectItem value="ETHUSDT">ETH/USDT</SelectItem>
+                      <SelectItem value="SOLUSDT">SOL/USDT</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div>
+                    <div className="text-xs text-gray-400">Last Price</div>
+                    {isLoading ? (
+                      <div className="w-20 h-6 bg-gray-700 animate-pulse rounded" />
+                    ) : (
+                      <div className={`text-lg font-semibold ${marketStats.change24h.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
+                        ${marketStats.price}
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div>
-                  <div className="text-xs text-gray-400">24h High</div>
-                  <div className="text-sm">${marketStats.high24h}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-gray-400">24h Low</div>
-                  <div className="text-sm">${marketStats.low24h}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-gray-400">24h Volume</div>
-                  <div className="text-sm">${marketStats.volume24h}</div>
+                <div className="flex items-center space-x-4">
+                  <div>
+                    <div className="text-xs text-gray-400">24h Change</div>
+                    <div className={`text-sm ${marketStats.change24h.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
+                      {marketStats.change24h}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-400">24h High</div>
+                    <div className="text-sm">${marketStats.high24h}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-400">24h Low</div>
+                    <div className="text-sm">${marketStats.low24h}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-400">24h Volume</div>
+                    <div className="text-sm">${marketStats.volume24h}</div>
+                  </div>
                 </div>
               </div>
+            </div>
+
+            {/* Chart Time Intervals */}
+            <div className="bg-[#0f0f0f] border-b border-gray-800 px-4 py-2">
+              <div className="flex items-center space-x-2">
+                {['1m', '5m', '15m', '1h', '4h', '1d'].map(interval => (
+                  <Button
+                    key={interval}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setTimeInterval(interval)}
+                    className={`h-7 px-3 ${
+                      timeInterval === interval 
+                        ? 'bg-gray-800 text-white' 
+                        : 'text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    {interval}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            
+            {/* TradingView Chart */}
+            <div className="flex-1 bg-[#131313]">
+              <TradingViewWidget
+                symbol={`BINANCE:${selectedPair.symbol}`}
+                interval={timeInterval}
+                theme="dark"
+                height="100%"
+                width="100%"
+              />
             </div>
           </div>
-
-          {/* Chart and Order Area - Fixed Height Container */}
-          <div className="flex h-full">
-            {/* Chart Section */}
-            <div className="flex-1 flex flex-col h-full">
-              {/* Chart Time Intervals */}
-              <div className="bg-[#0f0f0f] border-b border-gray-800 px-4 py-2">
-                <div className="flex items-center space-x-2">
-                  {['1m', '5m', '15m', '1h', '4h', '1d'].map(interval => (
-                    <Button
-                      key={interval}
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setTimeInterval(interval)}
-                      className={`h-7 px-3 ${
-                        timeInterval === interval 
-                          ? 'bg-gray-800 text-white' 
-                          : 'text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      {interval}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-              
-              {/* TradingView Chart */}
-              <div className="flex-1 bg-[#131313]">
-                <TradingViewWidget
-                  symbol={`BINANCE:${selectedPair.symbol}`}
-                  interval={timeInterval}
-                  theme="dark"
-                  height="100%"
-                  width="100%"
-                />
-              </div>
-            </div>
 
             {/* Order Book and Trading Panel */}
             <div className="w-[340px] bg-[#0f0f0f] border-l border-gray-800 flex flex-col h-full">
@@ -312,114 +300,96 @@ export default function ExampleTradingPage() {
                 </div>
               </div>
 
-              {/* Trading Form */}
-              <div className="border-t border-gray-800 p-4">
-                <Tabs defaultValue="spot" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3 bg-gray-900">
-                    <TabsTrigger value="spot" className="data-[state=active]:bg-gray-800">Spot</TabsTrigger>
-                    <TabsTrigger value="cross" className="data-[state=active]:bg-gray-800">Cross</TabsTrigger>
-                    <TabsTrigger value="isolated" className="data-[state=active]:bg-gray-800">Isolated</TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="spot" className="space-y-4 mt-4">
-                    {/* Buy/Sell Toggle */}
-                    <div className="grid grid-cols-2 gap-2">
-                      <Button
-                        variant={side === "buy" ? "default" : "outline"}
-                        onClick={() => setSide("buy")}
-                        className={side === "buy" ? "bg-green-600 hover:bg-green-700" : ""}
-                      >
-                        Buy
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => setSide("sell")}
-                        className={side === "sell" ? "bg-red-600 hover:bg-red-700 text-white border-red-600" : "text-gray-300 border-gray-700 hover:border-red-600 hover:text-red-400"}
-                      >
-                        Sell
-                      </Button>
-                    </div>
+              {/* Trading Form - Compact */}
+              <div className="border-t border-gray-800 p-3">
+                <div className="space-y-2">
+                  {/* Buy/Sell Toggle */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      size="sm"
+                      variant={side === "buy" ? "default" : "outline"}
+                      onClick={() => setSide("buy")}
+                      className={`h-8 ${side === "buy" ? "bg-green-600 hover:bg-green-700" : ""}`}
+                    >
+                      Buy
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setSide("sell")}
+                      className={`h-8 ${side === "sell" ? "bg-red-600 hover:bg-red-700 text-white border-red-600" : "text-gray-300 border-gray-700 hover:border-red-600 hover:text-red-400"}`}
+                    >
+                      Sell
+                    </Button>
+                  </div>
 
-                    {/* Order Type */}
-                    <div className="space-y-2">
-                      <Label className="text-xs">Order Type</Label>
-                      <Select value={orderType} onValueChange={setOrderType}>
-                        <SelectTrigger className="w-full bg-gray-900 border-gray-700">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="limit">Limit</SelectItem>
-                          <SelectItem value="market">Market</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  {/* Order Type */}
+                  <div>
+                    <Label className="text-xs text-gray-400">Order Type</Label>
+                    <Select value={orderType} onValueChange={setOrderType}>
+                      <SelectTrigger className="w-full h-8 bg-gray-900 border-gray-700 text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="limit">Limit</SelectItem>
+                        <SelectItem value="market">Market</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                    {/* Price Input */}
-                    {orderType === "limit" && (
-                      <div className="space-y-2">
-                        <Label className="text-xs">Price</Label>
-                        <Input 
-                          type="number" 
-                          placeholder="0.00"
-                          className="bg-gray-900 border-gray-700"
-                        />
-                      </div>
-                    )}
-
-                    {/* Amount Input */}
-                    <div className="space-y-2">
-                      <Label className="text-xs">Amount</Label>
+                  {/* Price Input */}
+                  {orderType === "limit" && (
+                    <div>
+                      <Label className="text-xs text-gray-400">Price</Label>
                       <Input 
                         type="number" 
                         placeholder="0.00"
-                        className="bg-gray-900 border-gray-700"
+                        className="bg-gray-900 border-gray-700 h-8 text-sm"
                       />
                     </div>
+                  )}
 
-                    {/* Leverage */}
-                    <div className="space-y-2">
-                      <Label className="text-xs">Leverage</Label>
-                      <Select defaultValue="1">
-                        <SelectTrigger className="w-full bg-gray-900 border-gray-700">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {['1', '2', '5', '10', '20', '50'].map(lev => (
-                            <SelectItem key={lev} value={lev}>{lev}x</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  {/* Amount Input */}
+                  <div>
+                    <Label className="text-xs text-gray-400">Amount</Label>
+                    <Input 
+                      type="number" 
+                      placeholder="0.00"
+                      className="bg-gray-900 border-gray-700 h-8 text-sm"
+                    />
+                  </div>
 
-                    {/* Submit Button */}
-                    <Button 
-                      className={`w-full ${
-                        side === "buy" 
-                          ? "bg-green-600 hover:bg-green-700" 
-                          : "bg-red-600 hover:bg-red-700"
-                      }`}
-                    >
-                      {side === "buy" ? "Buy Long" : "Sell Short"}
-                    </Button>
-                  </TabsContent>
-                  
-                  <TabsContent value="cross" className="space-y-4 mt-4">
-                    <div className="text-center text-gray-400 py-8">
-                      Cross margin trading coming soon
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="isolated" className="space-y-4 mt-4">
-                    <div className="text-center text-gray-400 py-8">
-                      Isolated margin trading coming soon
-                    </div>
-                  </TabsContent>
-                </Tabs>
+                  {/* Leverage */}
+                  <div>
+                    <Label className="text-xs text-gray-400">Leverage</Label>
+                    <Select defaultValue="1">
+                      <SelectTrigger className="w-full h-8 bg-gray-900 border-gray-700 text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {['1', '2', '5', '10', '20', '50'].map(lev => (
+                          <SelectItem key={lev} value={lev}>{lev}x</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Submit Button */}
+                  <Button 
+                    size="sm"
+                    className={`w-full h-9 ${
+                      side === "buy" 
+                        ? "bg-green-600 hover:bg-green-700" 
+                        : "bg-red-600 hover:bg-red-700"
+                    }`}
+                  >
+                    {side === "buy" ? "Buy Long" : "Sell Short"}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
       {/* Positions Area - Hyperliquid Style */}
       <div className="bg-[#0a0a0a] border-t border-gray-900">
