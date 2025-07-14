@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, BarChart3, Volume2, Activity } from "lucide-react";
 import liquidLabLogo from "@assets/Trade (6)_1752434284086.png";
-import TradingViewWidget from "@/components/charts/tradingview-widget";
+import HyperliquidChart from "@/components/charts/HyperliquidChart";
 import { TrustIndicators } from "@/components/TrustIndicators";
 import { PlatformVerificationBadge } from "@/components/PlatformVerificationBadge";
 import { PrivyProvider } from "@/components/PrivyProvider";
@@ -254,10 +254,10 @@ export default function ExampleTradingPage() {
               </div>
             </div>
             
-            {/* TradingView Chart */}
+            {/* Hyperliquid Chart */}
             <div className="flex-1 bg-[#131313]">
-              <TradingViewWidget
-                symbol={`BINANCE:${selectedPair.symbol}USDT`}
+              <HyperliquidChart
+                symbol={selectedPair.symbol}
                 interval={timeInterval}
                 theme="dark"
                 height="100%"
