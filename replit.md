@@ -166,6 +166,24 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - LiquidLab's 50% share of MoonPay revenue
   - Platform owners' 50% share of MoonPay revenue
 
+### Privy Wallet Authentication Integration (January 15, 2025)
+- **Automatic Privy Integration**: All trading platforms now include Privy wallet authentication by default
+  - Social logins (email, SMS) alongside wallet connections
+  - Dark theme customization matching Hyperliquid style
+  - Enterprise-grade wallet infrastructure at no additional cost
+- **Component Implementation**:
+  - Created PrivyProvider component that wraps trading interface
+  - WalletConnect button shows connected wallet address with logout functionality
+  - Integrated into example trading page template
+- **User Benefits**:
+  - Traders can connect with MetaMask, WalletConnect, or social accounts
+  - Embedded wallet creation for users without existing wallets
+  - Secure authentication without platform owners managing private keys
+- **Technical Details**:
+  - Uses @privy-io/react-auth for frontend integration
+  - Placeholder App ID included for demo purposes
+  - Production platforms will use unique Privy App IDs
+
 ### Logo Upload Feature
 - **File Upload Implementation**: Added multer-based logo upload system with 5MB size limit
 - **Supported Formats**: PNG, JPG, JPEG, GIF, and WebP images

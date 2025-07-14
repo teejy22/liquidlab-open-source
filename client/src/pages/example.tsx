@@ -11,6 +11,8 @@ import liquidLabLogo from "@assets/Trade (6)_1752434284086.png";
 import TradingViewWidget from "@/components/charts/tradingview-widget";
 import { TrustIndicators } from "@/components/TrustIndicators";
 import { PlatformVerificationBadge } from "@/components/PlatformVerificationBadge";
+import { PrivyProvider } from "@/components/PrivyProvider";
+import { WalletConnect } from "@/components/WalletConnect";
 
 interface MarketData {
   price: string;
@@ -150,7 +152,8 @@ export default function ExampleTradingPage() {
   const orderbook = useMemo(() => generateOrderbook(), [marketStats.price]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-gray-100 flex flex-col">
+    <PrivyProvider>
+      <div className="min-h-screen bg-[#0a0a0a] text-gray-100 flex flex-col">
       {/* Header */}
       <header className="bg-[#0f0f0f] border-b border-gray-800">
         <div className="flex items-center justify-between h-20 px-4">
@@ -185,6 +188,7 @@ export default function ExampleTradingPage() {
               platformName={platformData?.name || "Example Trading Platform"}
               isVerified={true}
             />
+            <WalletConnect />
             <span className="text-sm text-gray-400">Powered by LiquidLab</span>
           </div>
         </div>
@@ -594,6 +598,7 @@ export default function ExampleTradingPage() {
           </table>
         </div>
       </div>
-    </div>
+      </div>
+    </PrivyProvider>
   );
 }
