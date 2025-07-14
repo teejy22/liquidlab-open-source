@@ -493,10 +493,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (metaData[1][index]) {
             // Asset context contains volume and price data
             const assetCtx = metaData[1][index];
+            
             const price = parseFloat(assetCtx.markPx || assetCtx.midPx || "0");
+            
+            // Volume data is in dayNtlVlm (day notional volume)
+            const volume = assetCtx.dayNtlVlm || "0";
+            
             marketDataMap[market.name] = {
               price: price,
-              volume24h: assetCtx.volume || "0"
+              volume24h: volume
             };
           }
         });
