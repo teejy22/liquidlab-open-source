@@ -13,6 +13,7 @@ import { TrustIndicators } from "@/components/TrustIndicators";
 import { PlatformVerificationBadge } from "@/components/PlatformVerificationBadge";
 import { PrivyProvider } from "@/components/PrivyProvider";
 import { WalletConnect } from "@/components/WalletConnect";
+import { HyperliquidMarkets } from "@/components/trading/HyperliquidMarkets";
 
 interface MarketData {
   price: string;
@@ -23,7 +24,8 @@ interface MarketData {
 }
 
 export default function ExampleTradingPage() {
-  const [selectedPair, setSelectedPair] = useState({ symbol: "BTCUSDT", display: "BTC/USDT" });
+  const [selectedPair, setSelectedPair] = useState({ symbol: "BTC", display: "BTC/USD" });
+  const [selectedMarket, setSelectedMarket] = useState("BTC");
   const [side, setSide] = useState<"buy" | "sell">("buy");
   const [orderType, setOrderType] = useState("limit");
   const [timeInterval, setTimeInterval] = useState("15m");
@@ -37,6 +39,8 @@ export default function ExampleTradingPage() {
   });
   const [allMarketData, setAllMarketData] = useState<{[key: string]: any}>({});
   const [platformData, setPlatformData] = useState<any>(null);
+  const [hyperliquidPrices, setHyperliquidPrices] = useState<{[key: string]: string}>({});
+  const [orderbook, setOrderbook] = useState<{ asks: any[], bids: any[] }>({ asks: [], bids: [] });
 
   // Fetch platform data
   useEffect(() => {
@@ -59,54 +63,60 @@ export default function ExampleTradingPage() {
     fetchPlatformData();
   }, []);
 
-  // Fetch all market data
+  // Fetch Hyperliquid market data and order book
   useEffect(() => {
-    const fetchAllMarketData = async () => {
+    const fetchHyperliquidData = async () => {
       try {
-        const response = await fetch(
-          '/api/prices?ids=bitcoin,ethereum,solana'
-        );
+        // Fetch current market prices
+        const priceResponse = await fetch('/api/hyperliquid/market-data');
+        const priceData = await priceResponse.json();
+        setHyperliquidPrices(priceData);
         
-        if (!response.ok) {
-          throw new Error('Failed to fetch market data');
-        }
-        
-        const data = await response.json();
-        setAllMarketData(data);
-        
-        // Update current selected pair stats
-        const symbol = selectedPair.symbol.replace("USDT", "").toLowerCase();
-        const coinId = symbol === "btc" ? "bitcoin" : symbol === "eth" ? "ethereum" : symbol === "sol" ? "solana" : symbol;
-        const coinData = data[coinId];
-        
-        if (coinData && coinData.usd) {
+        // Update stats for selected market
+        const currentPrice = priceData[selectedMarket];
+        if (currentPrice) {
+          const price = parseFloat(currentPrice);
           setMarketStats({
-            price: coinData.usd.toFixed(2),
-            change24h: `${coinData.usd_24h_change >= 0 ? '+' : ''}${coinData.usd_24h_change.toFixed(2)}%`,
-            high24h: (coinData.usd * 1.02).toFixed(2),
-            low24h: (coinData.usd * 0.98).toFixed(2),
-            volume24h: (coinData.usd_24h_vol / 1000000).toFixed(2) + "M"
+            price: price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+            change24h: "+0.00%", // Hyperliquid doesn't provide 24h change in this endpoint
+            high24h: (price * 1.02).toFixed(2),
+            low24h: (price * 0.98).toFixed(2),
+            volume24h: "---"
           });
         }
+        
+        // Fetch order book data
+        const orderbookResponse = await fetch(`/api/hyperliquid/orderbook/${selectedMarket}`);
+        if (orderbookResponse.ok) {
+          const orderbookData = await orderbookResponse.json();
+          
+          // Format orderbook data
+          const formattedAsks = orderbookData.levels[0].map((ask: any[]) => ({
+            price: formatPrice(parseFloat(ask[0])),
+            amount: parseFloat(ask[1]).toFixed(4),
+            total: formatPrice(parseFloat(ask[0]) * parseFloat(ask[1]))
+          })).slice(0, 10);
+          
+          const formattedBids = orderbookData.levels[1].map((bid: any[]) => ({
+            price: formatPrice(parseFloat(bid[0])),
+            amount: parseFloat(bid[1]).toFixed(4),
+            total: formatPrice(parseFloat(bid[0]) * parseFloat(bid[1]))
+          })).slice(0, 10);
+          
+          setOrderbook({ asks: formattedAsks, bids: formattedBids });
+        }
+        
         setIsLoading(false);
       } catch (error) {
-        console.error("Error fetching market data:", error);
-        // Set default values on error
-        setMarketStats({
-          price: "0.00",
-          change24h: "+0.00%",
-          high24h: "0.00",
-          low24h: "0.00",
-          volume24h: "0.00"
-        });
+        console.error("Error fetching Hyperliquid data:", error);
         setIsLoading(false);
       }
     };
 
-    fetchAllMarketData();
-    const interval = setInterval(fetchAllMarketData, 30000);
+    fetchHyperliquidData();
+    const interval = setInterval(fetchHyperliquidData, 2000);
     return () => clearInterval(interval);
-  }, [selectedPair]);
+  }, [selectedMarket]);
 
   // Format number with commas
   const formatPrice = (price: number) => {
@@ -116,40 +126,7 @@ export default function ExampleTradingPage() {
     }).format(price);
   };
 
-  // Generate mock orderbook data
-  const generateOrderbook = () => {
-    const asks = [];
-    const bids = [];
-    const currentPrice = parseFloat(marketStats.price) || 50000;
-    
-    // Generate asks (sell orders) above current price
-    for (let i = 0; i < 6; i++) {
-      const price = currentPrice + (i + 1) * 0.50;
-      const amount = (Math.random() * 2).toFixed(4);
-      const total = (price * parseFloat(amount)).toFixed(2);
-      asks.push({
-        price: formatPrice(price),
-        amount,
-        total: formatPrice(parseFloat(total))
-      });
-    }
-    
-    // Generate bids (buy orders) below current price
-    for (let i = 0; i < 6; i++) {
-      const price = currentPrice - (i + 1) * 0.50;
-      const amount = (Math.random() * 2).toFixed(4);
-      const total = (price * parseFloat(amount)).toFixed(2);
-      bids.push({
-        price: formatPrice(price),
-        amount,
-        total: formatPrice(parseFloat(total))
-      });
-    }
-    
-    return { asks, bids };
-  };
-  
-  const orderbook = useMemo(() => generateOrderbook(), [marketStats.price]);
+
 
   return (
     <PrivyProvider>
@@ -203,43 +180,14 @@ export default function ExampleTradingPage() {
 
       {/* Main Trading Area - Fixed Height */}
       <div className="flex overflow-hidden" style={{ height: '450px' }}>
-        {/* Markets Sidebar */}
-        <div className="w-48 bg-[#0f0f0f] border-r border-gray-800 overflow-y-auto">
-          <div className="p-3 border-b border-gray-800">
-            <h3 className="text-sm font-medium">Markets</h3>
-          </div>
-          <div className="p-2">
-            {[
-              { symbol: "BTCUSDT", display: "BTC/USDT", coinId: "bitcoin" },
-              { symbol: "ETHUSDT", display: "ETH/USDT", coinId: "ethereum" },
-              { symbol: "SOLUSDT", display: "SOL/USDT", coinId: "solana" },
-            ].map((pair, i) => {
-              const coinData = allMarketData[pair.coinId];
-              const price = coinData?.usd ? `$${coinData.usd.toLocaleString()}` : "Loading...";
-              const change = coinData?.usd_24h_change 
-                ? `${coinData.usd_24h_change >= 0 ? '+' : ''}${coinData.usd_24h_change.toFixed(2)}%`
-                : "0.00%";
-              
-              return (
-                <Button
-                  key={i}
-                  variant="ghost"
-                  className={`w-full justify-between p-2 h-auto ${
-                    selectedPair.symbol === pair.symbol ? 'bg-gray-800' : ''
-                  }`}
-                  onClick={() => setSelectedPair({ symbol: pair.symbol, display: pair.display })}
-                >
-                  <div className="text-left">
-                    <div className="text-sm">{pair.display}</div>
-                    <div className="text-xs text-gray-400">{price}</div>
-                  </div>
-                  <span className={`text-xs ${change.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
-                    {change}
-                  </span>
-                </Button>
-              );
-            })}
-          </div>
+        {/* Markets Sidebar - Real Hyperliquid Markets */}
+        <div className="w-64 bg-[#0f0f0f] border-r border-gray-800 overflow-hidden">
+          <HyperliquidMarkets 
+            onSelectMarket={(market) => {
+              setSelectedPair({ symbol: market, display: `${market}/USD` });
+              setSelectedMarket(market);
+            }} 
+          />
         </div>
 
         {/* Chart and Trading Area */}

@@ -475,6 +475,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get properly mapped market prices with symbol names using orderbook mid prices
+  app.get("/api/hyperliquid/market-prices", async (req, res) => {
+    try {
+      // Get market metadata
+      const metaData = await hyperliquidService.getMetaAndAssetCtxs();
+      
+      if (!metaData || !metaData[0] || !metaData[0].universe) {
+        return res.json({});
+      }
+
+      // Get mid prices from orderbooks for main markets
+      const mainMarkets = ['BTC', 'ETH', 'SOL', 'ARB', 'MATIC', 'AVAX', 'BNB', 'DOGE', 'SUI', 'APT'];
+      const pricePromises = mainMarkets.map(async (symbol) => {
+        try {
+          const orderbook = await hyperliquidService.getOrderbook(symbol);
+          if (orderbook && orderbook.levels) {
+            const bestAsk = parseFloat(orderbook.levels[0][0]?.px || '0');
+            const bestBid = parseFloat(orderbook.levels[1][0]?.px || '0');
+            const midPrice = bestAsk && bestBid ? (bestAsk + bestBid) / 2 : bestAsk || bestBid;
+            return { symbol, price: midPrice };
+          }
+          return { symbol, price: 0 };
+        } catch (error) {
+          console.error(`Error fetching ${symbol} price:`, error);
+          return { symbol, price: 0 };
+        }
+      });
+
+      const prices = await Promise.all(pricePromises);
+      const mappedPrices: { [key: string]: number } = {};
+      
+      prices.forEach(({ symbol, price }) => {
+        if (price > 0) {
+          mappedPrices[symbol] = price;
+        }
+      });
+
+      res.json(mappedPrices);
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
   app.get("/api/hyperliquid/orderbook/:symbol", async (req, res) => {
     try {
       const { symbol } = req.params;
