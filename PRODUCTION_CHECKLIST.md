@@ -44,7 +44,8 @@ DATABASE_URL=your_production_database_url
 SESSION_SECRET=your_secure_session_secret
 ADMIN_PASSWORD_HASH=your_bcrypt_admin_password_hash
 SENDGRID_API_KEY=your_sendgrid_key (for email notifications)
-STRIPE_SECRET_KEY=your_stripe_key (for payment processing)
+PAYOUT_WALLET_PRIVATE_KEY=your_arbitrum_wallet_private_key (for crypto payouts)
+ARBITRUM_RPC_URL=https://arb1.arbitrum.io/rpc (or your preferred RPC)
 ```
 
 ### 3. Custom Domain Support
@@ -54,10 +55,15 @@ STRIPE_SECRET_KEY=your_stripe_key (for payment processing)
 - [ ] Configure DNS for platform custom domains
 
 ### 4. Revenue Distribution System
-- [ ] Implement automated payout system (Stripe Connect or similar)
-- [ ] Create payout scheduling (weekly/monthly)
-- [ ] Add payout tracking and reporting
-- [ ] Handle failed payouts and retries
+- [x] Crypto payout system implemented with ethers.js
+- [x] USDC on Arbitrum for low-fee transfers
+- [x] Payout tracking in payoutRecords table
+- [x] Dashboard UI for payout history and pending payments
+- [ ] Set `PAYOUT_WALLET_PRIVATE_KEY` environment variable
+- [ ] Set `ARBITRUM_RPC_URL` environment variable
+- [ ] Deploy USDC funding to payout wallet
+- [ ] Test payout processing on production
+- [ ] Create automated scheduler for weekly payouts
 
 ### 5. Monitoring & Observability
 - [ ] Set up error tracking (Sentry or similar)

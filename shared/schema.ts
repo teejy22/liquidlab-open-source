@@ -196,6 +196,28 @@ export const moonpayTransactions = pgTable("moonpay_transactions", {
   index("idx_moonpay_status").on(table.status),
 ]);
 
+// Crypto payout records
+export const payoutRecords = pgTable("payout_records", {
+  id: serial("id").primaryKey(),
+  platformId: integer("platform_id").notNull().references(() => tradingPlatforms.id, { onDelete: "cascade" }),
+  userId: integer("user_id").notNull().references(() => users.id),
+  amount: decimal("amount", { precision: 20, scale: 4 }).notNull(), // Amount in USDC
+  currency: varchar("currency", { length: 10 }).notNull().default('USDC'),
+  status: varchar("status", { length: 20 }).notNull().default('pending'), // 'pending', 'processing', 'completed', 'failed'
+  txHash: varchar("tx_hash", { length: 66 }), // Transaction hash
+  chainId: integer("chain_id").default(42161), // Arbitrum One
+  recipientAddress: varchar("recipient_address", { length: 42 }).notNull(),
+  error: text("error"), // Error message if failed
+  periodStart: date("period_start").notNull(),
+  periodEnd: date("period_end").notNull(),
+  processedAt: timestamp("processed_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_payout_platform").on(table.platformId),
+  index("idx_payout_status").on(table.status),
+  index("idx_payout_processed").on(table.processedAt),
+]);
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   platforms: many(tradingPlatforms),
@@ -221,6 +243,7 @@ export const tradingPlatformsRelations = relations(tradingPlatforms, ({ one, man
   feeTransactions: many(feeTransactions),
   revenueSummaries: many(platformRevenueSummary),
   moonpayTransactions: many(moonpayTransactions),
+  payoutRecords: many(payoutRecords),
 }));
 
 export const templatesRelations = relations(templates, ({ many }) => ({
@@ -304,6 +327,17 @@ export const moonpayTransactionsRelations = relations(moonpayTransactions, ({ on
   }),
 }));
 
+export const payoutRecordsRelations = relations(payoutRecords, ({ one }) => ({
+  platform: one(tradingPlatforms, {
+    fields: [payoutRecords.platformId],
+    references: [tradingPlatforms.id],
+  }),
+  user: one(users, {
+    fields: [payoutRecords.userId],
+    references: [users.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -379,6 +413,12 @@ export const insertMoonpayTransactionSchema = createInsertSchema(moonpayTransact
   completedAt: true,
 });
 
+export const insertPayoutRecordSchema = createInsertSchema(payoutRecords).omit({
+  id: true,
+  createdAt: true,
+  processedAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -406,3 +446,5 @@ export type PlatformRevenueSummary = typeof platformRevenueSummary.$inferSelect;
 export type InsertPlatformRevenueSummary = z.infer<typeof insertPlatformRevenueSummarySchema>;
 export type MoonpayTransaction = typeof moonpayTransactions.$inferSelect;
 export type InsertMoonpayTransaction = z.infer<typeof insertMoonpayTransactionSchema>;
+export type PayoutRecord = typeof payoutRecords.$inferSelect;
+export type InsertPayoutRecord = z.infer<typeof insertPayoutRecordSchema>;

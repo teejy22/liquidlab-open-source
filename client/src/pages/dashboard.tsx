@@ -79,6 +79,25 @@ export default function Dashboard() {
     }
   });
 
+  // Payout queries
+  const { data: payoutHistory } = useQuery({
+    queryKey: ['/api/payouts/platform/1'],
+    queryFn: async () => {
+      const response = await fetch('/api/payouts/platform/1');
+      if (!response.ok) throw new Error('Failed to fetch payout history');
+      return response.json();
+    }
+  });
+
+  const { data: pendingPayouts } = useQuery({
+    queryKey: ['/api/payouts/pending/1'],
+    queryFn: async () => {
+      const response = await fetch('/api/payouts/pending/1');
+      if (!response.ok) throw new Error('Failed to fetch pending payouts');
+      return response.json();
+    }
+  });
+
   if (authLoading || platformsLoading || analyticsLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -295,10 +314,11 @@ export default function Dashboard() {
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Fee Tracking & Revenue</h2>
         
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="transactions">Recent Transactions</TabsTrigger>
             <TabsTrigger value="platforms">Platform Revenues</TabsTrigger>
+            <TabsTrigger value="payouts">Payouts</TabsTrigger>
           </TabsList>
           
           <TabsContent value="overview" className="space-y-4">
@@ -472,6 +492,119 @@ export default function Dashboard() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">No revenue data yet</h3>
                     <p className="text-gray-600">
                       Revenue summaries will appear here as platforms generate trading fees
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="payouts" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Pending Payouts */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Pending Payouts</span>
+                    <Badge variant="secondary">Weekly</Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {pendingPayouts && pendingPayouts.length > 0 ? (
+                    <div className="space-y-3">
+                      {pendingPayouts.map((payout: any, index: number) => (
+                        <div key={index} className="p-3 bg-green-50 rounded-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="font-semibold text-green-900">${payout.amount}</p>
+                            <Badge className="bg-green-600">{payout.period}</Badge>
+                          </div>
+                          <p className="text-sm text-green-700">
+                            Next payout scheduled for end of period
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-6">
+                      <DollarSign className="w-10 h-10 text-gray-400 mx-auto mb-3" />
+                      <p className="text-gray-600">No pending payouts</p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Payouts are processed weekly for amounts over $10
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Payout Configuration */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Payout Settings</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <p className="text-sm text-gray-600 mb-1">Payout Method</p>
+                      <p className="font-semibold">USDC on Arbitrum</p>
+                      <p className="text-xs text-gray-500 mt-1">Low fees, fast transfers</p>
+                    </div>
+                    
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <p className="text-sm text-gray-600 mb-1">Minimum Payout</p>
+                      <p className="font-semibold">$10.00</p>
+                      <p className="text-xs text-gray-500 mt-1">Reduces transaction costs</p>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <p className="text-sm text-gray-600 mb-1">Payout Schedule</p>
+                      <p className="font-semibold">Weekly</p>
+                      <p className="text-xs text-gray-500 mt-1">Every Monday at 00:00 UTC</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Payout History */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Payout History</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {payoutHistory && payoutHistory.length > 0 ? (
+                  <div className="space-y-2">
+                    {payoutHistory.map((payout: any) => (
+                      <div key={payout.id} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <p className="font-semibold">${payout.amount} {payout.currency}</p>
+                          <p className="text-sm text-gray-600">
+                            {new Date(payout.processedAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <Badge variant={payout.status === 'completed' ? 'default' : 'secondary'}>
+                            {payout.status}
+                          </Badge>
+                          {payout.txHash && (
+                            <a 
+                              href={`https://arbiscan.io/tx/${payout.txHash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-blue-600 hover:underline block mt-1"
+                            >
+                              View on Arbiscan
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No payouts yet</h3>
+                    <p className="text-gray-600">
+                      Your payout history will appear here once you receive your first payment
                     </p>
                   </div>
                 )}

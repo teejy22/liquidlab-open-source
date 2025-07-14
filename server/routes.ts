@@ -860,6 +860,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Crypto payout endpoints
+  app.get("/api/payouts/platform/:platformId", async (req, res) => {
+    try {
+      const platformId = parseInt(req.params.platformId);
+      const { status, startDate, endDate } = req.query;
+      
+      // Verify user owns this platform
+      if (req.session.userId) {
+        const platform = await storage.getTradingPlatform(platformId);
+        if (!platform || platform.userId !== req.session.userId) {
+          return res.status(403).json({ error: "Unauthorized" });
+        }
+      }
+      
+      const options: any = {};
+      if (status) options.status = status as string;
+      if (startDate) options.startDate = new Date(startDate as string);
+      if (endDate) options.endDate = new Date(endDate as string);
+      
+      const payouts = await storage.getPayouts(platformId, options);
+      res.json(payouts);
+    } catch (error) {
+      console.error('Error fetching payouts:', error);
+      res.status(500).json({ error: 'Failed to fetch payouts' });
+    }
+  });
+
+  app.get("/api/payouts/pending/:platformId", async (req, res) => {
+    try {
+      const platformId = parseInt(req.params.platformId);
+      
+      // Verify user owns this platform
+      if (req.session.userId) {
+        const platform = await storage.getTradingPlatform(platformId);
+        if (!platform || platform.userId !== req.session.userId) {
+          return res.status(403).json({ error: "Unauthorized" });
+        }
+      }
+      
+      const pendingPayouts = await storage.getPendingPayouts(platformId);
+      res.json(pendingPayouts);
+    } catch (error) {
+      console.error('Error fetching pending payouts:', error);
+      res.status(500).json({ error: 'Failed to fetch pending payouts' });
+    }
+  });
+
+  // Admin-only: Process payouts
+  app.post("/api/payouts/process", requireAdmin, async (req, res) => {
+    try {
+      const { period = 'weekly' } = req.body;
+      
+      if (!process.env.PAYOUT_WALLET_PRIVATE_KEY) {
+        return res.status(500).json({ error: 'Payout wallet not configured' });
+      }
+      
+      // Run async without waiting
+      const { cryptoPayout } = await import('./services/cryptoPayout');
+      cryptoPayout.processPayouts(period as 'weekly' | 'monthly').catch(error => {
+        console.error('Payout processing error:', error);
+      });
+      
+      res.json({ 
+        success: true, 
+        message: 'Payout processing started in background' 
+      });
+    } catch (error) {
+      console.error('Error starting payout processing:', error);
+      res.status(500).json({ error: 'Failed to start payout processing' });
+    }
+  });
+
   // Fee tracking endpoints
   app.post("/api/fees/record", async (req, res) => {
     try {

@@ -7,6 +7,7 @@ import {
   feeTransactions,
   platformRevenueSummary,
   moonpayTransactions,
+  payoutRecords,
   type User, 
   type InsertUser,
   type TradingPlatform,
@@ -21,10 +22,12 @@ import {
   type InsertFeeTransaction,
   type PlatformRevenueSummary,
   type MoonpayTransaction,
-  type InsertMoonpayTransaction
+  type InsertMoonpayTransaction,
+  type PayoutRecord,
+  type InsertPayoutRecord
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, gte, lte } from "drizzle-orm";
+import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User management
@@ -78,6 +81,12 @@ export interface IStorage {
   getAllMoonpayTransactions(options?: { status?: string; startDate?: Date; endDate?: Date }): Promise<MoonpayTransaction[]>;
   updateMoonpayTransactionStatus(transactionId: number, status: string, completedAt?: Date): Promise<void>;
   getMoonpayRevenueSummary(platformId?: number): Promise<{ totalPurchases: string; totalAffiliateFees: string; platformEarnings: string; liquidlabEarnings: string }>;
+  
+  // Crypto payouts
+  recordPayout(payout: InsertPayoutRecord): Promise<PayoutRecord>;
+  getPayouts(platformId: number, options?: { status?: string; startDate?: Date; endDate?: Date }): Promise<PayoutRecord[]>;
+  updatePayoutStatus(payoutId: number, status: string, txHash?: string): Promise<void>;
+  getPendingPayouts(platformId: number): Promise<{ amount: string; period: string }[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -531,6 +540,81 @@ export class DatabaseStorage implements IStorage {
     });
     
     return summary;
+  }
+
+  async recordPayout(payout: InsertPayoutRecord): Promise<PayoutRecord> {
+    const [record] = await db
+      .insert(payoutRecords)
+      .values(payout)
+      .returning();
+    return record;
+  }
+
+  async getPayouts(
+    platformId: number, 
+    options?: { status?: string; startDate?: Date; endDate?: Date }
+  ): Promise<PayoutRecord[]> {
+    let query = db
+      .select()
+      .from(payoutRecords)
+      .where(eq(payoutRecords.platformId, platformId));
+
+    if (options?.status) {
+      query = query.where(eq(payoutRecords.status, options.status));
+    }
+
+    if (options?.startDate) {
+      query = query.where(gte(payoutRecords.periodStart, options.startDate));
+    }
+
+    if (options?.endDate) {
+      query = query.where(lte(payoutRecords.periodEnd, options.endDate));
+    }
+
+    return await query.orderBy(desc(payoutRecords.processedAt));
+  }
+
+  async updatePayoutStatus(payoutId: number, status: string, txHash?: string): Promise<void> {
+    const updates: any = { status };
+    if (txHash) {
+      updates.txHash = txHash;
+    }
+    if (status === 'completed') {
+      updates.processedAt = new Date();
+    }
+
+    await db
+      .update(payoutRecords)
+      .set(updates)
+      .where(eq(payoutRecords.id, payoutId));
+  }
+
+  async getPendingPayouts(platformId: number): Promise<{ amount: string; period: string }[]> {
+    const summaries = await db
+      .select()
+      .from(platformRevenueSummary)
+      .where(
+        and(
+          eq(platformRevenueSummary.platformId, platformId),
+          sql`${platformRevenueSummary.totalRevenue} > 0`
+        )
+      );
+
+    const payouts = await db
+      .select()
+      .from(payoutRecords)
+      .where(eq(payoutRecords.platformId, platformId));
+
+    const paidPeriods = new Set(
+      payouts.map(p => `${p.periodStart.toISOString()}-${p.periodEnd.toISOString()}`)
+    );
+
+    return summaries
+      .filter(s => !paidPeriods.has(`${s.periodStart.toISOString()}-${s.periodEnd.toISOString()}`))
+      .map(s => ({
+        amount: (parseFloat(s.totalRevenue) * 0.7).toFixed(2),
+        period: s.period,
+      }));
   }
 
   private generateRandomCode(prefix: string): string {
