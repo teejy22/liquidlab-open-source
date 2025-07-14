@@ -62,7 +62,7 @@ export default function ExampleTradingPage() {
     const fetchAllMarketData = async () => {
       try {
         const response = await fetch(
-          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_vol=true&include_24hr_change=true'
+          '/api/prices?ids=bitcoin,ethereum,solana'
         );
         
         if (!response.ok) {

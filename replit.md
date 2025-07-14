@@ -192,6 +192,16 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Platform name and ID are dynamically displayed in verification badge
   - Fallback to default logo if no platform exists
 
+### CORS Fix and Builder Preview Update (January 15, 2025)
+- **Builder Preview Enhancement**: Updated builder page to display uploaded logo in the main preview area
+  - Replaced static template preview with uploaded logo when available
+  - Logo displays on dark background for better visibility
+  - Maintains template preview as fallback when no logo is uploaded
+- **Market Data CORS Fix**: Resolved runtime error on example trading page
+  - Switched from direct CoinGecko API calls to proxy endpoint `/api/prices`
+  - Eliminates CORS errors by routing through backend
+  - Existing backend endpoint handles all CoinGecko API requests
+
 ### Builder Simplification
 - **Removed Drag-and-Drop**: Eliminated complex drag-and-drop builder functionality
 - **Single Template System**: Now offers one professional Hyperliquid-style template

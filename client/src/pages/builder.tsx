@@ -466,11 +466,21 @@ export default function Builder() {
                       </div>
                     )}
                     
-                    <img
-                      src={templatePreview}
-                      alt="Trading Platform Preview"
-                      className={`w-full shadow-xl ${(platformName || logoUrl) ? 'rounded-b-lg' : 'rounded-lg'}`}
-                    />
+                    {logoUrl ? (
+                      <div className="bg-gray-900 p-12 flex items-center justify-center">
+                        <img
+                          src={logoUrl}
+                          alt="Your Platform Logo"
+                          className="max-h-64 max-w-full object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <img
+                        src={templatePreview}
+                        alt="Trading Platform Preview"
+                        className={`w-full shadow-xl ${(platformName || logoUrl) ? 'rounded-b-lg' : 'rounded-lg'}`}
+                      />
+                    )}
                     
                     <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                       <Card className="p-4">
