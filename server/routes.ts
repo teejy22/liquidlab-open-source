@@ -138,6 +138,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get user count
       const userCount = await db.select({ count: sql<number>`count(*)` }).from(users);
       
+      // Get MoonPay stats
+      const moonpayStats = await storage.getMoonpayRevenueSummary();
+      
       res.json({
         platforms: allPlatforms,
         recentTransactions: allTransactions,
@@ -149,7 +152,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           platformCount: allPlatforms.length,
           userCount: userCount[0].count,
           transactionCount: allTransactions.length
-        }
+        },
+        moonpayStats
       });
     } catch (error) {
       console.error("Admin dashboard error - detailed:", error);
@@ -523,6 +527,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(data);
     } catch (error) {
       res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  // MoonPay revenue endpoints
+  app.get("/api/moonpay/revenue/:platformId", async (req, res) => {
+    try {
+      const platformId = parseInt(req.params.platformId);
+      const moonpayStats = await storage.getMoonpayRevenueSummary(platformId);
+      res.json(moonpayStats);
+    } catch (error) {
+      console.error('Error fetching MoonPay revenue:', error);
+      res.status(500).json({ message: 'Failed to fetch MoonPay revenue' });
+    }
+  });
+
+  app.get("/api/moonpay/revenue", async (req, res) => {
+    try {
+      const moonpayStats = await storage.getMoonpayRevenueSummary();
+      res.json(moonpayStats);
+    } catch (error) {
+      console.error('Error fetching total MoonPay revenue:', error);
+      res.status(500).json({ message: 'Failed to fetch MoonPay revenue' });
+    }
+  });
+
+  app.post("/api/moonpay/record", async (req, res) => {
+    try {
+      const { platformId, transactionId, purchaseAmount } = req.body;
+      
+      const affiliateFee = (parseFloat(purchaseAmount) * 0.01).toFixed(4); // 1% affiliate fee
+      const platformEarnings = (parseFloat(affiliateFee) * 0.5).toFixed(4); // 50% split
+      const liquidlabEarnings = (parseFloat(affiliateFee) * 0.5).toFixed(4); // 50% split
+      
+      const transaction = await storage.recordMoonpayTransaction({
+        platformId,
+        transactionId,
+        purchaseAmount,
+        affiliateFee,
+        platformEarnings,
+        liquidlabEarnings,
+        currency: 'USD',
+        status: 'completed',
+        completedAt: new Date()
+      });
+      
+      res.json(transaction);
+    } catch (error) {
+      console.error('Error recording MoonPay transaction:', error);
+      res.status(500).json({ message: 'Failed to record MoonPay transaction' });
     }
   });
 

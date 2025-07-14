@@ -6,6 +6,7 @@ import {
   referrals,
   feeTransactions,
   platformRevenueSummary,
+  moonpayTransactions,
   type User, 
   type InsertUser,
   type TradingPlatform,
@@ -18,7 +19,9 @@ import {
   type InsertReferral,
   type FeeTransaction,
   type InsertFeeTransaction,
-  type PlatformRevenueSummary
+  type PlatformRevenueSummary,
+  type MoonpayTransaction,
+  type InsertMoonpayTransaction
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, lte } from "drizzle-orm";
@@ -68,6 +71,13 @@ export interface IStorage {
   updateRevenueSummary(platformId: number, period: string): Promise<void>;
   getRevenueSummary(platformId: number, period: string): Promise<PlatformRevenueSummary | undefined>;
   getAllPlatformRevenues(options?: { period?: string; minRevenue?: number }): Promise<PlatformRevenueSummary[]>;
+  
+  // MoonPay transactions
+  recordMoonpayTransaction(transaction: InsertMoonpayTransaction): Promise<MoonpayTransaction>;
+  getMoonpayTransactions(platformId: number, options?: { status?: string; startDate?: Date; endDate?: Date }): Promise<MoonpayTransaction[]>;
+  getAllMoonpayTransactions(options?: { status?: string; startDate?: Date; endDate?: Date }): Promise<MoonpayTransaction[]>;
+  updateMoonpayTransactionStatus(transactionId: number, status: string, completedAt?: Date): Promise<void>;
+  getMoonpayRevenueSummary(platformId?: number): Promise<{ totalPurchases: string; totalAffiliateFees: string; platformEarnings: string; liquidlabEarnings: string }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -400,6 +410,115 @@ export class DatabaseStorage implements IStorage {
     }
     
     return results;
+  }
+
+  // MoonPay transactions
+  async recordMoonpayTransaction(transaction: InsertMoonpayTransaction): Promise<MoonpayTransaction> {
+    const [result] = await db
+      .insert(moonpayTransactions)
+      .values(transaction)
+      .returning();
+    return result;
+  }
+
+  async getMoonpayTransactions(
+    platformId: number, 
+    options?: { status?: string; startDate?: Date; endDate?: Date }
+  ): Promise<MoonpayTransaction[]> {
+    let query = db
+      .select()
+      .from(moonpayTransactions)
+      .where(eq(moonpayTransactions.platformId, platformId));
+    
+    const conditions = [];
+    
+    if (options?.status) {
+      conditions.push(eq(moonpayTransactions.status, options.status));
+    }
+    
+    if (options?.startDate) {
+      conditions.push(gte(moonpayTransactions.createdAt, options.startDate));
+    }
+    
+    if (options?.endDate) {
+      conditions.push(lte(moonpayTransactions.createdAt, options.endDate));
+    }
+    
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+    }
+    
+    return await query.orderBy(desc(moonpayTransactions.createdAt));
+  }
+
+  async getAllMoonpayTransactions(
+    options?: { status?: string; startDate?: Date; endDate?: Date }
+  ): Promise<MoonpayTransaction[]> {
+    let query = db.select().from(moonpayTransactions);
+    
+    const conditions = [];
+    
+    if (options?.status) {
+      conditions.push(eq(moonpayTransactions.status, options.status));
+    }
+    
+    if (options?.startDate) {
+      conditions.push(gte(moonpayTransactions.createdAt, options.startDate));
+    }
+    
+    if (options?.endDate) {
+      conditions.push(lte(moonpayTransactions.createdAt, options.endDate));
+    }
+    
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+    }
+    
+    return await query.orderBy(desc(moonpayTransactions.createdAt));
+  }
+
+  async updateMoonpayTransactionStatus(
+    transactionId: number, 
+    status: string, 
+    completedAt?: Date
+  ): Promise<void> {
+    await db
+      .update(moonpayTransactions)
+      .set({ 
+        status, 
+        completedAt,
+      })
+      .where(eq(moonpayTransactions.id, transactionId));
+  }
+
+  async getMoonpayRevenueSummary(platformId?: number): Promise<{ 
+    totalPurchases: string; 
+    totalAffiliateFees: string; 
+    platformEarnings: string; 
+    liquidlabEarnings: string 
+  }> {
+    let query = db.select().from(moonpayTransactions)
+      .where(eq(moonpayTransactions.status, 'completed'));
+    
+    if (platformId) {
+      query = query.where(eq(moonpayTransactions.platformId, platformId));
+    }
+    
+    const transactions = await query;
+    
+    const summary = transactions.reduce((acc, tx) => ({
+      totalPurchases: (parseFloat(acc.totalPurchases) + parseFloat(tx.purchaseAmount)).toFixed(2),
+      totalAffiliateFees: (parseFloat(acc.totalAffiliateFees) + parseFloat(tx.affiliateFee)).toFixed(4),
+      platformEarnings: (parseFloat(acc.platformEarnings) + parseFloat(tx.platformEarnings)).toFixed(4),
+      liquidlabEarnings: (parseFloat(acc.liquidlabEarnings) + parseFloat(tx.liquidlabEarnings)).toFixed(4),
+    }), {
+      totalPurchases: '0.00',
+      totalAffiliateFees: '0.00',
+      platformEarnings: '0.00',
+      liquidlabEarnings: '0.00',
+    });
+    
+    return summary;
   }
 
   private generateRandomCode(prefix: string): string {

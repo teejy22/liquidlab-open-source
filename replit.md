@@ -123,6 +123,26 @@ The application uses a monorepo structure with shared types and schemas, enablin
 - **FAQ Updates**: Added detailed explanations about dual revenue streams (trading fees + MoonPay commissions)
 - **Automatic Integration**: MoonPay already built into every platform, no additional setup required
 
+### MoonPay Revenue Dashboard Implementation
+- **Database Schema**: Added moonpayTransactions table to track all MoonPay affiliate transactions
+  - Tracks purchase amounts, affiliate fees, and revenue splits
+  - Separate earnings fields for platform owners and LiquidLab
+  - Status tracking for pending/completed transactions
+- **API Endpoints**: Created MoonPay revenue tracking endpoints
+  - GET /api/moonpay/revenue/:platformId - Platform-specific MoonPay stats
+  - GET /api/moonpay/revenue - Total MoonPay revenue across all platforms
+  - POST /api/moonpay/record - Record new MoonPay transactions
+- **Regular Dashboard Updates**: Platform owners can now see:
+  - Trading Fee Earnings (70% share)
+  - MoonPay Earnings (50% share)
+  - Total Combined Earnings
+  - Revenue split breakdown showing both income streams
+- **Admin Dashboard Updates**: Comprehensive MoonPay section showing:
+  - Total fiat purchases through MoonPay
+  - Total affiliate fees generated (1% of purchases)
+  - LiquidLab's 50% share of MoonPay revenue
+  - Platform owners' 50% share of MoonPay revenue
+
 ### Logo Upload Feature
 - **File Upload Implementation**: Added multer-based logo upload system with 5MB size limit
 - **Supported Formats**: PNG, JPG, JPEG, GIF, and WebP images

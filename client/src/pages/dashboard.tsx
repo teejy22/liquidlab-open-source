@@ -69,6 +69,16 @@ export default function Dashboard() {
     }
   });
 
+  // MoonPay revenue query
+  const { data: moonpayRevenue } = useQuery({
+    queryKey: ['/api/moonpay/revenue/1'],
+    queryFn: async () => {
+      const response = await fetch('/api/moonpay/revenue/1');
+      if (!response.ok) throw new Error('Failed to fetch MoonPay revenue');
+      return response.json();
+    }
+  });
+
   if (authLoading || platformsLoading || analyticsLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -292,19 +302,36 @@ export default function Dashboard() {
           </TabsList>
           
           <TabsContent value="overview" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600">Your Total Earnings (70%)</p>
+                      <p className="text-sm text-gray-600">Trading Fee Earnings (70%)</p>
                       <p className="text-2xl font-bold text-gray-900">
                         ${(platformRevenues?.reduce((sum: number, r: any) => sum + parseFloat(r.totalFees || 0), 0) * 0.70).toFixed(2) || '0.00'}
                       </p>
-                      <p className="text-sm text-green-600">Your share from all platforms</p>
+                      <p className="text-sm text-green-600">Your share from trades</p>
                     </div>
                     <div className="bg-green-500/10 p-3 rounded-full">
                       <Receipt className="w-6 h-6 text-green-500" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600">MoonPay Earnings (50%)</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        ${moonpayRevenue?.platformEarnings || '0.00'}
+                      </p>
+                      <p className="text-sm text-purple-600">From fiat purchases</p>
+                    </div>
+                    <div className="bg-purple-500/10 p-3 rounded-full">
+                      <DollarSign className="w-6 h-6 text-purple-500" />
                     </div>
                   </div>
                 </CardContent>
@@ -314,11 +341,11 @@ export default function Dashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600">Platform Earnings (70%)</p>
+                      <p className="text-sm text-gray-600">Total Combined Earnings</p>
                       <p className="text-2xl font-bold text-gray-900">
-                        ${platformRevenues?.reduce((sum: number, r: any) => sum + parseFloat(r.platformEarnings || 0), 0).toFixed(2) || '0.00'}
+                        ${((platformRevenues?.reduce((sum: number, r: any) => sum + parseFloat(r.totalFees || 0), 0) * 0.70) + parseFloat(moonpayRevenue?.platformEarnings || '0')).toFixed(2)}
                       </p>
-                      <p className="text-sm text-blue-600">Distributed to platform owners</p>
+                      <p className="text-sm text-blue-600">Trading + MoonPay</p>
                     </div>
                     <div className="bg-blue-500/10 p-3 rounded-full">
                       <PieChart className="w-6 h-6 text-blue-500" />
@@ -353,6 +380,25 @@ export default function Dashboard() {
                       <p className="font-semibold">70% / 30%</p>
                       <p className="text-sm text-gray-600">Platform / LiquidLab</p>
                     </div>
+                  </div>
+                  <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
+                    <div>
+                      <p className="font-semibold">MoonPay Fiat Purchases</p>
+                      <p className="text-sm text-gray-600">1% affiliate commission</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold">50% / 50%</p>
+                      <p className="text-sm text-gray-600">Platform / LiquidLab</p>
+                    </div>
+                  </div>
+                  <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                    <p className="text-sm font-semibold text-blue-900">MoonPay Stats</p>
+                    <p className="text-xs text-blue-700 mt-1">
+                      Total Fiat Purchases: ${moonpayRevenue?.totalPurchases || '0.00'}
+                    </p>
+                    <p className="text-xs text-blue-700">
+                      Your Earnings: ${moonpayRevenue?.platformEarnings || '0.00'} (50% of fees)
+                    </p>
                   </div>
                 </div>
               </CardContent>

@@ -207,6 +207,80 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
+        {/* MoonPay Revenue Section */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">MoonPay Affiliate Revenue</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card className="border-2 border-purple-500">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Total Fiat Purchases</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      ${dashboardData?.moonpayStats?.totalPurchases || '0.00'}
+                    </p>
+                    <p className="text-sm text-purple-600">Crypto bought via MoonPay</p>
+                  </div>
+                  <div className="bg-purple-500/10 p-3 rounded-full">
+                    <DollarSign className="w-6 h-6 text-purple-500" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-indigo-500">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Total Affiliate Fees (1%)</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      ${dashboardData?.moonpayStats?.totalAffiliateFees || '0.00'}
+                    </p>
+                    <p className="text-sm text-indigo-600">1% of purchases</p>
+                  </div>
+                  <div className="bg-indigo-500/10 p-3 rounded-full">
+                    <Activity className="w-6 h-6 text-indigo-500" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-red-500">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">LiquidLab MoonPay (50%)</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      ${dashboardData?.moonpayStats?.liquidlabEarnings || '0.00'}
+                    </p>
+                    <p className="text-sm text-red-600">LiquidLab's share</p>
+                  </div>
+                  <div className="bg-red-500/10 p-3 rounded-full">
+                    <BarChart3 className="w-6 h-6 text-red-500" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-green-500">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Platform MoonPay (50%)</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      ${dashboardData?.moonpayStats?.platformEarnings || '0.00'}
+                    </p>
+                    <p className="text-sm text-green-600">Platform owners' share</p>
+                  </div>
+                  <div className="bg-green-500/10 p-3 rounded-full">
+                    <TrendingUp className="w-6 h-6 text-green-500" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
         {/* Detailed Data Tabs */}
         <Tabs defaultValue="platforms" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
