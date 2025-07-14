@@ -105,8 +105,8 @@ export default function Dashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Revenue</p>
-                <p className="text-2xl font-bold text-gray-900">$2,847</p>
+                <p className="text-sm text-gray-600">Your Earnings (70%)</p>
+                <p className="text-2xl font-bold text-gray-900">$1,993</p>
                 <p className="text-sm text-green-600">+12.5% from last month</p>
               </div>
               <div className="bg-green-500/10 p-3 rounded-full">
@@ -292,16 +292,16 @@ export default function Dashboard() {
           </TabsList>
           
           <TabsContent value="overview" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600">Total Collected Fees</p>
+                      <p className="text-sm text-gray-600">Your Total Earnings (70%)</p>
                       <p className="text-2xl font-bold text-gray-900">
-                        ${platformRevenues?.reduce((sum: number, r: any) => sum + parseFloat(r.totalFees || 0), 0).toFixed(2) || '0.00'}
+                        ${(platformRevenues?.reduce((sum: number, r: any) => sum + parseFloat(r.totalFees || 0), 0) * 0.70).toFixed(2) || '0.00'}
                       </p>
-                      <p className="text-sm text-green-600">All platforms combined</p>
+                      <p className="text-sm text-green-600">Your share from all platforms</p>
                     </div>
                     <div className="bg-green-500/10 p-3 rounded-full">
                       <Receipt className="w-6 h-6 text-green-500" />
@@ -322,23 +322,6 @@ export default function Dashboard() {
                     </div>
                     <div className="bg-blue-500/10 p-3 rounded-full">
                       <PieChart className="w-6 h-6 text-blue-500" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-600">LiquidLab Revenue (30%)</p>
-                      <p className="text-2xl font-bold text-gray-900">
-                        ${platformRevenues?.reduce((sum: number, r: any) => sum + parseFloat(r.liquidlabEarnings || 0), 0).toFixed(2) || '0.00'}
-                      </p>
-                      <p className="text-sm text-purple-600">Platform maintenance & support</p>
-                    </div>
-                    <div className="bg-purple-500/10 p-3 rounded-full">
-                      <DollarSign className="w-6 h-6 text-purple-500" />
                     </div>
                   </div>
                 </CardContent>

@@ -25,15 +25,19 @@ export default function Login() {
     try {
       await apiRequest("POST", "/api/auth/signin", formData);
       
-      // Invalidate auth query to refresh user state
+      // Invalidate and wait for auth query to refresh
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
       
       toast({
         title: "Welcome Back!",
-        description: "Successfully logged in.",
+        description: "Successfully logged in. Redirecting...",
       });
       
-      setLocation("/dashboard");
+      // Navigate to dashboard
+      setTimeout(() => {
+        setLocation("/dashboard");
+      }, 500);
     } catch (error: any) {
       toast({
         title: "Login Failed",
