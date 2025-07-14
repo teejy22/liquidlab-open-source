@@ -10,6 +10,7 @@ import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, BarChart3, Volume2, Ac
 import liquidLabLogo from "@assets/Trade (6)_1752434284086.png";
 import TradingViewWidget from "@/components/charts/tradingview-widget";
 import { TrustIndicators } from "@/components/TrustIndicators";
+import { PlatformVerificationBadge } from "@/components/PlatformVerificationBadge";
 
 interface MarketData {
   price: string;
@@ -126,10 +127,15 @@ export default function ExampleTradingPage() {
             <img 
               src={liquidLabLogo} 
               alt="LiquidLab" 
-              className="h-16 w-auto"
+              className="h-24 w-auto"
             />
           </div>
           <div className="flex items-center space-x-4">
+            <PlatformVerificationBadge
+              platformId={1}
+              platformName="Example Trading Platform"
+              isVerified={true}
+            />
             <span className="text-sm text-gray-400">Powered by LiquidLab</span>
           </div>
         </div>
@@ -328,7 +334,7 @@ export default function ExampleTradingPage() {
                       <Button
                         variant={side === "sell" ? "default" : "outline"}
                         onClick={() => setSide("sell")}
-                        className={side === "sell" ? "bg-red-600 hover:bg-red-700" : ""}
+                        className={side === "sell" ? "bg-red-600 hover:bg-red-700 text-white" : ""}
                       >
                         Sell
                       </Button>
@@ -412,6 +418,115 @@ export default function ExampleTradingPage() {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Positions Area */}
+      <div className="bg-[#0f0f0f] border-t border-gray-800 p-4">
+        <div className="max-w-7xl mx-auto">
+          <h3 className="text-lg font-semibold mb-4">Positions</h3>
+          
+          {/* Position Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <Card className="bg-[#131313] border-gray-800">
+              <CardContent className="p-4">
+                <div className="text-xs text-gray-400 mb-1">Total Collateral</div>
+                <div className="text-xl font-semibold">$125,430.45</div>
+              </CardContent>
+            </Card>
+            <Card className="bg-[#131313] border-gray-800">
+              <CardContent className="p-4">
+                <div className="text-xs text-gray-400 mb-1">Free Collateral</div>
+                <div className="text-xl font-semibold">$45,230.12</div>
+              </CardContent>
+            </Card>
+            <Card className="bg-[#131313] border-gray-800">
+              <CardContent className="p-4">
+                <div className="text-xs text-gray-400 mb-1">Unrealized PnL</div>
+                <div className="text-xl font-semibold text-green-400">+$3,456.78</div>
+                <div className="text-xs text-green-400">+2.75%</div>
+              </CardContent>
+            </Card>
+            <Card className="bg-[#131313] border-gray-800">
+              <CardContent className="p-4">
+                <div className="text-xs text-gray-400 mb-1">Margin Ratio</div>
+                <div className="text-xl font-semibold">35.2%</div>
+                <div className="w-full bg-gray-700 rounded-full h-1.5 mt-2">
+                  <div className="bg-green-400 h-1.5 rounded-full" style={{width: '35.2%'}}></div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Positions Table */}
+          <Card className="bg-[#131313] border-gray-800">
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="border-b border-gray-800">
+                    <tr className="text-xs text-gray-400">
+                      <th className="text-left p-4">Symbol</th>
+                      <th className="text-left p-4">Side</th>
+                      <th className="text-right p-4">Size</th>
+                      <th className="text-right p-4">Entry Price</th>
+                      <th className="text-right p-4">Mark Price</th>
+                      <th className="text-right p-4">Liq. Price</th>
+                      <th className="text-right p-4">PnL (USD)</th>
+                      <th className="text-right p-4">PnL (%)</th>
+                      <th className="text-center p-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-gray-800 hover:bg-gray-900/50">
+                      <td className="p-4">BTC-PERP</td>
+                      <td className="p-4">
+                        <span className="text-green-400">LONG</span>
+                      </td>
+                      <td className="text-right p-4">0.5 BTC</td>
+                      <td className="text-right p-4">$64,230</td>
+                      <td className="text-right p-4">$65,890</td>
+                      <td className="text-right p-4 text-orange-400">$58,450</td>
+                      <td className="text-right p-4 text-green-400">+$830.00</td>
+                      <td className="text-right p-4 text-green-400">+2.58%</td>
+                      <td className="text-center p-4">
+                        <Button size="sm" variant="outline" className="text-xs">Close</Button>
+                      </td>
+                    </tr>
+                    <tr className="border-b border-gray-800 hover:bg-gray-900/50">
+                      <td className="p-4">ETH-PERP</td>
+                      <td className="p-4">
+                        <span className="text-red-400">SHORT</span>
+                      </td>
+                      <td className="text-right p-4">10 ETH</td>
+                      <td className="text-right p-4">$3,450</td>
+                      <td className="text-right p-4">$3,380</td>
+                      <td className="text-right p-4 text-orange-400">$3,890</td>
+                      <td className="text-right p-4 text-green-400">+$700.00</td>
+                      <td className="text-right p-4 text-green-400">+2.03%</td>
+                      <td className="text-center p-4">
+                        <Button size="sm" variant="outline" className="text-xs">Close</Button>
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-900/50">
+                      <td className="p-4">SOL-PERP</td>
+                      <td className="p-4">
+                        <span className="text-green-400">LONG</span>
+                      </td>
+                      <td className="text-right p-4">100 SOL</td>
+                      <td className="text-right p-4">$98.50</td>
+                      <td className="text-right p-4">$102.30</td>
+                      <td className="text-right p-4 text-orange-400">$78.20</td>
+                      <td className="text-right p-4 text-green-400">+$380.00</td>
+                      <td className="text-right p-4 text-green-400">+3.86%</td>
+                      <td className="text-center p-4">
+                        <Button size="sm" variant="outline" className="text-xs">Close</Button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
