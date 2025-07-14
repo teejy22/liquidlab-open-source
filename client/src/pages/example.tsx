@@ -334,7 +334,7 @@ export default function ExampleTradingPage() {
                       <Button
                         variant="outline"
                         onClick={() => setSide("sell")}
-                        className={side === "sell" ? "bg-red-600 hover:bg-red-700 text-white border-red-600" : "border-gray-700 hover:border-red-600"}
+                        className={side === "sell" ? "bg-red-600 hover:bg-red-700 text-white border-red-600" : "text-gray-300 border-gray-700 hover:border-red-600 hover:text-red-400"}
                       >
                         Sell
                       </Button>
@@ -421,112 +421,136 @@ export default function ExampleTradingPage() {
         </div>
       </div>
 
-      {/* Positions Area */}
-      <div className="bg-[#0f0f0f] border-t border-gray-800 p-4">
-        <div className="max-w-7xl mx-auto">
-          <h3 className="text-lg font-semibold mb-4">Positions</h3>
-          
-          {/* Position Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card className="bg-[#131313] border-gray-800">
-              <CardContent className="p-4">
-                <div className="text-xs text-gray-400 mb-1">Total Collateral</div>
-                <div className="text-xl font-semibold text-white">$125,430.45</div>
-              </CardContent>
-            </Card>
-            <Card className="bg-[#131313] border-gray-800">
-              <CardContent className="p-4">
-                <div className="text-xs text-gray-400 mb-1">Free Collateral</div>
-                <div className="text-xl font-semibold text-white">$45,230.12</div>
-              </CardContent>
-            </Card>
-            <Card className="bg-[#131313] border-gray-800">
-              <CardContent className="p-4">
-                <div className="text-xs text-gray-400 mb-1">Unrealized PnL</div>
-                <div className="text-xl font-semibold text-green-400">+$3,456.78</div>
-                <div className="text-xs text-green-400">+2.75%</div>
-              </CardContent>
-            </Card>
-            <Card className="bg-[#131313] border-gray-800">
-              <CardContent className="p-4">
-                <div className="text-xs text-gray-400 mb-1">Margin Ratio</div>
-                <div className="text-xl font-semibold">35.2%</div>
-                <div className="w-full bg-gray-700 rounded-full h-1.5 mt-2">
-                  <div className="bg-green-400 h-1.5 rounded-full" style={{width: '35.2%'}}></div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Positions Table */}
-          <Card className="bg-[#131313] border-gray-800">
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="border-b border-gray-800">
-                    <tr className="text-xs text-gray-400">
-                      <th className="text-left p-4">Symbol</th>
-                      <th className="text-left p-4">Side</th>
-                      <th className="text-right p-4">Size</th>
-                      <th className="text-right p-4">Entry Price</th>
-                      <th className="text-right p-4">Mark Price</th>
-                      <th className="text-right p-4">Liq. Price</th>
-                      <th className="text-right p-4">PnL (USD)</th>
-                      <th className="text-right p-4">PnL (%)</th>
-                      <th className="text-center p-4">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b border-gray-800 hover:bg-gray-900/50">
-                      <td className="p-4">BTC-PERP</td>
-                      <td className="p-4">
-                        <span className="text-green-400">LONG</span>
-                      </td>
-                      <td className="text-right p-4">0.5 BTC</td>
-                      <td className="text-right p-4">$64,230</td>
-                      <td className="text-right p-4">$65,890</td>
-                      <td className="text-right p-4 text-orange-400">$58,450</td>
-                      <td className="text-right p-4 text-green-400">+$830.00</td>
-                      <td className="text-right p-4 text-green-400">+2.58%</td>
-                      <td className="text-center p-4">
-                        <Button size="sm" variant="outline" className="text-xs">Close</Button>
-                      </td>
-                    </tr>
-                    <tr className="border-b border-gray-800 hover:bg-gray-900/50">
-                      <td className="p-4">ETH-PERP</td>
-                      <td className="p-4">
-                        <span className="text-red-400">SHORT</span>
-                      </td>
-                      <td className="text-right p-4">10 ETH</td>
-                      <td className="text-right p-4">$3,450</td>
-                      <td className="text-right p-4">$3,380</td>
-                      <td className="text-right p-4 text-orange-400">$3,890</td>
-                      <td className="text-right p-4 text-green-400">+$700.00</td>
-                      <td className="text-right p-4 text-green-400">+2.03%</td>
-                      <td className="text-center p-4">
-                        <Button size="sm" variant="outline" className="text-xs">Close</Button>
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-gray-900/50">
-                      <td className="p-4">SOL-PERP</td>
-                      <td className="p-4">
-                        <span className="text-green-400">LONG</span>
-                      </td>
-                      <td className="text-right p-4">100 SOL</td>
-                      <td className="text-right p-4">$98.50</td>
-                      <td className="text-right p-4">$102.30</td>
-                      <td className="text-right p-4 text-orange-400">$78.20</td>
-                      <td className="text-right p-4 text-green-400">+$380.00</td>
-                      <td className="text-right p-4 text-green-400">+3.86%</td>
-                      <td className="text-center p-4">
-                        <Button size="sm" variant="outline" className="text-xs">Close</Button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+      {/* Positions Area - Hyperliquid Style */}
+      <div className="bg-[#0a0a0a] border-t border-gray-900">
+        {/* Account Summary Bar */}
+        <div className="bg-[#0f0f0f] border-b border-gray-900 px-4 py-2">
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center space-x-8">
+              <div className="flex items-center space-x-2">
+                <span className="text-gray-500">Account Value:</span>
+                <span className="font-mono text-white">$125,430.45</span>
               </div>
-            </CardContent>
-          </Card>
+              <div className="flex items-center space-x-2">
+                <span className="text-gray-500">Margin Used:</span>
+                <span className="font-mono text-white">$80,200.33</span>
+                <span className="text-gray-400">(63.9%)</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-gray-500">Free Collateral:</span>
+                <span className="font-mono text-white">$45,230.12</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-gray-500">uPnL:</span>
+                <span className="font-mono text-green-400">+$1,910.00</span>
+                <span className="text-green-400">(+1.54%)</span>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-gray-400 hover:text-white">
+                Deposit
+              </Button>
+              <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-gray-400 hover:text-white">
+                Withdraw
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Positions Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead className="bg-[#0f0f0f] border-b border-gray-900 sticky top-0">
+              <tr className="text-gray-500">
+                <th className="text-left py-2 px-4 font-normal">Market</th>
+                <th className="text-center py-2 px-2 font-normal">Side</th>
+                <th className="text-right py-2 px-2 font-normal">Size</th>
+                <th className="text-right py-2 px-2 font-normal">Value</th>
+                <th className="text-right py-2 px-2 font-normal">Entry</th>
+                <th className="text-right py-2 px-2 font-normal">Mark</th>
+                <th className="text-right py-2 px-2 font-normal">Liq</th>
+                <th className="text-right py-2 px-2 font-normal">PnL</th>
+                <th className="text-right py-2 px-2 font-normal">PnL %</th>
+                <th className="text-right py-2 px-2 font-normal">Margin</th>
+                <th className="text-center py-2 px-2 font-normal">TP/SL</th>
+                <th className="text-center py-2 px-4 font-normal">Close</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-gray-900 hover:bg-[#0f0f0f] transition-colors">
+                <td className="py-2 px-4 font-mono">BTC-USD</td>
+                <td className="py-2 px-2 text-center">
+                  <span className="text-green-400 font-semibold">LONG</span>
+                </td>
+                <td className="py-2 px-2 text-right font-mono">0.5</td>
+                <td className="py-2 px-2 text-right font-mono text-gray-300">$32,945</td>
+                <td className="py-2 px-2 text-right font-mono">64,230.0</td>
+                <td className="py-2 px-2 text-right font-mono">65,890.0</td>
+                <td className="py-2 px-2 text-right font-mono text-orange-400">58,450.0</td>
+                <td className="py-2 px-2 text-right font-mono text-green-400">+$830.00</td>
+                <td className="py-2 px-2 text-right text-green-400">+2.58%</td>
+                <td className="py-2 px-2 text-right font-mono">$3,294</td>
+                <td className="py-2 px-2 text-center">
+                  <Button size="sm" variant="ghost" className="h-5 px-1 text-[10px] text-gray-400 hover:text-white">
+                    Set
+                  </Button>
+                </td>
+                <td className="py-2 px-4 text-center">
+                  <Button size="sm" variant="ghost" className="h-5 px-2 text-[10px] text-gray-400 hover:text-white hover:bg-red-900/20">
+                    Close
+                  </Button>
+                </td>
+              </tr>
+              <tr className="border-b border-gray-900 hover:bg-[#0f0f0f] transition-colors">
+                <td className="py-2 px-4 font-mono">ETH-USD</td>
+                <td className="py-2 px-2 text-center">
+                  <span className="text-red-400 font-semibold">SHORT</span>
+                </td>
+                <td className="py-2 px-2 text-right font-mono">10.0</td>
+                <td className="py-2 px-2 text-right font-mono text-gray-300">$33,800</td>
+                <td className="py-2 px-2 text-right font-mono">3,450.00</td>
+                <td className="py-2 px-2 text-right font-mono">3,380.00</td>
+                <td className="py-2 px-2 text-right font-mono text-orange-400">3,890.00</td>
+                <td className="py-2 px-2 text-right font-mono text-green-400">+$700.00</td>
+                <td className="py-2 px-2 text-right text-green-400">+2.03%</td>
+                <td className="py-2 px-2 text-right font-mono">$3,380</td>
+                <td className="py-2 px-2 text-center">
+                  <Button size="sm" variant="ghost" className="h-5 px-1 text-[10px] text-gray-400 hover:text-white">
+                    Set
+                  </Button>
+                </td>
+                <td className="py-2 px-4 text-center">
+                  <Button size="sm" variant="ghost" className="h-5 px-2 text-[10px] text-gray-400 hover:text-white hover:bg-red-900/20">
+                    Close
+                  </Button>
+                </td>
+              </tr>
+              <tr className="border-b border-gray-900 hover:bg-[#0f0f0f] transition-colors">
+                <td className="py-2 px-4 font-mono">SOL-USD</td>
+                <td className="py-2 px-2 text-center">
+                  <span className="text-green-400 font-semibold">LONG</span>
+                </td>
+                <td className="py-2 px-2 text-right font-mono">100.0</td>
+                <td className="py-2 px-2 text-right font-mono text-gray-300">$10,230</td>
+                <td className="py-2 px-2 text-right font-mono">98.50</td>
+                <td className="py-2 px-2 text-right font-mono">102.30</td>
+                <td className="py-2 px-2 text-right font-mono text-orange-400">78.20</td>
+                <td className="py-2 px-2 text-right font-mono text-green-400">+$380.00</td>
+                <td className="py-2 px-2 text-right text-green-400">+3.86%</td>
+                <td className="py-2 px-2 text-right font-mono">$1,023</td>
+                <td className="py-2 px-2 text-center">
+                  <Button size="sm" variant="ghost" className="h-5 px-1 text-[10px] text-gray-400 hover:text-white">
+                    Set
+                  </Button>
+                </td>
+                <td className="py-2 px-4 text-center">
+                  <Button size="sm" variant="ghost" className="h-5 px-2 text-[10px] text-gray-400 hover:text-white hover:bg-red-900/20">
+                    Close
+                  </Button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
