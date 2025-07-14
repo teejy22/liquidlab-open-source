@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { HyperliquidMarkets } from './HyperliquidMarkets';
 import { HyperliquidSpotMarkets } from './HyperliquidSpotMarkets';
@@ -31,15 +31,15 @@ export function HyperliquidTradingInterface() {
 
   const address = user?.wallet?.address || '';
 
-  // Get TradingView symbol based on selected market
-  const getTradingViewSymbol = () => {
+  // Get TradingView symbol based on selected market - memoized to prevent unnecessary re-renders
+  const tradingViewSymbol = useMemo(() => {
     if (tradingMode === 'perp' && selectedPerpMarket) {
       return `${selectedPerpMarket.name}USDT`;
     } else if (tradingMode === 'spot' && selectedSpotMarket) {
       return `${selectedSpotMarket.token}USDT`;
     }
     return 'BTCUSDT';
-  };
+  }, [tradingMode, selectedPerpMarket?.name, selectedSpotMarket?.token]);
 
   return (
     <div className="flex flex-col bg-black text-white" style={{ height: '600px' }}>
@@ -130,7 +130,7 @@ export function HyperliquidTradingInterface() {
           {/* Chart */}
           <div className="flex-1">
             <TradingViewChart 
-              symbol={getTradingViewSymbol()}
+              symbol={tradingViewSymbol}
               theme="dark"
             />
           </div>
