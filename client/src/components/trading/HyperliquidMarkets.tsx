@@ -88,10 +88,10 @@ export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="p-4 border-b border-gray-800">
-        <h3 className="text-sm font-semibold text-gray-400">PERPETUAL MARKETS</h3>
+      <div className="p-2 border-b border-gray-800">
+        <h3 className="text-xs font-semibold text-gray-400">PERPETUAL MARKETS</h3>
       </div>
-      <div className="space-y-1 p-2">
+      <div className="space-y-0.5 p-1">
         {sortedMarkets.map((market) => {
           const price = prices[market.name];
           const isSelected = selectedMarket === market.name;
@@ -99,23 +99,25 @@ export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market
           return (
             <Card
               key={market.name}
-              className={`p-3 cursor-pointer transition-colors ${
+              className={`p-2 cursor-pointer transition-all group ${
                 isSelected ? 'bg-gray-800 border-blue-500' : 'hover:bg-gray-800/50 border-transparent'
               }`}
               onClick={() => handleMarketClick(market.name)}
             >
-              <div className="flex justify-between items-center">
+              <div className={`flex justify-between items-center ${
+                isSelected ? '' : 'group-hover:text-white'
+              }`}>
                 <div>
-                  <div className="font-semibold text-sm">{market.name}-USD</div>
-                  <div className="text-xs text-gray-400">
-                    {market.maxLeverage}x leverage
+                  <div className="font-semibold text-xs">{market.name}-USD</div>
+                  <div className="text-[10px] text-gray-400 group-hover:text-gray-300">
+                    {market.maxLeverage}x
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-mono text-sm">
+                  <div className="font-mono text-xs">
                     ${price?.price ? parseFloat(price.price).toLocaleString() : '---'}
                   </div>
-                  <div className={`text-xs ${price?.change24h && price.change24h > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  <div className={`text-[10px] ${price?.change24h && price.change24h > 0 ? 'text-green-400' : 'text-red-400'}`}>
                     {price?.change24h ? `${price.change24h > 0 ? '+' : ''}${price.change24h.toFixed(2)}%` : '0.00%'}
                   </div>
                 </div>

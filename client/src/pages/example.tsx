@@ -181,7 +181,7 @@ export default function ExampleTradingPage() {
       {/* Main Trading Area - Fixed Height */}
       <div className="flex overflow-hidden" style={{ height: '450px' }}>
         {/* Markets Sidebar - Real Hyperliquid Markets */}
-        <div className="w-64 bg-[#0f0f0f] border-r border-gray-800 overflow-hidden">
+        <div className="w-44 bg-[#0f0f0f] border-r border-gray-800 overflow-hidden">
           <HyperliquidMarkets 
             onSelectMarket={(market) => {
               setSelectedPair({ symbol: market, display: `${market}/USD` });
