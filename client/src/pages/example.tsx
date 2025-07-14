@@ -871,6 +871,18 @@ export default function Example() {
                       {side === "buy" ? "Buy Long" : "Sell Short"}
                     </Button>
                   </TabsContent>
+                  
+                  <TabsContent value="cross" className="space-y-4 mt-4">
+                    <div className="text-center text-gray-400 py-8">
+                      Cross margin trading coming soon
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="isolated" className="space-y-4 mt-4">
+                    <div className="text-center text-gray-400 py-8">
+                      Isolated margin trading coming soon
+                    </div>
+                  </TabsContent>
                 </Tabs>
               </div>
             )}
@@ -879,7 +891,6 @@ export default function Example() {
         </div>
       </div>
       
-      {/* Security Footer */}
       <SecurityFooter 
         platformName="Example Trading Platform"
         platformId={1}
