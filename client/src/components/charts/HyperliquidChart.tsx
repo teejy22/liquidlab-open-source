@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import * as LightweightCharts from 'lightweight-charts';
+import { createChart, ColorType, CandlestickSeries } from 'lightweight-charts';
 
 interface HyperliquidChartProps {
   symbol: string;
@@ -19,8 +19,8 @@ export default function HyperliquidChart({
   className = ""
 }: HyperliquidChartProps) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<LightweightCharts.IChartApi | null>(null);
-  const candleSeriesRef = useRef<LightweightCharts.ISeriesApi<"Candlestick"> | null>(null);
+  const chartRef = useRef<any>(null);
+  const candleSeriesRef = useRef<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPrice, setCurrentPrice] = useState<number | null>(null);
 
@@ -28,9 +28,9 @@ export default function HyperliquidChart({
     if (!chartContainerRef.current) return;
 
     // Create chart with Hyperliquid-style dark theme
-    const chart = LightweightCharts.createChart(chartContainerRef.current, {
+    const chart = createChart(chartContainerRef.current, {
       layout: {
-        background: { type: LightweightCharts.ColorType.Solid, color: '#0a0a0a' },
+        background: { type: ColorType.Solid, color: '#0a0a0a' },
         textColor: '#d1d4dc',
       },
       grid: {
@@ -75,7 +75,7 @@ export default function HyperliquidChart({
     chartRef.current = chart;
 
     // Create candlestick series with Hyperliquid colors  
-    const candleSeries = chart.addCandlestickSeries({
+    const candleSeries = chart.addSeries(CandlestickSeries, {
       upColor: '#22c55e',
       downColor: '#ef4444',
       borderUpColor: '#22c55e',
@@ -106,11 +106,11 @@ export default function HyperliquidChart({
         // Generate synthetic candle data based on current price
         // In production, you'd fetch historical data from Hyperliquid
         const now = Math.floor(Date.now() / 1000);
-        const candleData: CandlestickData[] = [];
+        const candleData: any[] = [];
         
         // Generate 100 candles of historical data
         for (let i = 100; i >= 0; i--) {
-          const time = (now - i * getIntervalSeconds(interval)) as Time;
+          const time = now - i * getIntervalSeconds(interval);
           const basePrice = currentPrice * (1 - i * 0.0001); // Slight trend
           const volatility = 0.002; // 0.2% volatility
           
@@ -150,7 +150,7 @@ export default function HyperliquidChart({
           setCurrentPrice(newPrice);
           
           // Update the last candle with new price
-          const now = Math.floor(Date.now() / 1000) as Time;
+          const now = Math.floor(Date.now() / 1000);
           candleSeriesRef.current.update({
             time: now,
             open: newPrice * (1 + (Math.random() - 0.5) * 0.001),
