@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, BarChart3, Volume2, Activity } from "lucide-react";
+import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, BarChart3, Volume2, Activity, X } from "lucide-react";
 import liquidLabLogo from "@assets/Trade (6)_1752434284086.png";
 import TradingViewWidget from "@/components/charts/TradingViewWidget";
 import { TrustIndicators } from "@/components/TrustIndicators";
@@ -18,6 +18,7 @@ import { useHyperliquidTrading } from "@/hooks/useHyperliquidTrading";
 import { HyperliquidOrder } from "@/lib/hyperliquid-signing";
 import { HyperliquidTradeForm } from "@/components/trading/HyperliquidTradeForm";
 import { HyperliquidPositions } from "@/components/trading/HyperliquidPositions";
+import { TestWalletInput } from "@/components/TestWalletInput";
 
 interface MarketData {
   price: string;
@@ -34,6 +35,7 @@ export default function ExampleTradingPage() {
   const [orderType, setOrderType] = useState("limit");
   const [timeInterval, setTimeInterval] = useState("15m");
   const [isLoading, setIsLoading] = useState(true);
+  const [showTestWallet, setShowTestWallet] = useState(false);
   const [marketStats, setMarketStats] = useState<MarketData>({
     price: "0.00",
     change24h: "+0.00%",
@@ -150,6 +152,14 @@ export default function ExampleTradingPage() {
               isVerified={true}
             />
             <WalletConnect />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowTestWallet(!showTestWallet)}
+              className="text-xs hover:bg-gray-800"
+            >
+              Test Wallet
+            </Button>
             <span className="text-sm text-gray-400">Powered by LiquidLab</span>
           </div>
         </div>
@@ -161,6 +171,23 @@ export default function ExampleTradingPage() {
         platformId={platformData?.id || 1}
         builderCode={platformData?.config?.builderCode || "LIQUIDLAB2025"}
       />
+
+      {/* Test Wallet Input Modal */}
+      {showTestWallet && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute -top-10 right-0 text-white hover:bg-gray-800"
+              onClick={() => setShowTestWallet(false)}
+            >
+              <X className="w-4 h-4" />
+            </Button>
+            <TestWalletInput />
+          </div>
+        </div>
+      )}
 
       {/* Main Trading Area - Fixed Height */}
       <div className="flex overflow-hidden" style={{ height: '450px' }}>
