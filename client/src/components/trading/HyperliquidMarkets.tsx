@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 interface HyperliquidMarket {
   name: string;
@@ -12,6 +14,7 @@ interface HyperliquidMarket {
 interface MarketPrice {
   price: string;
   change24h: number;
+  volume24h?: string;
 }
 
 export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market: string) => void }) {
@@ -19,6 +22,7 @@ export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market
   const [prices, setPrices] = useState<{[key: string]: MarketPrice}>({});
   const [loading, setLoading] = useState(true);
   const [selectedMarket, setSelectedMarket] = useState("BTC");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchMarkets();
@@ -48,11 +52,21 @@ export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market
       
       // Transform the data into a more usable format
       const priceMap: {[key: string]: MarketPrice} = {};
-      Object.entries(data).forEach(([symbol, price]: [string, any]) => {
-        priceMap[symbol] = {
-          price: price.toString(),
-          change24h: 0 // Hyperliquid doesn't provide 24h change in this endpoint
-        };
+      Object.entries(data).forEach(([symbol, priceData]: [string, any]) => {
+        // Handle both number and object formats
+        if (typeof priceData === 'number') {
+          priceMap[symbol] = {
+            price: priceData.toString(),
+            change24h: 0,
+            volume24h: "0"
+          };
+        } else if (priceData && typeof priceData === 'object') {
+          priceMap[symbol] = {
+            price: priceData.price?.toString() || "0",
+            change24h: priceData.change24h || 0,
+            volume24h: priceData.volume24h || "0"
+          };
+        }
       });
       setPrices(priceMap);
     } catch (error) {
@@ -75,9 +89,20 @@ export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market
     );
   }
 
-  // Filter to show main markets first
+  // Filter markets based on search query
+  const filteredMarkets = markets.filter(market => 
+    market.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Sort by volume (if available) or by main markets
   const mainMarkets = ['BTC', 'ETH', 'SOL', 'ARB', 'MATIC', 'AVAX', 'BNB', 'DOGE', 'SUI', 'APT'];
-  const sortedMarkets = markets.sort((a, b) => {
+  const sortedMarkets = filteredMarkets.sort((a, b) => {
+    // First sort by volume if available
+    const aVolume = prices[a.name]?.volume24h ? parseFloat(prices[a.name].volume24h) : 0;
+    const bVolume = prices[b.name]?.volume24h ? parseFloat(prices[b.name].volume24h) : 0;
+    if (aVolume !== bVolume) return bVolume - aVolume;
+    
+    // Then by main markets order
     const aIndex = mainMarkets.indexOf(a.name);
     const bIndex = mainMarkets.indexOf(b.name);
     if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
@@ -87,9 +112,21 @@ export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market
   });
 
   return (
-    <div className="h-full overflow-y-auto">
+    <div className="h-full overflow-y-auto custom-scrollbar">
       <div className="p-2 border-b border-gray-800">
         <h3 className="text-xs font-semibold text-gray-400">PERPETUAL MARKETS</h3>
+      </div>
+      <div className="p-2 border-b border-gray-800">
+        <div className="relative">
+          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
+          <Input
+            type="text"
+            placeholder="Search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-6 h-7 text-xs bg-gray-900 border-gray-700 text-white placeholder-gray-500"
+          />
+        </div>
       </div>
       <div className="space-y-0.5 p-1">
         {sortedMarkets.map((market) => {

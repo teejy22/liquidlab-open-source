@@ -253,6 +253,24 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Removed default RSI and MACD indicators for cleaner initial view
   - Users can still add any indicators they want through TradingView's built-in interface
 
+### Markets Sidebar Improvements (January 16, 2025)
+- **Compact Design**: Made perp markets column thinner (w-44) and more compact
+  - Reduced text sizes to xs and text-[10px] for maximum space efficiency
+  - Tighter padding (p-2 and space-y-0.5) throughout
+  - Simplified leverage display showing just "5x" instead of "5x leverage"
+- **Search Functionality**: Added real-time market search
+  - Search input with icon at top of markets list
+  - Filters markets by symbol name as you type
+- **Hover Effects**: Fixed hover states to change both background and text colors
+  - Group hover classes ensure all text elements change color together
+- **Custom Scrollbar**: Added black scrollbar styling
+  - Thin 6px width scrollbar
+  - Black track with dark gray thumb
+  - Hover state for better visibility
+- **Volume Sorting**: Prepared for volume-based sorting
+  - Markets will sort by 24h volume when data is available
+  - Currently falls back to predefined order of major markets
+
 ### Centralized Fee Tracking System
 - **Single Builder Code**: All platforms now use unified "LIQUIDLAB2025" builder code
 - **Fee Collection**: Centralized revenue collection system tracks all platform trades

@@ -157,4 +157,27 @@ export class HyperliquidService {
       throw error;
     }
   }
+
+  async getSpotMeta() {
+    try {
+      const response = await fetch(`${this.baseUrl}/info`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "spotMeta",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching spot meta:", error);
+      throw error;
+    }
+  }
 }
