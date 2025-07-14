@@ -370,7 +370,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Verify platform ownership
       const platform = await storage.getTradingPlatform(platformId);
-      if (!platform || platform.userId !== req.session.userId.toString()) {
+      if (!platform || platform.userId !== req.session.userId) {
         return res.status(403).json({ error: "Unauthorized" });
       }
       
@@ -407,7 +407,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Verify platform ownership
       const platform = await storage.getTradingPlatform(platformId);
-      if (!platform || platform.userId !== req.session.userId.toString()) {
+      if (!platform || platform.userId !== req.session.userId) {
         return res.status(403).json({ error: "Unauthorized" });
       }
       
@@ -431,7 +431,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Verify platform ownership
       const platform = await storage.getTradingPlatform(platformId);
-      if (!platform || platform.userId !== req.session.userId.toString()) {
+      if (!platform || platform.userId !== req.session.userId) {
         return res.status(403).json({ error: "Unauthorized" });
       }
       
@@ -456,7 +456,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Verify platform ownership
       const platform = await storage.getTradingPlatform(platformId);
-      if (!platform || platform.userId !== req.session.userId.toString()) {
+      if (!platform || platform.userId !== req.session.userId) {
         return res.status(403).json({ error: "Unauthorized" });
       }
       
