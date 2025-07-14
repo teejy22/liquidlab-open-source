@@ -10,6 +10,7 @@ import fs from "fs/promises";
 import bcrypt from "bcryptjs";
 import { db } from "./db";
 import { desc, sql } from "drizzle-orm";
+import { handleHyperliquidWebhook, verifyWebhookEndpoint } from "./webhooks/hyperliquid";
 
 // Extend Express session types
 declare module "express-session" {
@@ -849,6 +850,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: handleError(error) });
     }
   });
+
+  // Hyperliquid webhook endpoints
+  app.post("/api/webhooks/hyperliquid", handleHyperliquidWebhook);
+  app.get("/api/webhooks/hyperliquid/verify", verifyWebhookEndpoint);
 
   // Privy configuration endpoint
   app.get("/api/privy/config", async (req, res) => {
