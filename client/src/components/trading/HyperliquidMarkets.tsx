@@ -135,16 +135,24 @@ export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market
                 isSelected ? '' : 'group-hover:text-white'
               }`}>
                 <div>
-                  <div className="font-semibold text-xs">{market.name}-USD</div>
-                  <div className="text-[10px] text-gray-400 group-hover:text-gray-300">
+                  <div className={`font-semibold text-xs ${
+                    isSelected ? 'text-white' : 'group-hover:text-white'
+                  }`}>{market.name}-USD</div>
+                  <div className={`text-[10px] ${
+                    isSelected ? 'text-gray-300' : 'text-gray-400 group-hover:text-gray-300'
+                  }`}>
                     {market.maxLeverage}x
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-mono text-xs">
+                  <div className={`font-mono text-xs ${
+                    isSelected ? 'text-white' : 'group-hover:text-white'
+                  }`}>
                     ${price?.price && parseFloat(price.price) > 0 ? parseFloat(price.price).toLocaleString() : '0.00'}
                   </div>
-                  <div className="text-[10px] text-gray-400">
+                  <div className={`text-[10px] ${
+                    isSelected ? 'text-gray-300' : 'text-gray-400 group-hover:text-gray-300'
+                  }`}>
                     Vol: ${price?.volume24h ? (parseFloat(price.volume24h) / 1e6).toFixed(1) : '0'}M
                   </div>
                 </div>

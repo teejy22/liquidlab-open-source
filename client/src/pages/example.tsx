@@ -471,78 +471,7 @@ export default function ExampleTradingPage() {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-gray-900 hover:bg-[#0f0f0f] transition-colors">
-                <td className="py-2 px-4 font-mono">BTC-USD</td>
-                <td className="py-2 px-2 text-center">
-                  <span className="text-green-400 font-semibold">LONG</span>
-                </td>
-                <td className="py-2 px-2 text-right font-mono">0.5</td>
-                <td className="py-2 px-2 text-right font-mono text-gray-300">$32,945</td>
-                <td className="py-2 px-2 text-right font-mono">64,230.0</td>
-                <td className="py-2 px-2 text-right font-mono">65,890.0</td>
-                <td className="py-2 px-2 text-right font-mono text-orange-400">58,450.0</td>
-                <td className="py-2 px-2 text-right font-mono text-green-400">+$830.00</td>
-                <td className="py-2 px-2 text-right text-green-400">+2.58%</td>
-                <td className="py-2 px-2 text-right font-mono">$3,294</td>
-                <td className="py-2 px-2 text-center">
-                  <Button size="sm" variant="ghost" className="h-5 px-1 text-[10px] text-gray-400 hover:text-white">
-                    Set
-                  </Button>
-                </td>
-                <td className="py-2 px-4 text-center">
-                  <Button size="sm" variant="ghost" className="h-5 px-2 text-[10px] text-gray-400 hover:text-white hover:bg-red-900/20">
-                    Close
-                  </Button>
-                </td>
-              </tr>
-              <tr className="border-b border-gray-900 hover:bg-[#0f0f0f] transition-colors">
-                <td className="py-2 px-4 font-mono">ETH-USD</td>
-                <td className="py-2 px-2 text-center">
-                  <span className="text-red-400 font-semibold">SHORT</span>
-                </td>
-                <td className="py-2 px-2 text-right font-mono">10.0</td>
-                <td className="py-2 px-2 text-right font-mono text-gray-300">$33,800</td>
-                <td className="py-2 px-2 text-right font-mono">3,450.00</td>
-                <td className="py-2 px-2 text-right font-mono">3,380.00</td>
-                <td className="py-2 px-2 text-right font-mono text-orange-400">3,890.00</td>
-                <td className="py-2 px-2 text-right font-mono text-green-400">+$700.00</td>
-                <td className="py-2 px-2 text-right text-green-400">+2.03%</td>
-                <td className="py-2 px-2 text-right font-mono">$3,380</td>
-                <td className="py-2 px-2 text-center">
-                  <Button size="sm" variant="ghost" className="h-5 px-1 text-[10px] text-gray-400 hover:text-white">
-                    Set
-                  </Button>
-                </td>
-                <td className="py-2 px-4 text-center">
-                  <Button size="sm" variant="ghost" className="h-5 px-2 text-[10px] text-gray-400 hover:text-white hover:bg-red-900/20">
-                    Close
-                  </Button>
-                </td>
-              </tr>
-              <tr className="border-b border-gray-900 hover:bg-[#0f0f0f] transition-colors">
-                <td className="py-2 px-4 font-mono">SOL-USD</td>
-                <td className="py-2 px-2 text-center">
-                  <span className="text-green-400 font-semibold">LONG</span>
-                </td>
-                <td className="py-2 px-2 text-right font-mono">100.0</td>
-                <td className="py-2 px-2 text-right font-mono text-gray-300">$10,230</td>
-                <td className="py-2 px-2 text-right font-mono">98.50</td>
-                <td className="py-2 px-2 text-right font-mono">102.30</td>
-                <td className="py-2 px-2 text-right font-mono text-orange-400">78.20</td>
-                <td className="py-2 px-2 text-right font-mono text-green-400">+$380.00</td>
-                <td className="py-2 px-2 text-right text-green-400">+3.86%</td>
-                <td className="py-2 px-2 text-right font-mono">$1,023</td>
-                <td className="py-2 px-2 text-center">
-                  <Button size="sm" variant="ghost" className="h-5 px-1 text-[10px] text-gray-400 hover:text-white">
-                    Set
-                  </Button>
-                </td>
-                <td className="py-2 px-4 text-center">
-                  <Button size="sm" variant="ghost" className="h-5 px-2 text-[10px] text-gray-400 hover:text-white hover:bg-red-900/20">
-                    Close
-                  </Button>
-                </td>
-              </tr>
+              {/* Empty positions table - ready for real positions */}
             </tbody>
           </table>
         </div>
