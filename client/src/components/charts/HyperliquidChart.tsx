@@ -26,6 +26,17 @@ export default function HyperliquidChart({
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
+    
+    // Clear any existing chart
+    if (chartRef.current) {
+      try {
+        chartRef.current.remove();
+      } catch (error) {
+        // Chart already disposed
+      }
+      chartRef.current = null;
+      candleSeriesRef.current = null;
+    }
 
     // Create chart with Hyperliquid-style dark theme
     const chart = createChart(chartContainerRef.current, {
@@ -140,13 +151,16 @@ export default function HyperliquidChart({
     generateCandleData();
 
     // Set up real-time updates
+    let isDisposed = false;
     const updateInterval = setInterval(async () => {
+      if (isDisposed) return;
+      
       try {
         const priceResponse = await fetch('/api/hyperliquid/market-prices');
         const prices = await priceResponse.json();
         const newPrice = prices[symbol];
         
-        if (newPrice && candleSeriesRef.current) {
+        if (newPrice && candleSeriesRef.current && !isDisposed) {
           setCurrentPrice(newPrice);
           
           // Update the last candle with new price
@@ -160,23 +174,40 @@ export default function HyperliquidChart({
           });
         }
       } catch (error) {
-        console.error('Error updating price:', error);
+        if (!error.message?.includes('disposed')) {
+          console.error('Error updating price:', error);
+        }
       }
     }, 5000); // Update every 5 seconds
 
     // Handle resize
     const handleResize = () => {
-      if (chartContainerRef.current && chart) {
-        chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+      if (chartContainerRef.current && chartRef.current && !isDisposed) {
+        try {
+          chartRef.current.applyOptions({ width: chartContainerRef.current.clientWidth });
+        } catch (error) {
+          if (!error.message?.includes('disposed')) {
+            console.error('Error resizing chart:', error);
+          }
+        }
       }
     };
 
     window.addEventListener('resize', handleResize);
 
     return () => {
+      isDisposed = true;
       window.removeEventListener('resize', handleResize);
       clearInterval(updateInterval);
-      chart.remove();
+      if (chartRef.current) {
+        try {
+          chartRef.current.remove();
+        } catch (error) {
+          // Chart already disposed
+        }
+      }
+      chartRef.current = null;
+      candleSeriesRef.current = null;
     };
   }, [symbol, interval, height]);
 
