@@ -42,16 +42,6 @@ export default function TradingViewWidget({
         loading="lazy"
         title="TradingView Chart"
       />
-      <div className="tradingview-widget-copyright mt-2">
-        <a 
-          href={`https://www.tradingview.com/symbols/${symbol?.replace(':', '-')}/`}
-          rel="noopener nofollow" 
-          target="_blank"
-          className="text-xs text-gray-400 hover:text-liquid-green"
-        >
-          Track all markets on TradingView
-        </a>
-      </div>
     </div>
   );
 }
