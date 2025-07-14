@@ -17,6 +17,8 @@ import Example from "@/pages/example";
 import NotFound from "@/pages/not-found";
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
+import AdminLogin from "@/pages/admin-login";
+import AdminDashboard from "@/pages/admin-dashboard";
 
 function Router() {
   return (
@@ -33,6 +35,8 @@ function Router() {
       <Route path="/example" component={Example} />
       <Route path="/login" component={Login} />
       <Route path="/signup" component={Signup} />
+      <Route path="/admin/login" component={AdminLogin} />
+      <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -40,7 +44,7 @@ function Router() {
 
 function AppContent() {
   const [location] = useLocation();
-  const hideHeaderFooter = location === '/example' || location === '/login' || location === '/signup';
+  const hideHeaderFooter = location === '/example' || location === '/login' || location === '/signup' || location.startsWith('/admin');
 
   return (
     <TooltipProvider>

@@ -2,17 +2,21 @@ import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
-import { insertUserSchema, insertTradingPlatformSchema, insertTemplateSchema, insertRevenueRecordSchema } from "@shared/schema";
+import { insertUserSchema, insertTradingPlatformSchema, insertTemplateSchema, insertRevenueRecordSchema, feeTransactions } from "@shared/schema";
 import { HyperliquidService } from "./services/hyperliquid";
 import multer from "multer";
 import path from "path";
 import fs from "fs/promises";
 import bcrypt from "bcryptjs";
+import { db } from "./db";
+import { desc, sql } from "drizzle-orm";
 
 // Extend Express session types
 declare module "express-session" {
   interface SessionData {
     userId?: number;
+    isAdmin?: boolean;
+    adminEmail?: string;
   }
 }
 
@@ -55,6 +59,103 @@ function handleError(error: unknown): string {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Admin authentication
+  const ADMIN_EMAIL = "admin@liquidlab.com";
+  const ADMIN_PASSWORD = "$2a$10$YourHashedAdminPassword"; // In production, use environment variable
+  
+  app.post("/api/admin/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      // Check if it's the admin
+      if (email !== ADMIN_EMAIL) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      // For demo, accept "admin123" as password
+      const validPassword = password === "admin123" || await bcrypt.compare(password, ADMIN_PASSWORD);
+      if (!validPassword) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      // Set admin session
+      req.session.isAdmin = true;
+      req.session.adminEmail = email;
+      
+      res.json({ 
+        success: true,
+        admin: { email }
+      });
+    } catch (error) {
+      console.error("Admin login error:", error);
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+  
+  app.get("/api/admin/check", (req, res) => {
+    if (req.session.isAdmin) {
+      res.json({ 
+        isAdmin: true,
+        email: req.session.adminEmail 
+      });
+    } else {
+      res.json({ isAdmin: false });
+    }
+  });
+  
+  app.post("/api/admin/logout", (req, res) => {
+    req.session.isAdmin = false;
+    req.session.adminEmail = undefined;
+    res.json({ success: true });
+  });
+  
+  // Admin-only middleware
+  const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
+    if (!req.session.isAdmin) {
+      return res.status(401).json({ message: "Admin access required" });
+    }
+    next();
+  };
+  
+  // Admin dashboard data
+  app.get("/api/admin/dashboard", requireAdmin, async (req, res) => {
+    try {
+      // Get all platforms with user info
+      const allPlatforms = await storage.getTradingPlatforms();
+      
+      // Get all fee transactions
+      const allTransactions = await db.select().from(feeTransactions).orderBy(desc(feeTransactions.createdAt)).limit(100);
+      
+      // Get revenue summaries
+      const revenueSummaries = await storage.getAllPlatformRevenues();
+      
+      // Calculate totals
+      const totalRevenue = revenueSummaries.reduce((sum, r) => sum + parseFloat(r.totalFees || '0'), 0);
+      const liquidlabRevenue = revenueSummaries.reduce((sum, r) => sum + parseFloat(r.liquidlabEarnings || '0'), 0);
+      const platformOwnerRevenue = revenueSummaries.reduce((sum, r) => sum + parseFloat(r.platformEarnings || '0'), 0);
+      
+      // Get user count
+      const userCount = await db.select({ count: sql<number>`count(*)` }).from(users);
+      
+      res.json({
+        platforms: allPlatforms,
+        recentTransactions: allTransactions,
+        revenueSummaries,
+        stats: {
+          totalRevenue: totalRevenue.toFixed(2),
+          liquidlabRevenue: liquidlabRevenue.toFixed(2),
+          platformOwnerRevenue: platformOwnerRevenue.toFixed(2),
+          platformCount: allPlatforms.length,
+          userCount: userCount[0].count,
+          transactionCount: allTransactions.length
+        }
+      });
+    } catch (error) {
+      console.error("Admin dashboard error:", error);
+      res.status(500).json({ message: "Failed to fetch admin data" });
+    }
+  });
+
   // Authentication routes
   app.post("/api/auth/signup", async (req, res) => {
     try {
