@@ -533,10 +533,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { symbol } = req.params;
       const { interval = '15m' } = req.query;
       
-      // Get current price from the market-prices endpoint
-      const priceResponse = await fetch(`http://localhost:${PORT}/api/hyperliquid/market-prices`);
-      const prices = await priceResponse.json();
-      const currentPrice = prices[symbol] || 100000;
+      // Get current price directly from Hyperliquid
+      const orderbookData = await hyperliquidService.getOrderbook(symbol);
+      let currentPrice = 100000; // Default for BTC
+      
+      if (orderbookData && orderbookData.levels) {
+        const bestAsk = parseFloat(orderbookData.levels[0]?.[0]?.px || '0');
+        const bestBid = parseFloat(orderbookData.levels[1]?.[0]?.px || '0');
+        currentPrice = bestAsk && bestBid ? (bestAsk + bestBid) / 2 : bestAsk || bestBid || currentPrice;
+      }
       
       // Generate realistic candle data
       const now = Math.floor(Date.now() / 1000);
