@@ -267,61 +267,7 @@ export default function Example() {
       {/* Main Trading Interface */}
       <div className="flex flex-col h-[calc(100vh-180px)]">
         <div className="flex flex-1">
-        {/* Left Sidebar - Market List */}
-        <div className="w-48 bg-[#0f0f0f] border-r border-gray-800 overflow-y-auto hidden lg:block">
-          <div className="p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium">Markets</h3>
-              <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
-                <Star className="w-3 h-3" />
-              </Button>
-            </div>
-            <div className="space-y-1">
-              {tradingPairs.map(pair => {
-                const coinData = pricesData[pair.coinId];
-                const price = coinData?.usd || 0;
-                const change = coinData?.usd_24h_change || 0;
-                const volume = coinData?.usd_24h_vol || 0;
-                
-                return (
-                  <div 
-                    key={pair.symbol}
-                    onClick={() => setSelectedPair(pair)}
-                    className={`p-2 rounded cursor-pointer transition-colors ${
-                      selectedPair.symbol === pair.symbol 
-                        ? 'bg-gray-800' 
-                        : 'hover:bg-gray-800/50'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{pair.name.split('-')[0]}</span>
-                      {isLoading ? (
-                        <span className="inline-block w-12 h-3 bg-gray-700 animate-pulse rounded" />
-                      ) : (
-                        <span className={`text-xs ${change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          {formatChange(change)}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center justify-between mt-1">
-                      {isLoading ? (
-                        <>
-                          <span className="inline-block w-16 h-3 bg-gray-700 animate-pulse rounded" />
-                          <span className="inline-block w-12 h-3 bg-gray-700 animate-pulse rounded" />
-                        </>
-                      ) : (
-                        <>
-                          <span className="text-xs text-gray-400">${formatPrice(price)}</span>
-                          <span className="text-xs text-gray-500">{formatVolume(volume)}</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
+
 
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col">
@@ -377,8 +323,35 @@ export default function Example() {
               {/* Desktop Asset Info */}
               <div className="hidden md:flex items-center space-x-6">
                 <div className="flex items-center space-x-2">
-                  <h2 className="text-lg font-semibold">{selectedPair.name}</h2>
-                  <span className="text-xs bg-gray-800 px-2 py-1 rounded">Perp</span>
+                  <Select value={selectedPair.symbol} onValueChange={(value) => {
+                    const pair = tradingPairs.find(p => p.symbol === value);
+                    if (pair) setSelectedPair(pair);
+                  }}>
+                    <SelectTrigger className="w-[180px] bg-gray-800 border-gray-700">
+                      <SelectValue>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-semibold">{selectedPair.name}</span>
+                          <span className="text-xs bg-gray-700 px-2 py-0.5 rounded">Perp</span>
+                        </div>
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {tradingPairs.map(pair => {
+                        const coinData = pricesData[pair.coinId];
+                        const change = coinData?.usd_24h_change || 0;
+                        return (
+                          <SelectItem key={pair.symbol} value={pair.symbol}>
+                            <div className="flex items-center justify-between w-full">
+                              <span>{pair.name}</span>
+                              <span className={`text-xs ml-4 ${change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                {formatChange(change)}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               
@@ -421,8 +394,8 @@ export default function Example() {
                     <span className="ml-2 w-2 h-2 bg-green-400 rounded-full animate-pulse" title="Live" />
                   )}
                 </div>
-                </div>
               </div>
+            </div>
               
               {/* Right side - Quick actions */}
               <div className="flex items-center space-x-4">
@@ -857,50 +830,51 @@ export default function Example() {
             )}
           </div>
 
-          {/* Bottom Section - Positions */}
-          <div className="bg-[#0f0f0f] border-t border-gray-800">
-            <div className="p-4">
-              <Tabs defaultValue="positions" className="w-full">
-                <TabsList className="bg-transparent border-b border-gray-800 rounded-none h-auto p-0">
-                  <TabsTrigger 
-                    value="positions" 
-                    className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none pb-2"
-                  >
-                    Positions
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="orders" 
-                    className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none pb-2"
-                  >
-                    Orders
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="history" 
-                    className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none pb-2"
-                  >
-                    Trade History
-                  </TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="positions" className="mt-4">
-                  <div className="text-center py-8 text-gray-400">
-                    <p>No open positions</p>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="orders" className="mt-4">
-                  <div className="text-center py-8 text-gray-400">
-                    <p>No open orders</p>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="history" className="mt-4">
-                  <div className="text-center py-8 text-gray-400">
-                    <p>No trade history</p>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </div>
+        </div>
+        
+        {/* Bottom Section - Positions */}
+        <div className="bg-[#0f0f0f] border-t border-gray-800">
+          <div className="p-4">
+            <Tabs defaultValue="positions" className="w-full">
+              <TabsList className="bg-transparent border-b border-gray-800 rounded-none h-auto p-0">
+                <TabsTrigger 
+                  value="positions" 
+                  className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none pb-2"
+                >
+                  Positions
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="orders" 
+                  className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none pb-2"
+                >
+                  Orders
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="history" 
+                  className="data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none pb-2"
+                >
+                  Trade History
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="positions" className="mt-4">
+                <div className="text-center py-8 text-gray-400">
+                  <p>No open positions</p>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="orders" className="mt-4">
+                <div className="text-center py-8 text-gray-400">
+                  <p>No open orders</p>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="history" className="mt-4">
+                <div className="text-center py-8 text-gray-400">
+                  <p>No trade history</p>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
         
