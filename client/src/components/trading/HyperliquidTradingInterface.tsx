@@ -3,7 +3,7 @@ import { HyperliquidMarkets } from './HyperliquidMarkets';
 import { HyperliquidTradeForm } from './HyperliquidTradeForm';
 import { HyperliquidPositions } from './HyperliquidPositions';
 import { TradingViewChart } from './TradingViewChart';
-import { HyperliquidLightweightChart } from './HyperliquidLightweightChart';
+import { SimpleHyperliquidChart } from './SimpleHyperliquidChart';
 import { TradingViewUDFChart } from './TradingViewUDFChart';
 import { AIMarketAssistant } from './AIMarketAssistant';
 import { usePrivy } from '@privy-io/react-auth';
@@ -189,7 +189,7 @@ export function HyperliquidTradingInterface() {
                 theme="dark"
               />
             ) : (
-              <HyperliquidLightweightChart
+              <SimpleHyperliquidChart
                 symbol={selectedMarket?.name || 'BTC'}
                 interval="15m"
               />

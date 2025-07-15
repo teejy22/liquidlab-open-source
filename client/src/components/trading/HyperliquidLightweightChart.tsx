@@ -34,59 +34,65 @@ export const HyperliquidLightweightChart: React.FC<HyperliquidLightweightChartPr
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
-    const chart = createChart(chartContainerRef.current, {
-      layout: {
-        background: { type: ColorType.Solid, color: '#0a0a0a' },
-        textColor: '#d1d4dc',
-      },
-      grid: {
-        vertLines: { color: '#1a1a1a' },
-        horzLines: { color: '#1a1a1a' },
-      },
-      crosshair: {
-        mode: 1,
-      },
-      rightPriceScale: {
-        borderColor: '#2a2a2a',
-      },
-      timeScale: {
-        borderColor: '#2a2a2a',
-        timeVisible: true,
-        secondsVisible: false,
-      },
-      watermark: {
-        visible: false,
-      },
-    });
+    try {
+      const chartOptions = {
+        width: chartContainerRef.current.clientWidth,
+        height: chartContainerRef.current.clientHeight,
+        layout: {
+          background: { type: ColorType.Solid, color: '#0a0a0a' },
+          textColor: '#d1d4dc',
+        },
+        grid: {
+          vertLines: { color: '#1a1a1a' },
+          horzLines: { color: '#1a1a1a' },
+        },
+        crosshair: {
+          mode: 1,
+        },
+        rightPriceScale: {
+          borderColor: '#2a2a2a',
+        },
+        timeScale: {
+          borderColor: '#2a2a2a',
+          timeVisible: true,
+          secondsVisible: false,
+        },
+      };
 
-    const candlestickSeries = chart.addCandlestickSeries({
-      upColor: '#26a69a',
-      downColor: '#ef5350',
-      borderVisible: false,
-      wickUpColor: '#26a69a',
-      wickDownColor: '#ef5350',
-    });
+      const chart = createChart(chartContainerRef.current, chartOptions);
+      
+      const candlestickSeries = chart.addCandlestickSeries({
+        upColor: '#26a69a',
+        downColor: '#ef5350',
+        borderVisible: false,
+        wickUpColor: '#26a69a',
+        wickDownColor: '#ef5350',
+      });
 
-    chartRef.current = chart;
-    candlestickSeriesRef.current = candlestickSeries;
+      chartRef.current = chart;
+      candlestickSeriesRef.current = candlestickSeries;
 
-    // Handle resize
-    const handleResize = () => {
-      if (chartContainerRef.current && chart) {
-        chart.applyOptions({ 
-          width: chartContainerRef.current.clientWidth,
-          height: chartContainerRef.current.clientHeight 
-        });
-      }
-    };
+      // Handle resize
+      const handleResize = () => {
+        if (chartContainerRef.current && chart) {
+          chart.applyOptions({ 
+            width: chartContainerRef.current.clientWidth,
+            height: chartContainerRef.current.clientHeight 
+          });
+        }
+      };
 
-    window.addEventListener('resize', handleResize);
-    handleResize();
+      window.addEventListener('resize', handleResize);
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      chart.remove();
-    };
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        if (chart) {
+          chart.remove();
+        }
+      };
+    } catch (error) {
+      console.error('Error initializing chart:', error);
+    }
   }, []);
 
   // Update chart data
@@ -120,7 +126,7 @@ export const HyperliquidLightweightChart: React.FC<HyperliquidLightweightChartPr
           <span className="text-blue-400 font-medium">Hyperliquid DEX</span>
         </div>
       </div>
-      <div ref={chartContainerRef} className="h-full w-full" />
+      <div ref={chartContainerRef} className="h-full w-full min-h-[400px]" />
     </div>
   );
 };
