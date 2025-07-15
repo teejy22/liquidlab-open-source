@@ -170,10 +170,10 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
       {/* Buy/Sell Toggle */}
       <Tabs value={side} onValueChange={(v) => setSide(v as "buy" | "sell")}>
         <TabsList className="grid w-full grid-cols-2 h-8 bg-gray-900 p-0.5">
-          <TabsTrigger value="buy" className="text-xs data-[state=active]:bg-green-600 data-[state=active]:text-white data-[state=inactive]:bg-gray-800 data-[state=inactive]:text-gray-400">
+          <TabsTrigger value="buy" className="text-xs data-[state=active]:bg-[#1dd1a1] data-[state=active]:text-black data-[state=inactive]:bg-gray-800 data-[state=inactive]:text-gray-400">
             Buy / Long
           </TabsTrigger>
-          <TabsTrigger value="sell" className="text-xs data-[state=active]:bg-red-600 data-[state=active]:text-white data-[state=inactive]:bg-gray-800 data-[state=inactive]:text-gray-400">
+          <TabsTrigger value="sell" className="text-xs data-[state=active]:bg-[#1dd1a1] data-[state=active]:text-black data-[state=inactive]:bg-gray-800 data-[state=inactive]:text-gray-400">
             Sell / Short
           </TabsTrigger>
         </TabsList>
@@ -237,7 +237,7 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
               onClick={() => setSizeMode("asset")}
               className={`px-2 py-0.5 text-xs rounded ${
                 sizeMode === "asset" 
-                  ? "bg-blue-600 text-white" 
+                  ? "bg-[#1dd1a1] text-black" 
                   : "bg-gray-800 text-gray-400 hover:bg-gray-700"
               }`}
             >
@@ -248,7 +248,7 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
               onClick={() => setSizeMode("usd")}
               className={`px-2 py-0.5 text-xs rounded ${
                 sizeMode === "usd" 
-                  ? "bg-blue-600 text-white" 
+                  ? "bg-[#1dd1a1] text-black" 
                   : "bg-gray-800 text-gray-400 hover:bg-gray-700"
               }`}
             >
@@ -310,7 +310,7 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
         size="sm"
         disabled={isPlacingOrder || (!authenticated ? false : !size)}
         onClick={!authenticated ? () => window.dispatchEvent(new CustomEvent('privy:login')) : handleSubmit}
-        className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 rounded-md px-3 w-full h-9 hover:bg-[#00a8cc] text-black bg-[#16a34a]"
+        className="w-full h-9 text-sm font-medium text-black bg-[#1dd1a1] rounded hover:bg-[#19b894] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {isPlacingOrder ? (
           <>
