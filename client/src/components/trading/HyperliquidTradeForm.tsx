@@ -320,7 +320,7 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
         ) : !authenticated ? (
           "Connect Wallet"
         ) : (
-          `${side === "buy" ? "Buy Long" : "Sell Short"} ${size || "0"} ${selectedMarket}`
+          `${side === "buy" ? "Buy Long" : "Sell Short"} ${sizeMode === "usd" ? "$" : ""}${size || "0"} ${sizeMode === "usd" ? "USD" : selectedMarket}`
         )}
       </Button>
 
@@ -331,7 +331,7 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
         onConfirm={handleConfirmOrder}
         market={selectedMarket}
         side={side}
-        size={getTradeDetails().orderSize}
+        size={parseFloat(size || "0")}
         price={getTradeDetails().orderPrice}
         leverage={leverage}
         isMarketOrder={orderType === "market"}
@@ -341,6 +341,7 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
         requiredMargin={getTradeDetails().requiredMargin}
         fee={getTradeDetails().fee}
         isReduceOnly={reduceOnly}
+        sizeMode={sizeMode}
       />
     </div>
   );

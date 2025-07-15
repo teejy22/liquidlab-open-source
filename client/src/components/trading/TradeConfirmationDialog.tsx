@@ -20,6 +20,7 @@ interface TradeConfirmationDialogProps {
   requiredMargin: number;
   fee: number;
   isReduceOnly?: boolean;
+  sizeMode?: 'asset' | 'usd';
 }
 
 export function TradeConfirmationDialog({
@@ -37,7 +38,8 @@ export function TradeConfirmationDialog({
   notionalValue,
   requiredMargin,
   fee,
-  isReduceOnly
+  isReduceOnly,
+  sizeMode = 'asset'
 }: TradeConfirmationDialogProps) {
   const priceDisplay = isMarketOrder ? markPrice : price;
   const sideColor = side === 'buy' ? 'text-green-400' : 'text-red-400';
@@ -77,7 +79,9 @@ export function TradeConfirmationDialog({
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Size</span>
-                <span className="text-white">{size.toLocaleString()} {market}</span>
+                <span className="text-white">
+                  {sizeMode === 'usd' ? `$${size.toFixed(2)} USD` : `${size.toLocaleString()} ${market}`}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Price</span>
