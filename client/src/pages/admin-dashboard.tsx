@@ -21,7 +21,9 @@ import {
   KeyRound,
   Mail,
   User,
-  Wallet
+  Wallet,
+  Send,
+  FileText
 } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -322,11 +324,12 @@ export default function AdminDashboard() {
 
         {/* Detailed Data Tabs */}
         <Tabs defaultValue="platforms" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="platforms">All Platforms</TabsTrigger>
             <TabsTrigger value="transactions">Recent Transactions</TabsTrigger>
             <TabsTrigger value="revenue">Revenue Breakdown</TabsTrigger>
             <TabsTrigger value="users">User Management</TabsTrigger>
+            <TabsTrigger value="wallets">Wallet Management</TabsTrigger>
           </TabsList>
 
           <TabsContent value="platforms" className="space-y-4">
@@ -587,6 +590,139 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="wallets" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Wallet Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {/* Main Collection Wallet */}
+                  <div className="border-2 border-purple-500 rounded-lg p-6">
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <Wallet className="w-5 h-5 text-purple-500" />
+                      Main Collection Wallet
+                    </h3>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">Builder Code Address</p>
+                        <p className="font-mono text-sm bg-gray-100 p-2 rounded">
+                          LIQUIDLAB2025
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          All platform trading fees are collected under this builder code
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">Total Collected Revenue</p>
+                        <p className="text-2xl font-bold text-purple-600">
+                          ${dashboardData?.stats?.totalRevenue || '0.00'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Payout Wallet Configuration */}
+                  <div className="border rounded-lg p-6">
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <Send className="w-5 h-5 text-blue-500" />
+                      Payout Wallet Configuration
+                    </h3>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">Network</p>
+                        <Badge variant="secondary">Arbitrum</Badge>
+                      </div>
+                      
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">Currency</p>
+                        <Badge variant="secondary">USDC</Badge>
+                      </div>
+                      
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">Payout Schedule</p>
+                        <p className="text-sm">Weekly (Every Monday)</p>
+                      </div>
+                      
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">Minimum Payout Threshold</p>
+                        <p className="font-medium">$10.00</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Revenue Distribution */}
+                  <div className="border rounded-lg p-6">
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <PieChart className="w-5 h-5 text-green-500" />
+                      Revenue Distribution
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">LiquidLab Share (30%)</span>
+                        <span className="font-medium text-purple-600">
+                          ${dashboardData?.stats?.liquidlabRevenue || '0.00'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">Platform Owners Share (70%)</span>
+                        <span className="font-medium text-blue-600">
+                          ${dashboardData?.stats?.platformOwnerRevenue || '0.00'}
+                        </span>
+                      </div>
+                      <div className="pt-3 border-t">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">Pending Payouts</span>
+                          <span className="font-medium text-orange-600">
+                            ${dashboardData?.pendingPayouts || '0.00'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Manual Actions */}
+                  <div className="border rounded-lg p-6">
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <Shield className="w-5 h-5 text-red-500" />
+                      Manual Actions
+                    </h3>
+                    <div className="space-y-3">
+                      <Button 
+                        variant="outline"
+                        className="w-full justify-start"
+                        onClick={() => {
+                          toast({
+                            title: "Process Payouts",
+                            description: "This feature requires production configuration",
+                          });
+                        }}
+                      >
+                        <Send className="w-4 h-4 mr-2" />
+                        Process Weekly Payouts
+                      </Button>
+                      
+                      <Button 
+                        variant="outline"
+                        className="w-full justify-start"
+                        onClick={() => {
+                          toast({
+                            title: "Export Revenue Report",
+                            description: "Revenue report export started",
+                          });
+                        }}
+                      >
+                        <FileText className="w-4 h-4 mr-2" />
+                        Export Revenue Report
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

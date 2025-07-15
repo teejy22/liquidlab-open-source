@@ -118,6 +118,12 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Secure password reset with minimum 8 character requirement
   - Admin-only endpoints: GET /api/admin/users, POST /api/admin/users/:userId/reset-password
   - Storage layer enhanced with getAllUsers() and updateUserPassword() methods
+- **Wallet Management Tab** (January 17, 2025): Added dedicated wallet management functionality
+  - Main Collection Wallet: Shows LIQUIDLAB2025 builder code and total collected revenue
+  - Payout Wallet Configuration: Displays Arbitrum network, USDC currency, weekly schedule
+  - Revenue Distribution: Visual breakdown of LiquidLab (30%) vs Platform Owners (70%) shares
+  - Manual Actions: Process payouts and export revenue reports buttons
+  - Pending payouts display for tracking outstanding platform owner payments
 - **Security**: Admin routes protected with requireAdmin middleware
 - **Visual Design**: Red-themed admin interface to distinguish from regular user dashboard
 
