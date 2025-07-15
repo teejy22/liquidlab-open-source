@@ -21,6 +21,8 @@ interface TradeConfirmationDialogProps {
   fee: number;
   isReduceOnly?: boolean;
   sizeMode?: 'asset' | 'usd';
+  tpPrice?: number;
+  slPrice?: number;
 }
 
 export function TradeConfirmationDialog({
@@ -39,7 +41,9 @@ export function TradeConfirmationDialog({
   requiredMargin,
   fee,
   isReduceOnly,
-  sizeMode = 'asset'
+  sizeMode = 'asset',
+  tpPrice,
+  slPrice
 }: TradeConfirmationDialogProps) {
   const priceDisplay = isMarketOrder ? markPrice : price;
   const sideColor = side === 'buy' ? 'text-green-400' : 'text-red-400';
@@ -128,6 +132,31 @@ export function TradeConfirmationDialog({
               )}
             </div>
           </Card>
+
+          {/* Take Profit / Stop Loss */}
+          {(tpPrice || slPrice) && (
+            <Card className="p-4 bg-gray-800 border-gray-700">
+              <h4 className="font-semibold mb-3 text-sm uppercase text-gray-400">Risk Management</h4>
+              <div className="space-y-2 text-sm">
+                {tpPrice && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Take Profit</span>
+                    <span className="text-green-400 font-semibold">
+                      ${tpPrice.toFixed(2)}
+                    </span>
+                  </div>
+                )}
+                {slPrice && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Stop Loss</span>
+                    <span className="text-red-400 font-semibold">
+                      ${slPrice.toFixed(2)}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </Card>
+          )}
 
           {/* Warning for high leverage */}
           {leverage >= 10 && (

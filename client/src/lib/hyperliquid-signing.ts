@@ -156,6 +156,8 @@ export interface HyperliquidOrder {
   reduceOnly?: boolean;
   postOnly?: boolean;
   ioc?: boolean;
+  tpPrice?: number;
+  slPrice?: number;
 }
 
 export interface SignedOrder {

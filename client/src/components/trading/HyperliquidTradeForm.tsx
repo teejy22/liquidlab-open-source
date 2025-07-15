@@ -27,6 +27,16 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
   const [reduceOnly, setReduceOnly] = useState(false);
   const [postOnly, setPostOnly] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  
+  // TP/SL states
+  const [enableTP, setEnableTP] = useState(false);
+  const [enableSL, setEnableSL] = useState(false);
+  const [tpPrice, setTpPrice] = useState("");
+  const [slPrice, setSlPrice] = useState("");
+  const [tpMode, setTpMode] = useState<"price" | "percentage">("price");
+  const [slMode, setSlMode] = useState<"price" | "percentage">("price");
+  const [tpPercentage, setTpPercentage] = useState("");
+  const [slPercentage, setSlPercentage] = useState("");
 
   const { 
     authenticated, 
@@ -50,6 +60,30 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
       setLeverage(maxLeverage);
     }
   }, [maxLeverage, leverage]);
+
+  // Calculate TP/SL prices based on percentage
+  useEffect(() => {
+    const entryPrice = orderType === "limit" && price ? parseFloat(price) : currentPrice;
+    if (entryPrice > 0) {
+      // Update TP price if in percentage mode
+      if (tpMode === "percentage" && tpPercentage) {
+        const tpPercent = parseFloat(tpPercentage);
+        const calculatedTpPrice = side === "buy" 
+          ? entryPrice * (1 + tpPercent / 100)
+          : entryPrice * (1 - tpPercent / 100);
+        setTpPrice(calculatedTpPrice.toFixed(2));
+      }
+      
+      // Update SL price if in percentage mode
+      if (slMode === "percentage" && slPercentage) {
+        const slPercent = parseFloat(slPercentage);
+        const calculatedSlPrice = side === "buy"
+          ? entryPrice * (1 - slPercent / 100)
+          : entryPrice * (1 + slPercent / 100);
+        setSlPrice(calculatedSlPrice.toFixed(2));
+      }
+    }
+  }, [tpMode, slMode, tpPercentage, slPercentage, price, currentPrice, orderType, side]);
 
   const handleSubmit = async () => {
     if (!size || parseFloat(size) <= 0) {
@@ -94,6 +128,8 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
         reduceOnly,
         postOnly: orderType === "limit" && postOnly,
         ioc: orderType === "market",
+        tpPrice: enableTP && tpPrice ? parseFloat(tpPrice) : undefined,
+        slPrice: enableSL && slPrice ? parseFloat(slPrice) : undefined,
       });
 
       // Reset form after successful order
@@ -286,6 +322,126 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
           <span>{maxLeverage}x</span>
         </div>
       </div>
+      
+      {/* Take Profit / Stop Loss */}
+      <div className="space-y-3 border-t border-gray-800 pt-3">
+        {/* Take Profit */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={enableTP}
+                onChange={(e) => setEnableTP(e.target.checked)}
+                className="w-3.5 h-3.5 rounded border-gray-600 bg-gray-800 text-[#1dd1a1] focus:ring-[#1dd1a1] focus:ring-offset-0"
+              />
+              <span className="text-xs font-medium text-gray-300">Take Profit</span>
+            </label>
+            {enableTP && (
+              <div className="flex items-center space-x-1">
+                <button
+                  type="button"
+                  onClick={() => setTpMode("price")}
+                  className={`px-2 py-0.5 text-[10px] rounded ${
+                    tpMode === "price" 
+                      ? "bg-[#1dd1a1] text-black" 
+                      : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+                  }`}
+                >
+                  Price
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTpMode("percentage")}
+                  className={`px-2 py-0.5 text-[10px] rounded ${
+                    tpMode === "percentage" 
+                      ? "bg-[#1dd1a1] text-black" 
+                      : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+                  }`}
+                >
+                  %
+                </button>
+              </div>
+            )}
+          </div>
+          {enableTP && (
+            <div className="flex items-center space-x-2">
+              <Input
+                type="number"
+                value={tpMode === "price" ? tpPrice : tpPercentage}
+                onChange={(e) => tpMode === "price" ? setTpPrice(e.target.value) : setTpPercentage(e.target.value)}
+                placeholder={tpMode === "price" ? "TP Price" : "TP %"}
+                disabled={!enableTP}
+                className="bg-gray-900 border-gray-700 h-7 text-xs"
+              />
+              {tpMode === "percentage" && tpPrice && (
+                <span className="text-[10px] text-gray-400 whitespace-nowrap">
+                  = ${tpPrice}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Stop Loss */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={enableSL}
+                onChange={(e) => setEnableSL(e.target.checked)}
+                className="w-3.5 h-3.5 rounded border-gray-600 bg-gray-800 text-[#f56565] focus:ring-[#f56565] focus:ring-offset-0"
+              />
+              <span className="text-xs font-medium text-gray-300">Stop Loss</span>
+            </label>
+            {enableSL && (
+              <div className="flex items-center space-x-1">
+                <button
+                  type="button"
+                  onClick={() => setSlMode("price")}
+                  className={`px-2 py-0.5 text-[10px] rounded ${
+                    slMode === "price" 
+                      ? "bg-[#f56565] text-white" 
+                      : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+                  }`}
+                >
+                  Price
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSlMode("percentage")}
+                  className={`px-2 py-0.5 text-[10px] rounded ${
+                    slMode === "percentage" 
+                      ? "bg-[#f56565] text-white" 
+                      : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+                  }`}
+                >
+                  %
+                </button>
+              </div>
+            )}
+          </div>
+          {enableSL && (
+            <div className="flex items-center space-x-2">
+              <Input
+                type="number"
+                value={slMode === "price" ? slPrice : slPercentage}
+                onChange={(e) => slMode === "price" ? setSlPrice(e.target.value) : setSlPercentage(e.target.value)}
+                placeholder={slMode === "price" ? "SL Price" : "SL %"}
+                disabled={!enableSL}
+                className="bg-gray-900 border-gray-700 h-7 text-xs"
+              />
+              {slMode === "percentage" && slPrice && (
+                <span className="text-[10px] text-gray-400 whitespace-nowrap">
+                  = ${slPrice}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+      
       {/* Order Summary */}
       <div className="border-t border-gray-800 pt-3 space-y-2 text-xs">
         <div className="flex justify-between">
@@ -346,6 +502,8 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
         fee={getTradeDetails().fee}
         isReduceOnly={reduceOnly}
         sizeMode={sizeMode}
+        tpPrice={enableTP && tpPrice ? parseFloat(tpPrice) : undefined}
+        slPrice={enableSL && slPrice ? parseFloat(slPrice) : undefined}
       />
     </div>
   );
