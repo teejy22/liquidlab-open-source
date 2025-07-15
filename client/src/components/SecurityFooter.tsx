@@ -4,9 +4,10 @@ interface SecurityFooterProps {
   platformName: string;
   platformId: number;
   builderCode: string;
+  verificationCode?: string;
 }
 
-export function SecurityFooter({ platformName, platformId, builderCode }: SecurityFooterProps) {
+export function SecurityFooter({ platformName, platformId, builderCode, verificationCode }: SecurityFooterProps) {
   return (
     <footer className="bg-[#0a0a0a] text-white py-8 mt-auto">
       <div className="container mx-auto px-4">
@@ -38,11 +39,11 @@ export function SecurityFooter({ platformName, platformId, builderCode }: Securi
             <h3 className="font-semibold mb-3">Platform Details</h3>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>Platform: {platformName}</li>
-              <li>ID: #{platformId}</li>
+              {verificationCode && <li>Verification Code: {verificationCode}</li>}
               <li>Builder Code: {builderCode}</li>
               <li>
                 <a 
-                  href={`https://liquidlab.trade/verify/${platformId}`}
+                  href="https://liquidlab.trade/verify"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:text-blue-300 flex items-center gap-1"
