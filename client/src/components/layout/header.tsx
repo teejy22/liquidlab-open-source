@@ -65,7 +65,7 @@ export default function Header() {
             <img 
               src={logoImage} 
               alt="LiquidLab Logo" 
-              className="h-20 md:h-32 w-auto"
+              className="h-28 md:h-32 w-auto"
             />
           </Link>
           
