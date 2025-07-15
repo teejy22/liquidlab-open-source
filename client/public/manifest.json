@@ -1,0 +1,41 @@
+{
+  "name": "LiquidLab Trading Platform",
+  "short_name": "LiquidLab",
+  "description": "Professional trading platform powered by Hyperliquid DEX",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090909",
+  "theme_color": "#1dd1a1",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Trade BTC",
+      "short_name": "BTC",
+      "description": "Open BTC trading",
+      "url": "/example?market=BTC",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Trade ETH",
+      "short_name": "ETH",
+      "description": "Open ETH trading",
+      "url": "/example?market=ETH",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

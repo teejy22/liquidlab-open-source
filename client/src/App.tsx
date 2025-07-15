@@ -21,6 +21,7 @@ import AdminLogin from "@/pages/admin-login";
 import AdminDashboard from "@/pages/admin-dashboard";
 import Security from "@/pages/security";
 import Verify from "@/pages/verify";
+import { PWAInstaller } from "@/components/PWAInstaller";
 
 function Router() {
   return (
@@ -60,6 +61,7 @@ function AppContent() {
         {!hideHeaderFooter && <Footer />}
       </div>
       <Toaster />
+      <PWAInstaller />
     </TooltipProvider>
   );
 }
