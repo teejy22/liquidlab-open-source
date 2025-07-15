@@ -39,114 +39,104 @@ export function RevenueCalculator() {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Calculator className="w-5 h-5" />
+    <Card className="w-full max-w-lg mx-auto">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Calculator className="w-4 h-4" />
           Revenue Calculator
         </CardTitle>
-        <CardDescription>
-          Calculate your potential monthly earnings from trading fees and MoonPay commissions
+        <CardDescription className="text-sm">
+          Calculate your monthly earnings
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Input Section */}
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="spot-volume">Monthly Spot Trading Volume</Label>
+      <CardContent className="space-y-4 pb-4">
+        {/* Input Section - Compact Grid */}
+        <div className="grid grid-cols-1 gap-3">
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <Label htmlFor="spot-volume" className="text-xs">Spot Volume</Label>
+              <span className="text-[10px] text-gray-500">0.2% • 70% yours</span>
+            </div>
             <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <DollarSign className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-500" />
               <Input
                 id="spot-volume"
                 type="number"
                 placeholder="1,000,000"
                 value={spotVolume}
                 onChange={(e) => setSpotVolume(e.target.value)}
-                className="pl-9"
+                className="pl-7 h-8 text-sm"
               />
             </div>
-            <p className="text-xs text-gray-500">0.2% fee • 70% to you</p>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="perp-volume">Monthly Perp Trading Volume</Label>
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <Label htmlFor="perp-volume" className="text-xs">Perp Volume</Label>
+              <span className="text-[10px] text-gray-500">0.1% • 70% yours</span>
+            </div>
             <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <DollarSign className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-500" />
               <Input
                 id="perp-volume"
                 type="number"
                 placeholder="5,000,000"
                 value={perpVolume}
                 onChange={(e) => setPerpVolume(e.target.value)}
-                className="pl-9"
+                className="pl-7 h-8 text-sm"
               />
             </div>
-            <p className="text-xs text-gray-500">0.1% fee • 70% to you</p>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="moonpay-volume">Monthly MoonPay Purchases</Label>
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <Label htmlFor="moonpay-volume" className="text-xs">MoonPay Purchases</Label>
+              <span className="text-[10px] text-gray-500">1% • 50% yours</span>
+            </div>
             <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <DollarSign className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-500" />
               <Input
                 id="moonpay-volume"
                 type="number"
                 placeholder="100,000"
                 value={moonpayVolume}
                 onChange={(e) => setMoonpayVolume(e.target.value)}
-                className="pl-9"
+                className="pl-7 h-8 text-sm"
               />
             </div>
-            <p className="text-xs text-gray-500">1% affiliate commission • 50% to you</p>
           </div>
         </div>
 
-        {/* Results Section */}
-        <div className="border-t pt-6">
-          <h3 className="font-semibold mb-4 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4" />
-            Your Monthly Earnings
-          </h3>
-          
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Spot Trading Revenue</span>
+        {/* Results Section - Compact */}
+        <div className="border-t pt-3">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Spot</span>
               <span className="font-medium">{formatCurrency(spotRevenue)}</span>
             </div>
-            
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Perp Trading Revenue</span>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Perp</span>
               <span className="font-medium">{formatCurrency(perpRevenue)}</span>
             </div>
-            
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">MoonPay Affiliate Revenue</span>
+            <div className="flex justify-between">
+              <span className="text-gray-600">MoonPay</span>
               <span className="font-medium">{formatCurrency(moonpayRevenue)}</span>
             </div>
-            
-            <div className="border-t pt-3 flex justify-between items-center">
-              <span className="font-semibold">Total Monthly Revenue</span>
-              <span className="text-2xl font-bold text-green-600">{formatCurrency(totalRevenue)}</span>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Annual</span>
+              <span className="font-medium">{formatCurrency(totalRevenue * 12)}</span>
             </div>
+          </div>
+          
+          <div className="mt-3 pt-3 border-t flex justify-between items-center">
+            <span className="text-sm font-semibold">Monthly Total</span>
+            <span className="text-xl font-bold text-[#1dd1a1]">{formatCurrency(totalRevenue)}</span>
           </div>
         </div>
 
-        {/* Annual Projection */}
-        <div className="bg-green-50 dark:bg-green-950/20 rounded-lg p-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="text-sm font-medium text-green-900 dark:text-green-100">Annual Projection</p>
-              <p className="text-xs text-green-700 dark:text-green-300">Based on current monthly volume</p>
-            </div>
-            <p className="text-3xl font-bold text-green-600">{formatCurrency(totalRevenue * 12)}</p>
-          </div>
-        </div>
-
-        {/* Revenue Split Info */}
-        <div className="text-xs text-gray-500 space-y-1">
-          <p>• Trading fees split: 70% Platform Owner / 30% LiquidLab</p>
-          <p>• MoonPay commission split: 50% Platform Owner / 50% LiquidLab</p>
-          <p className="pt-2">LiquidLab's share from your inputs: {formatCurrency(liquidLabTotal)}/month</p>
+        {/* Revenue Split Info - Tiny Text */}
+        <div className="text-[10px] text-gray-500 pt-2 border-t">
+          <p>LiquidLab share: {formatCurrency(liquidLabTotal)}/mo</p>
         </div>
       </CardContent>
     </Card>
