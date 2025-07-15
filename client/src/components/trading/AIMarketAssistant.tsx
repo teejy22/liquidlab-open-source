@@ -22,7 +22,7 @@ export function AIMarketAssistant({ selectedMarket = 'BTC', currentPrice }: AIMa
     {
       id: '1',
       role: 'assistant',
-      content: `Ask me about ${selectedMarket} analysis or strategies.`,
+      content: 'ask me about market analysis or strategies',
       timestamp: new Date()
     }
   ]);
