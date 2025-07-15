@@ -237,11 +237,135 @@ export async function signOrder(
   };
 }
 
+// Sign multiple orders for bracket orders (entry + TP/SL)
+export async function signBracketOrders(
+  order: HyperliquidOrder,
+  signer: any
+): Promise<SignedOrder[]> {
+  const orders: SignedOrder[] = [];
+  
+  // Sign the main entry order
+  const mainOrder = await signOrder(order, signer);
+  orders.push(mainOrder);
+  
+  // If TP is enabled, create a TP order
+  if (order.tpPrice) {
+    const tpOrder: HyperliquidOrder = {
+      symbol: order.symbol,
+      side: order.side === 'buy' ? 'sell' : 'buy', // Opposite side to close position
+      price: order.tpPrice,
+      size: order.size,
+      orderType: 'limit',
+      reduceOnly: true // TP orders must be reduce-only
+    };
+    
+    const signedTP = await signTriggerOrder(tpOrder, signer, 'tp', order.tpPrice);
+    orders.push(signedTP);
+  }
+  
+  // If SL is enabled, create a SL order
+  if (order.slPrice) {
+    const slOrder: HyperliquidOrder = {
+      symbol: order.symbol,
+      side: order.side === 'buy' ? 'sell' : 'buy', // Opposite side to close position
+      price: order.slPrice,
+      size: order.size,
+      orderType: 'limit',
+      reduceOnly: true // SL orders must be reduce-only
+    };
+    
+    const signedSL = await signTriggerOrder(slOrder, signer, 'sl', order.slPrice);
+    orders.push(signedSL);
+  }
+  
+  return orders;
+}
+
+// Sign a trigger order (TP or SL)
+async function signTriggerOrder(
+  order: HyperliquidOrder,
+  signer: any,
+  tpsl: 'tp' | 'sl',
+  triggerPrice: number
+): Promise<SignedOrder> {
+  const nonce = Date.now();
+  const assetIndex = getAssetIndex(order.symbol);
+  
+  // Convert to wire format
+  const wireLimitPx = floatToWire(order.price, 8);
+  const wireSz = floatToWire(order.size, 5);
+  const wireTriggerPx = floatToWire(triggerPrice, 8);
+  
+  // Create the order object for signing (same structure as regular orders)
+  const orderData = {
+    asset: assetIndex,
+    isBuy: order.side === 'buy',
+    limitPx: wireLimitPx,
+    sz: wireSz,
+    nonce: nonce,
+    tif: TimeInForce.GTC
+  };
+  
+  // Create the typed data for EIP-712 signing
+  const typedData = {
+    types: ORDER_TYPES,
+    domain: HYPERLIQUID_DOMAIN,
+    primaryType: 'Order',
+    message: orderData
+  };
+  
+  // Sign the order
+  const signature = await signer._signTypedData(
+    typedData.domain,
+    typedData.types,
+    orderData
+  );
+  
+  // Create the trigger order format for Hyperliquid API
+  const hyperliquidOrder = {
+    a: assetIndex,
+    b: order.side === 'buy',
+    p: wireLimitPx,
+    s: wireSz,
+    r: true, // Always reduce-only for TP/SL
+    t: {
+      trigger: {
+        triggerPx: wireTriggerPx,
+        isMarket: false, // Use limit order when triggered
+        tpsl: tpsl
+      }
+    },
+    c: 'LIQUIDLAB2025'
+  };
+  
+  return {
+    order: hyperliquidOrder,
+    signature,
+    nonce
+  };
+}
+
 // Helper function to format order for API submission
 export function formatOrderRequest(
   userAddress: string,
   signedOrders: SignedOrder[]
 ): any {
+  // For bracket orders with multiple orders, we need to send them together
+  if (signedOrders.length > 1) {
+    return {
+      action: {
+        type: 'batchModify',
+        orders: signedOrders.map(so => ({
+          order: so.order,
+          signature: so.signature,
+          nonce: so.nonce
+        })),
+        grouping: 'normalTpsl'
+      }
+    };
+  }
+  
+  // Single order
   return {
     action: {
       type: 'order',

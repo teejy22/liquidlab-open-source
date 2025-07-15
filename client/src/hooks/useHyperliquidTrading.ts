@@ -3,7 +3,7 @@ import { usePrivy } from '@privy-io/react-auth';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { signOrder, formatOrderRequest, HyperliquidOrder } from '@/lib/hyperliquid-signing';
+import { signOrder, signBracketOrders, formatOrderRequest, HyperliquidOrder } from '@/lib/hyperliquid-signing';
 
 export function useHyperliquidTrading() {
   const { authenticated, ready, user, getEthersProvider } = usePrivy();
@@ -92,11 +92,17 @@ export function useHyperliquidTrading() {
       
       const signer = provider.getSigner();
       
-      // Sign the order
-      const signedOrder = await signOrder(order, signer);
+      // Sign the order(s) - use bracket orders if TP/SL are set
+      let signedOrders: any[];
+      if (order.tpPrice || order.slPrice) {
+        signedOrders = await signBracketOrders(order, signer);
+      } else {
+        const signedOrder = await signOrder(order, signer);
+        signedOrders = [signedOrder];
+      }
       
       // Format the request for Hyperliquid API
-      const orderRequest = formatOrderRequest(userAddress, [signedOrder]);
+      const orderRequest = formatOrderRequest(userAddress, signedOrders);
       
       // Submit the order
       await placeOrderMutation.mutateAsync(orderRequest);
