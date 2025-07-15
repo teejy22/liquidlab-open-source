@@ -295,6 +295,7 @@ export function HyperliquidTradingInterface() {
                 setSelectedMarket(market);
                 setMobileView('chart');
               }}
+              autoSelectBTC={false}
             />
           )}
 

@@ -27,7 +27,7 @@ interface MarketSelection {
   maxLeverage: number;
 }
 
-export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market: MarketSelection) => void }) {
+export function HyperliquidMarkets({ onSelectMarket, autoSelectBTC = true }: { onSelectMarket: (market: MarketSelection) => void, autoSelectBTC?: boolean }) {
   const [markets, setMarkets] = useState<HyperliquidMarket[]>([]);
   const [marketContexts, setMarketContexts] = useState<any[]>([]);
   const [prices, setPrices] = useState<{[key: string]: MarketPrice}>({});
@@ -52,22 +52,24 @@ export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market
           setMarketContexts(data[1]);
         }
         
-        // Auto-select BTC on first load
-        const btcMarket = data[0].universe.find((m: HyperliquidMarket) => m.name === 'BTC');
-        if (btcMarket && data[1]) {
-          const btcIndex = data[0].universe.findIndex((m: HyperliquidMarket) => m.name === 'BTC');
-          const btcCtx = data[1][btcIndex];
-          if (btcCtx) {
-            const marketObj: MarketSelection = {
-              name: 'BTC',
-              displayName: 'BTC',
-              index: btcIndex,
-              markPx: btcCtx.markPx || '0',
-              dayNtlVlm: btcCtx.dayNtlVlm || '0',
-              prevDayPx: btcCtx.prevDayPx || '0',
-              maxLeverage: btcMarket.maxLeverage
-            };
-            onSelectMarket(marketObj);
+        // Auto-select BTC on first load only if autoSelectBTC is true
+        if (autoSelectBTC) {
+          const btcMarket = data[0].universe.find((m: HyperliquidMarket) => m.name === 'BTC');
+          if (btcMarket && data[1]) {
+            const btcIndex = data[0].universe.findIndex((m: HyperliquidMarket) => m.name === 'BTC');
+            const btcCtx = data[1][btcIndex];
+            if (btcCtx) {
+              const marketObj: MarketSelection = {
+                name: 'BTC',
+                displayName: 'BTC',
+                index: btcIndex,
+                markPx: btcCtx.markPx || '0',
+                dayNtlVlm: btcCtx.dayNtlVlm || '0',
+                prevDayPx: btcCtx.prevDayPx || '0',
+                maxLeverage: btcMarket.maxLeverage
+              };
+              onSelectMarket(marketObj);
+            }
           }
         }
       }
