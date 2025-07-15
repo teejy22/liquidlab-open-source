@@ -3,6 +3,7 @@ import { HyperliquidMarkets } from './HyperliquidMarkets';
 import { HyperliquidTradeForm } from './HyperliquidTradeForm';
 import { HyperliquidPositions } from './HyperliquidPositions';
 import { TradingViewChart } from './TradingViewChart';
+import { AIMarketAssistant } from './AIMarketAssistant';
 import { usePrivy } from '@privy-io/react-auth';
 
 interface Market {
@@ -172,13 +173,21 @@ export function HyperliquidTradingInterface() {
           )}
         </div>
 
-        {/* Right Sidebar - Trading Panel */}
-        <div className="w-80 border-l border-gray-800 overflow-y-auto">
-          <HyperliquidTradeForm
-            selectedMarket={selectedMarket?.name || 'BTC'}
-            currentPrice={parseFloat(selectedMarket?.markPx || '0')}
-            maxLeverage={selectedMarket?.maxLeverage}
-          />
+        {/* Right Sidebar - Trading Panel & AI Assistant */}
+        <div className="w-80 border-l border-gray-800 flex flex-col">
+          <div className="flex-1 overflow-y-auto border-b border-gray-800">
+            <HyperliquidTradeForm
+              selectedMarket={selectedMarket?.name || 'BTC'}
+              currentPrice={parseFloat(selectedMarket?.markPx || '0')}
+              maxLeverage={selectedMarket?.maxLeverage}
+            />
+          </div>
+          <div className="h-[250px] overflow-hidden">
+            <AIMarketAssistant
+              selectedMarket={selectedMarket?.name || 'BTC'}
+              currentPrice={parseFloat(selectedMarket?.markPx || '0')}
+            />
+          </div>
         </div>
       </div>
     </div>

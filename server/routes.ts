@@ -913,6 +913,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI Market Chat endpoint
+  app.post('/api/ai/market-chat', async (req, res) => {
+    try {
+      const { message, context } = req.body;
+      
+      if (!process.env.PERPLEXITY_API_KEY) {
+        return res.status(503).json({ 
+          response: "AI assistant is currently unavailable. Please ask the administrator to configure the Perplexity API key." 
+        });
+      }
+
+      const systemPrompt = `You are a cryptocurrency trading assistant for LiquidLab platform. Provide concise, accurate market analysis and trading insights. Current context: Trading ${context.market} at $${context.currentPrice}. Keep responses brief and focused on actionable information.`;
+
+      const response = await fetch('https://api.perplexity.ai/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.PERPLEXITY_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'llama-3.1-sonar-small-128k-online',
+          messages: [
+            {
+              role: 'system',
+              content: systemPrompt
+            },
+            {
+              role: 'user',
+              content: message
+            }
+          ],
+          temperature: 0.2,
+          top_p: 0.9,
+          return_images: false,
+          return_related_questions: false,
+          search_recency_filter: 'month',
+          stream: false
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Perplexity API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const aiResponse = data.choices[0]?.message?.content || "Sorry, I couldn't generate a response.";
+
+      res.json({ response: aiResponse });
+    } catch (error) {
+      console.error('AI chat error:', error);
+      res.status(500).json({ 
+        response: "I'm having trouble connecting to the AI service right now. Please try again later." 
+      });
+    }
+  });
+
   // Crypto payout endpoints
   app.get("/api/payouts/platform/:platformId", async (req, res) => {
     try {
