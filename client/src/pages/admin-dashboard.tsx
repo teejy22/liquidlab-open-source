@@ -1,9 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useLocation } from "wouter";
 import { 
   DollarSign, 
@@ -14,15 +17,23 @@ import {
   LogOut,
   Building,
   Activity,
-  PieChart
+  PieChart,
+  KeyRound,
+  Mail,
+  User,
+  Wallet
 } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [userSearchQuery, setUserSearchQuery] = useState("");
 
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ['/api/admin/dashboard'],
@@ -45,6 +56,34 @@ export default function AdminDashboard() {
       const data = await response.json();
       console.log("Dashboard data received:", data);
       return data;
+    },
+  });
+
+  const { data: usersData, isLoading: usersLoading } = useQuery({
+    queryKey: ['/api/admin/users'],
+    retry: false,
+    enabled: !!dashboardData, // Only fetch users if dashboard data is loaded
+  });
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: async ({ userId, newPassword }: { userId: number; newPassword: string }) => {
+      await apiRequest("POST", `/api/admin/users/${userId}/reset-password`, { newPassword });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Password Reset",
+        description: "User password has been reset successfully.",
+      });
+      setResetPasswordDialogOpen(false);
+      setSelectedUser(null);
+      setNewPassword("");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to reset password.",
+        variant: "destructive",
+      });
     },
   });
   
@@ -283,10 +322,11 @@ export default function AdminDashboard() {
 
         {/* Detailed Data Tabs */}
         <Tabs defaultValue="platforms" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="platforms">All Platforms</TabsTrigger>
             <TabsTrigger value="transactions">Recent Transactions</TabsTrigger>
             <TabsTrigger value="revenue">Revenue Breakdown</TabsTrigger>
+            <TabsTrigger value="users">User Management</TabsTrigger>
           </TabsList>
 
           <TabsContent value="platforms" className="space-y-4">
@@ -440,7 +480,168 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="users" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>User Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {usersLoading ? (
+                  <div className="flex justify-center py-8">
+                    <Skeleton className="h-8 w-8 animate-spin rounded-full" />
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Search Input */}
+                    <div className="flex items-center gap-2">
+                      <Input
+                        placeholder="Search by username or email..."
+                        value={userSearchQuery}
+                        onChange={(e) => setUserSearchQuery(e.target.value)}
+                        className="max-w-sm"
+                      />
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="border-b">
+                          <tr>
+                            <th className="text-left p-3">ID</th>
+                            <th className="text-left p-3">Username</th>
+                            <th className="text-left p-3">Email</th>
+                            <th className="text-left p-3">Wallet Address</th>
+                            <th className="text-left p-3">Builder Code</th>
+                            <th className="text-left p-3">Created</th>
+                            <th className="text-left p-3">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {usersData?.users
+                            ?.filter((user: any) => {
+                              const query = userSearchQuery.toLowerCase();
+                              return (
+                                user.username?.toLowerCase().includes(query) ||
+                                user.email?.toLowerCase().includes(query)
+                              );
+                            })
+                            ?.map((user: any) => (
+                          <tr key={user.id} className="border-b hover:bg-gray-50">
+                            <td className="p-3 font-medium">#{user.id}</td>
+                            <td className="p-3">
+                              <div className="flex items-center gap-2">
+                                <User className="w-4 h-4 text-gray-400" />
+                                {user.username}
+                              </div>
+                            </td>
+                            <td className="p-3">
+                              <div className="flex items-center gap-2">
+                                <Mail className="w-4 h-4 text-gray-400" />
+                                {user.email}
+                              </div>
+                            </td>
+                            <td className="p-3">
+                              {user.walletAddress ? (
+                                <div className="flex items-center gap-2">
+                                  <Wallet className="w-4 h-4 text-gray-400" />
+                                  <span className="font-mono text-sm">
+                                    {user.walletAddress.slice(0, 6)}...{user.walletAddress.slice(-4)}
+                                  </span>
+                                </div>
+                              ) : (
+                                <span className="text-gray-400">No wallet</span>
+                              )}
+                            </td>
+                            <td className="p-3">
+                              {user.builderCode ? (
+                                <Badge variant="secondary">{user.builderCode}</Badge>
+                              ) : (
+                                <span className="text-gray-400">-</span>
+                              )}
+                            </td>
+                            <td className="p-3 text-sm text-gray-600">
+                              {new Date(user.createdAt).toLocaleDateString()}
+                            </td>
+                            <td className="p-3">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setResetPasswordDialogOpen(true);
+                                }}
+                              >
+                                <KeyRound className="w-4 h-4 mr-1" />
+                                Reset Password
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {(!usersData?.users || usersData.users.length === 0) && (
+                      <div className="text-center py-8 text-gray-500">
+                        No users registered yet
+                      </div>
+                    )}
+                  </div>
+                </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
+
+        {/* Password Reset Dialog */}
+        <Dialog open={resetPasswordDialogOpen} onOpenChange={setResetPasswordDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Reset Password for {selectedUser?.username}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="newPassword">New Password</Label>
+                <Input
+                  id="newPassword"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password (min. 8 characters)"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setResetPasswordDialogOpen(false);
+                  setNewPassword("");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  if (selectedUser && newPassword.length >= 8) {
+                    resetPasswordMutation.mutate({
+                      userId: selectedUser.id,
+                      newPassword
+                    });
+                  } else {
+                    toast({
+                      title: "Invalid Password",
+                      description: "Password must be at least 8 characters long.",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+                disabled={resetPasswordMutation.isPending}
+              >
+                {resetPasswordMutation.isPending ? "Resetting..." : "Reset Password"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

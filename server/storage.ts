@@ -39,6 +39,8 @@ export interface IStorage {
   updateUser(id: number, updates: Partial<User>): Promise<User>;
   updateUserWallet(userId: number, walletAddress: string): Promise<User>;
   authenticateUser(email: string, password: string): Promise<User | undefined>;
+  getAllUsers(): Promise<User[]>;
+  updateUserPassword(userId: number, newPassword: string): Promise<void>;
   
   // Trading platforms
   getTradingPlatforms(userId?: string): Promise<TradingPlatform[]>;
@@ -147,6 +149,17 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId))
       .returning();
     return user;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users).orderBy(desc(users.createdAt));
+  }
+
+  async updateUserPassword(userId: number, newPassword: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ password: newPassword, updatedAt: new Date() })
+      .where(eq(users.id, userId));
   }
 
   async getTradingPlatforms(userId?: string): Promise<TradingPlatform[]> {
