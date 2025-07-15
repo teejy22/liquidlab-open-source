@@ -63,7 +63,6 @@ export default function Verify() {
           </div>
         </div>
       </header>
-
       {/* Main Content */}
       <main className="container mx-auto px-4 py-12 max-w-4xl">
         <div className="text-center mb-12">
@@ -129,7 +128,7 @@ export default function Verify() {
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h2 className="text-2xl font-bold mb-2">{verificationResult.platform.name}</h2>
+                      <h2 className="text-2xl font-bold mb-2 text-[#fffcfc]">{verificationResult.platform.name}</h2>
                       <p className="text-gray-400">Platform ID: {verificationResult.platform.id}</p>
                     </div>
                     {verificationResult.platform.isVerified ? (
@@ -259,7 +258,6 @@ export default function Verify() {
           </Card>
         )}
       </main>
-
       {/* Footer */}
       <footer className="border-t border-gray-800 mt-20">
         <div className="container mx-auto px-4 py-8">
