@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useCallback } from 'react';
-import { createChart, ColorType, IChartApi, ISeriesApi, UTCTimestamp } from 'lightweight-charts';
+import React, { useEffect, useRef } from 'react';
+import { createChart, ColorType } from 'lightweight-charts';
 import { useQuery } from '@tanstack/react-query';
 
 interface HyperliquidLightweightChartProps {
@@ -8,7 +8,7 @@ interface HyperliquidLightweightChartProps {
 }
 
 interface CandleData {
-  time: UTCTimestamp;
+  time: number;
   open: number;
   high: number;
   low: number;
@@ -21,8 +21,8 @@ export const HyperliquidLightweightChart: React.FC<HyperliquidLightweightChartPr
   interval = '15m' 
 }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<IChartApi | null>(null);
-  const candlestickSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
+  const chartRef = useRef<any>(null);
+  const candlestickSeriesRef = useRef<any>(null);
 
   // Fetch historical candles from Hyperliquid
   const { data: candleData, refetch } = useQuery({
@@ -95,14 +95,14 @@ export const HyperliquidLightweightChart: React.FC<HyperliquidLightweightChartPr
 
     try {
       // Convert data to lightweight-charts format
-      const formattedData: CandleData[] = candleData.map((candle: any) => ({
-        time: (Math.floor(candle.timestamp / 1000)) as UTCTimestamp,
+      const formattedData = candleData.map((candle: any) => ({
+        time: Math.floor(candle.timestamp / 1000),
         open: parseFloat(candle.open),
         high: parseFloat(candle.high),
         low: parseFloat(candle.low),
         close: parseFloat(candle.close),
         volume: parseFloat(candle.volume || 0),
-      })).sort((a, b) => a.time - b.time);
+      })).sort((a: any, b: any) => a.time - b.time);
 
       if (formattedData.length > 0) {
         candlestickSeriesRef.current.setData(formattedData);
