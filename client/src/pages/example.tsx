@@ -149,13 +149,13 @@ export default function ExampleTradingPage() {
               <img 
                 src={platformData.logoUrl} 
                 alt={platformData.name || "Trading Platform"} 
-                className="h-32 lg:h-36 w-auto"
+                className="h-40 lg:h-36 w-auto"
               />
             ) : (
               <img 
                 src={liquidLabLogo} 
                 alt="LiquidLab" 
-                className="h-32 lg:h-36 w-auto"
+                className="h-40 lg:h-36 w-auto"
               />
             )}
           </div>
