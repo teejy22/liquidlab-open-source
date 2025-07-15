@@ -122,6 +122,15 @@ export class VerificationService {
         return { success: false, error: 'Platform not found' };
       }
       
+      // Update platform as verified
+      await db
+        .update(tradingPlatforms)
+        .set({
+          isVerified: true,
+          verificationDate: new Date(),
+        })
+        .where(eq(tradingPlatforms.id, platform.id));
+      
       // Record successful attempt
       await db.insert(verificationAttempts).values({
         attemptedCode: code,
@@ -131,9 +140,16 @@ export class VerificationService {
         platformId: platform.id,
       });
       
+      // Return updated platform info
+      const updatedPlatform = {
+        ...platform,
+        isVerified: true,
+        verificationDate: new Date()
+      };
+      
       return { 
         success: true, 
-        platform, 
+        platform: updatedPlatform, 
         securityHash: token.securityHash 
       };
       
