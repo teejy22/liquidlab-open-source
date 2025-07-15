@@ -1,23 +1,35 @@
 import { usePrivy } from '@privy-io/react-auth';
 import { Button } from '@/components/ui/button';
 import { Wallet } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { apiRequest } from '@/lib/queryClient';
 
 export function WalletConnect() {
   const { ready, authenticated, user, login, logout } = usePrivy();
+  const [hasTimedOut, setHasTimedOut] = useState(false);
+
+  // Set timeout for Privy initialization
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!ready) {
+        setHasTimedOut(true);
+      }
+    }, 5000); // Wait 5 seconds before timing out
+
+    return () => clearTimeout(timer);
+  }, [ready]);
 
   // Listen for custom login event from other components
   useEffect(() => {
     const handlePrivyLogin = () => {
-      if (ready && !authenticated) {
+      if ((ready || hasTimedOut) && !authenticated) {
         login();
       }
     };
 
     window.addEventListener('privy:login', handlePrivyLogin);
     return () => window.removeEventListener('privy:login', handlePrivyLogin);
-  }, [ready, authenticated, login]);
+  }, [ready, authenticated, login, hasTimedOut]);
 
   // Save wallet address when user connects
   useEffect(() => {
@@ -41,7 +53,7 @@ export function WalletConnect() {
     saveWalletAddress();
   }, [authenticated, user]);
 
-  if (!ready) {
+  if (!ready && !hasTimedOut) {
     return (
       <Button disabled variant="outline" size="sm">
         <Wallet className="w-4 h-4 mr-2" />
