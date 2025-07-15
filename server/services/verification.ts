@@ -117,6 +117,19 @@ export class VerificationService {
         .from(tradingPlatforms)
         .where(eq(tradingPlatforms.id, token.platformId));
       
+      if (!platform) {
+        // Record failed attempt - platform not found
+        await db.insert(verificationAttempts).values({
+          attemptedCode: code,
+          ipAddress,
+          userAgent,
+          success: false,
+          errorReason: 'platform_not_found',
+        });
+        
+        return { success: false, error: 'Platform not found' };
+      }
+      
       // Record successful attempt
       await db.insert(verificationAttempts).values({
         attemptedCode: code,
