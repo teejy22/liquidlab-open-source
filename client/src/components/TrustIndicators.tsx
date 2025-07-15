@@ -25,7 +25,7 @@ export function TrustIndicators({
   const [showDetails, setShowDetails] = useState(false);
 
   return (
-    <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg px-3 py-2 mb-2">
+    <div className="dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg px-3 py-2 mb-2 bg-[#080505]">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
           <div className="flex items-center gap-2">
@@ -100,7 +100,6 @@ export function TrustIndicators({
           {showDetails ? "Hide" : "Details"}
         </Button>
       </div>
-
       {showDetails && (
         <div className="mt-2 pt-2 border-t border-green-200 dark:border-green-800 space-y-2">
           <div className="bg-white dark:bg-gray-900 rounded p-2 space-y-1.5">
