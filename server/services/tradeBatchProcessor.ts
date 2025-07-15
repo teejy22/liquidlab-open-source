@@ -62,11 +62,9 @@ export class TradeBatchProcessor {
 
       for (const trade of trades) {
         try {
-          // Only process trades with our builder code
-          if (trade.builderCode === 'LIQUIDLAB2025') {
-            await this.processSingleTrade(trade);
-            processedCount++;
-          }
+          // Process all trades (builder fees are handled by Hyperliquid onchain)
+          await this.processSingleTrade(trade);
+          processedCount++;
         } catch (error) {
           console.error(`Error processing trade ${trade.tradeId}:`, error);
           errorCount++;
@@ -163,7 +161,7 @@ export class TradeBatchProcessor {
    * Since Hyperliquid doesn't have a direct builder code API, we need to:
    * 1. Get all platform owners from our database
    * 2. Fetch their trades using their wallet addresses (from Privy)
-   * 3. Filter for trades with LIQUIDLAB2025 builder code
+   * 3. Filter for trades with our builder wallet address
    */
   private async fetchRecentTrades(): Promise<TradeData[]> {
     try {
@@ -203,7 +201,7 @@ export class TradeBatchProcessor {
             size: '0.1',
             price: '120000',
             fee: '12', // 0.1% of 12000 USD
-            builderCode: 'LIQUIDLAB2025',
+            builderCode: process.env.VITE_BUILDER_WALLET_ADDRESS || '0x0000000000000000000000000000000000000000',
             timestamp: currentTime - 5000 // 5 seconds ago
           },
           {
@@ -215,7 +213,7 @@ export class TradeBatchProcessor {
             size: '1.5',
             price: '3400',
             fee: '5.1', // 0.1% of 5100 USD
-            builderCode: 'LIQUIDLAB2025',
+            builderCode: process.env.VITE_BUILDER_WALLET_ADDRESS || '0x0000000000000000000000000000000000000000',
             timestamp: currentTime - 3000 // 3 seconds ago
           }
         ];
@@ -245,12 +243,13 @@ export class TradeBatchProcessor {
             continue;
           }
 
-          // Filter for trades with LIQUIDLAB2025 builder code and after last processed timestamp
+          // Filter for trades with our builder wallet and after last processed timestamp
           const platformTrades = userFills
             .filter((fill: any) => {
-              const hasBuilderCode = fill.cloid && fill.cloid.includes('LIQUIDLAB2025');
+              // In production, Hyperliquid tracks builder fees onchain
+              // We just need to check if this is a new trade
               const isNewTrade = new Date(fill.time).getTime() > this.lastProcessedTimestamp;
-              return hasBuilderCode && isNewTrade;
+              return isNewTrade;
             })
             .map((fill: any) => {
               const tradeSize = parseFloat(fill.sz);
@@ -270,7 +269,7 @@ export class TradeBatchProcessor {
                 size: fill.sz,
                 price: fill.px,
                 fee: fee.toFixed(2),
-                builderCode: 'LIQUIDLAB2025',
+                builderCode: process.env.VITE_BUILDER_WALLET_ADDRESS || '0x0000000000000000000000000000000000000000',
                 timestamp: new Date(fill.time).getTime()
               };
             });

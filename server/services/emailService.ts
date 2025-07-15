@@ -98,7 +98,7 @@ class EmailService {
         <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Platform Details</h3>
           <p><strong>Platform ID:</strong> #${platform.id}</p>
-          <p><strong>Builder Code:</strong> LIQUIDLAB2025</p>
+          <p><strong>Builder Wallet:</strong> Configured automatically</p>
           <p><strong>Revenue Share:</strong> You earn 70% of all trading fees</p>
           <p><strong>MoonPay Commission:</strong> You earn 50% of affiliate fees</p>
         </div>

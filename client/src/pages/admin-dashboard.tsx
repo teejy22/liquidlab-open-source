@@ -441,7 +441,7 @@ export default function AdminDashboard() {
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-700">Platform Configuration</p>
-                            <p className="text-sm">Builder Code: {platform.builderCode || 'LIQUIDLAB2025'}</p>
+                            <p className="text-sm">Builder Wallet: {platform.builderWallet || 'Not configured'}</p>
                             <p className="text-sm">Has Logo: {platform.logoUrl ? 'Yes' : 'No'}</p>
                           </div>
                         </div>
@@ -769,12 +769,12 @@ export default function AdminDashboard() {
                     </h3>
                     <div className="space-y-4">
                       <div>
-                        <p className="text-sm text-gray-600 mb-1">Builder Code Address</p>
+                        <p className="text-sm text-gray-600 mb-1">Builder Wallet Address</p>
                         <p className="font-mono text-sm bg-gray-100 p-2 rounded">
-                          LIQUIDLAB2025
+                          {import.meta.env.VITE_BUILDER_WALLET_ADDRESS || 'Not configured'}
                         </p>
                         <p className="text-xs text-gray-500 mt-1">
-                          All platform trading fees are collected under this builder code
+                          All platform trading fees are collected through this builder wallet
                         </p>
                       </div>
                       

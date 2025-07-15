@@ -35,7 +35,7 @@ export function TestWalletInput() {
       
       toast({
         title: "Success",
-        description: "Wallet address saved! You can now place trades with LIQUIDLAB2025 builder code.",
+        description: "Wallet address saved! You can now place trades with builder fee tracking.",
       });
       
       setWalletAddress('');
@@ -90,7 +90,7 @@ export function TestWalletInput() {
           <ol className="list-decimal list-inside space-y-1">
             <li>Enter your Hyperliquid wallet address above</li>
             <li>Go to Hyperliquid and place a trade</li>
-            <li>Include "LIQUIDLAB2025" in the cloid field</li>
+            <li>Trades will automatically include builder fee tracking</li>
             <li>Wait up to 10 minutes for processing</li>
             <li>Check your dashboard for earnings</li>
           </ol>

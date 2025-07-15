@@ -120,7 +120,7 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Admin-only endpoints: GET /api/admin/users, POST /api/admin/users/:userId/reset-password
   - Storage layer enhanced with getAllUsers() and updateUserPassword() methods
 - **Wallet Management Tab** (January 17, 2025): Added dedicated wallet management functionality
-  - Main Collection Wallet: Shows LIQUIDLAB2025 builder code and total collected revenue
+  - Main Collection Wallet: Shows builder wallet address and total collected revenue
   - Payout Wallet Configuration: Displays Arbitrum network, USDC currency, weekly schedule
   - Real-time USDC balance display with 30-second auto-refresh
   - Revenue Distribution: Visual breakdown of LiquidLab (30%) vs Platform Owners (70%) shares
@@ -673,15 +673,15 @@ The application uses a monorepo structure with shared types and schemas, enablin
 - **Trade Batch Processor**: Updated to use real wallet addresses for production
   - Fetches wallet addresses from database for each platform owner
   - Queries Hyperliquid API using actual wallet addresses
-  - Filters trades with LIQUIDLAB2025 builder code
+  - Filters trades with builder wallet configuration
   - Processes real trading fees with 70/30 revenue split
 - **Automatic Builder Code Integration**: Fixed critical UX issue where users had to manually enter builder code
-  - Updated hyperliquid-signing.ts to automatically include `c: 'LIQUIDLAB2025'` in all orders
-  - All trades placed through any LiquidLab platform now automatically include the builder code
+  - Updated hyperliquid-signing.ts to automatically include builder wallet with fee structure
+  - All trades placed through any LiquidLab platform now automatically include the builder configuration
   - Trade batch processor detects and processes fees without any user action required
 - **Production Ready**: System now ready to process real trades automatically
   - Users simply connect wallets and trade normally
-  - Builder code "LIQUIDLAB2025" is automatically included in all orders
+  - Builder wallet address is automatically included in all orders
   - Trade batch runs every 10 minutes to check for new trades
   - Real-time revenue tracking and distribution enabled
 
