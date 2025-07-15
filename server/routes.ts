@@ -61,20 +61,25 @@ function handleError(error: unknown): string {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Admin authentication
-  const ADMIN_EMAIL = "admin@liquidlab.trade";
-  const ADMIN_PASSWORD = "$2a$10$YourHashedAdminPassword"; // In production, use environment variable
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@liquidlab.trade";
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD; // Required environment variable
   
   app.post("/api/admin/login", async (req, res) => {
     try {
       const { email, password } = req.body;
+      
+      // Check if admin credentials are configured
+      if (!ADMIN_PASSWORD) {
+        return res.status(500).json({ message: "Admin authentication not configured" });
+      }
       
       // Check if it's the admin
       if (email !== ADMIN_EMAIL) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       
-      // For demo, accept "admin123" as password
-      const validPassword = password === "admin123" || await bcrypt.compare(password, ADMIN_PASSWORD);
+      // Verify password against environment variable
+      const validPassword = await bcrypt.compare(password, ADMIN_PASSWORD);
       if (!validPassword) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
