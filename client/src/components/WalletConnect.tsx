@@ -74,7 +74,7 @@ export function WalletConnect() {
       onClick={login} 
       variant="default" 
       size="sm"
-      className="bg-[#00d4ff] hover:bg-[#00a8cc] text-black"
+      className="bg-[#00d4ff] hover:bg-[#00a8cc] text-black pl-[5px] pr-[5px] ml-[8px] mr-[8px]"
     >
       <Wallet className="w-4 h-4 mr-2" />
       Connect Wallet
