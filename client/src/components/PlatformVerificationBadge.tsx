@@ -26,17 +26,17 @@ export function PlatformVerificationBadge({
         <Button 
           variant="ghost" 
           size={compactMode ? "sm" : "default"}
-          className="gap-2 hover:bg-green-50 dark:hover:bg-green-950/20"
+          className={`${compactMode ? 'gap-1 h-7 px-2 text-xs' : 'gap-2'} hover:bg-green-50 dark:hover:bg-green-950/20`}
         >
           {isVerified ? (
             <>
-              <Shield className="w-4 h-4 text-green-600 dark:text-green-400" />
+              <Shield className={`${compactMode ? 'w-3 h-3' : 'w-4 h-4'} text-green-600 dark:text-green-400`} />
               {!compactMode && <span>LiquidLab Verified</span>}
-              <CheckCircle className="w-3 h-3 text-green-600 dark:text-green-400" />
+              <CheckCircle className={`${compactMode ? 'w-2.5 h-2.5' : 'w-3 h-3'} text-green-600 dark:text-green-400`} />
             </>
           ) : (
             <>
-              <AlertCircle className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
+              <AlertCircle className={`${compactMode ? 'w-3 h-3' : 'w-4 h-4'} text-yellow-600 dark:text-yellow-400`} />
               {!compactMode && <span>Verification Pending</span>}
             </>
           )}

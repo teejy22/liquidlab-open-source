@@ -141,13 +141,13 @@ export default function ExampleTradingPage() {
               <img 
                 src={platformData.logoUrl} 
                 alt={platformData.name || "Trading Platform"} 
-                className="h-12 lg:h-24 w-auto"
+                className="h-16 lg:h-32 w-auto"
               />
             ) : (
               <img 
                 src={liquidLabLogo} 
                 alt="LiquidLab" 
-                className="h-12 lg:h-24 w-auto"
+                className="h-16 lg:h-32 w-auto"
               />
             )}
           </div>
@@ -156,6 +156,7 @@ export default function ExampleTradingPage() {
               platformId={platformData?.id || 1}
               platformName={platformData?.name || "Example Trading Platform"}
               isVerified={true}
+              compactMode={true}
               className="hidden lg:block"
             />
             <WalletConnect />
