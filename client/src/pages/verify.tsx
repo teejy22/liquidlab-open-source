@@ -163,7 +163,7 @@ export default function Verify() {
                       )}
                       <div>
                         <p className="text-sm text-gray-500 mb-1">Builder Code</p>
-                        <p className="font-mono">LIQUIDLAB2025</p>
+                        <p className="font-mono text-[#ffffff]">LIQUIDLAB2025</p>
                       </div>
                     </div>
 
