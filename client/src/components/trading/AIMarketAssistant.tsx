@@ -96,7 +96,7 @@ export function AIMarketAssistant({ selectedMarket = 'BTC', currentPrice }: AIMa
 
   return (
     <Card className="bg-gray-900 border-gray-800 h-full flex flex-col">
-      <div className="p-2 border-b border-gray-800">
+      <div className="p-2 border-b border-gray-800 text-[#00030a]">
         <h3 className="text-xs font-semibold flex items-center gap-1.5 text-[#ffffff]">
           <Bot className="h-3.5 w-3.5 text-blue-400" />
           AI Assistant
