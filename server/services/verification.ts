@@ -152,6 +152,24 @@ export class VerificationService {
         return { success: false, error: 'This platform has been suspended. Please contact support.' };
       }
       
+      // Check if platform is approved
+      if (platform.approvalStatus !== 'approved') {
+        await db.insert(verificationAttempts).values({
+          attemptedCode: code,
+          ipAddress,
+          userAgent,
+          success: false,
+          errorReason: 'platform_not_approved',
+          platformId: platform.id,
+        });
+        
+        const errorMessage = platform.approvalStatus === 'rejected' 
+          ? 'This platform has been rejected. Please check your email for details.'
+          : 'This platform is pending approval. You will receive an email once approved.';
+        
+        return { success: false, error: errorMessage };
+      }
+      
       // Update platform as verified
       await db
         .update(tradingPlatforms)

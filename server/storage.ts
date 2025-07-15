@@ -49,6 +49,11 @@ export interface IStorage {
   updateTradingPlatform(id: number, updates: Partial<TradingPlatform>): Promise<TradingPlatform>;
   deleteTradingPlatform(id: number): Promise<void>;
   
+  // Platform approval
+  getPendingPlatforms(): Promise<TradingPlatform[]>;
+  approvePlatform(platformId: number, approvalNotes?: string): Promise<TradingPlatform>;
+  rejectPlatform(platformId: number, rejectionReason: string): Promise<TradingPlatform>;
+  
   // Templates
   getTemplates(): Promise<Template[]>;
   getTemplate(id: number): Promise<Template | undefined>;
@@ -193,7 +198,8 @@ export class DatabaseStorage implements IStorage {
       .insert(tradingPlatforms)
       .values({
         ...platform,
-        slug
+        slug,
+        approvalStatus: 'pending' // All new platforms start as pending
       })
       .returning();
     return created;
@@ -210,6 +216,52 @@ export class DatabaseStorage implements IStorage {
 
   async deleteTradingPlatform(id: number): Promise<void> {
     await db.delete(tradingPlatforms).where(eq(tradingPlatforms.id, id));
+  }
+
+  async getPendingPlatforms(): Promise<TradingPlatform[]> {
+    return await db
+      .select()
+      .from(tradingPlatforms)
+      .where(eq(tradingPlatforms.approvalStatus, 'pending'))
+      .orderBy(desc(tradingPlatforms.createdAt));
+  }
+
+  async approvePlatform(platformId: number, approvalNotes?: string): Promise<TradingPlatform> {
+    const [platform] = await db
+      .update(tradingPlatforms)
+      .set({
+        approvalStatus: 'approved',
+        approvalDate: new Date(),
+        approvalNotes,
+        updatedAt: new Date(),
+      })
+      .where(eq(tradingPlatforms.id, platformId))
+      .returning();
+    
+    if (!platform) {
+      throw new Error('Platform not found');
+    }
+    
+    return platform;
+  }
+
+  async rejectPlatform(platformId: number, rejectionReason: string): Promise<TradingPlatform> {
+    const [platform] = await db
+      .update(tradingPlatforms)
+      .set({
+        approvalStatus: 'rejected',
+        approvalDate: new Date(),
+        rejectionReason,
+        updatedAt: new Date(),
+      })
+      .where(eq(tradingPlatforms.id, platformId))
+      .returning();
+    
+    if (!platform) {
+      throw new Error('Platform not found');
+    }
+    
+    return platform;
   }
 
   async getTemplates(): Promise<Template[]> {

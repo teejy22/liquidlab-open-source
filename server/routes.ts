@@ -387,6 +387,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await SecurityService.updateRiskScore(platform.id, 50);
       }
       
+      // Send approval notification to admin
+      const user = await storage.getUser(platform.userId);
+      if (user) {
+        const { sendPlatformApprovalNotification } = await import('./services/notifications');
+        await sendPlatformApprovalNotification(platform, user);
+      }
+      
       res.json(platform);
     } catch (error) {
       res.status(400).json({ error: handleError(error) });
@@ -1416,6 +1423,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error starting payout processing:', error);
       res.status(500).json({ error: 'Failed to start payout processing' });
+    }
+  });
+
+  // Admin-only: Get pending platforms
+  app.get("/api/admin/platforms/pending", requireAdmin, async (req, res) => {
+    try {
+      const pendingPlatforms = await storage.getPendingPlatforms();
+      
+      // Get user details for each platform
+      const platformsWithUsers = await Promise.all(
+        pendingPlatforms.map(async (platform) => {
+          const user = await storage.getUser(platform.userId);
+          return {
+            ...platform,
+            user: user ? {
+              id: user.id,
+              username: user.username,
+              email: user.email,
+            } : null,
+          };
+        })
+      );
+      
+      res.json(platformsWithUsers);
+    } catch (error) {
+      console.error('Error fetching pending platforms:', error);
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  // Admin-only: Approve platform
+  app.post("/api/admin/platforms/:platformId/approve", requireAdmin, async (req, res) => {
+    try {
+      const { platformId } = req.params;
+      const { approvalNotes } = req.body;
+      
+      const platform = await storage.approvePlatform(parseInt(platformId), approvalNotes);
+      const user = await storage.getUser(platform.userId);
+      
+      // Send approval notification
+      if (user) {
+        const { sendPlatformApprovedNotification } = await import('./services/notifications');
+        await sendPlatformApprovedNotification(platform, user);
+      }
+      
+      res.json({ success: true, platform });
+    } catch (error) {
+      console.error('Error approving platform:', error);
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  // Admin-only: Reject platform
+  app.post("/api/admin/platforms/:platformId/reject", requireAdmin, async (req, res) => {
+    try {
+      const { platformId } = req.params;
+      const { rejectionReason } = req.body;
+      
+      if (!rejectionReason) {
+        return res.status(400).json({ error: 'Rejection reason is required' });
+      }
+      
+      const platform = await storage.rejectPlatform(parseInt(platformId), rejectionReason);
+      const user = await storage.getUser(platform.userId);
+      
+      // Send rejection notification
+      if (user) {
+        const { sendPlatformRejectedNotification } = await import('./services/notifications');
+        await sendPlatformRejectedNotification(platform, user);
+      }
+      
+      res.json({ success: true, platform });
+    } catch (error) {
+      console.error('Error rejecting platform:', error);
+      res.status(500).json({ error: handleError(error) });
     }
   });
 

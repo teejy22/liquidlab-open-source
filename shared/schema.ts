@@ -29,6 +29,10 @@ export const tradingPlatforms = pgTable("trading_platforms", {
   isVerified: boolean("is_verified").default(false),
   verificationDate: timestamp("verification_date"),
   verificationNotes: text("verification_notes"),
+  approvalStatus: text("approval_status").default("pending"), // 'pending', 'approved', 'rejected'
+  approvalDate: timestamp("approval_date"),
+  approvalNotes: text("approval_notes"),
+  rejectionReason: text("rejection_reason"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

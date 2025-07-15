@@ -74,6 +74,55 @@ export default function AdminDashboard() {
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
+  const { data: pendingPlatforms, isLoading: pendingLoading } = useQuery({
+    queryKey: ['/api/admin/platforms/pending'],
+    retry: false,
+    enabled: !!dashboardData,
+  });
+
+  const approvePlatformMutation = useMutation({
+    mutationFn: async ({ platformId, notes }: { platformId: number; notes?: string }) => {
+      return apiRequest("POST", `/api/admin/platforms/${platformId}/approve`, { notes });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Platform Approved",
+        description: "The platform has been approved and can now go live.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/platforms/pending'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/dashboard'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Approval Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const rejectPlatformMutation = useMutation({
+    mutationFn: async ({ platformId, reason }: { platformId: number; reason: string }) => {
+      return apiRequest("POST", `/api/admin/platforms/${platformId}/reject`, { reason });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Platform Rejected",
+        description: "The platform has been rejected.",
+        variant: "destructive",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/platforms/pending'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/dashboard'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Rejection Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const { data: suspiciousPlatforms } = useQuery({
     queryKey: ['/api/admin/platforms/suspicious'],
     retry: false,
@@ -336,8 +385,9 @@ export default function AdminDashboard() {
         </div>
 
         {/* Detailed Data Tabs */}
-        <Tabs defaultValue="platforms" className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
+        <Tabs defaultValue="pending" className="w-full">
+          <TabsList className="grid w-full grid-cols-7">
+            <TabsTrigger value="pending">Pending Approvals</TabsTrigger>
             <TabsTrigger value="platforms">All Platforms</TabsTrigger>
             <TabsTrigger value="transactions">Recent Transactions</TabsTrigger>
             <TabsTrigger value="revenue">Revenue Breakdown</TabsTrigger>
@@ -345,6 +395,102 @@ export default function AdminDashboard() {
             <TabsTrigger value="wallets">Wallet Management</TabsTrigger>
             <TabsTrigger value="security">Security Monitor</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="pending" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Platforms Awaiting Approval</span>
+                  <Badge variant="destructive" className="text-lg px-3 py-1">
+                    {pendingPlatforms?.length || 0} Pending
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {pendingLoading ? (
+                  <div className="space-y-3">
+                    {[...Array(3)].map((_, i) => (
+                      <div key={i} className="p-4 border rounded-lg">
+                        <Skeleton className="h-6 w-48 mb-2" />
+                        <Skeleton className="h-4 w-32 mb-2" />
+                        <Skeleton className="h-4 w-64" />
+                      </div>
+                    ))}
+                  </div>
+                ) : pendingPlatforms && pendingPlatforms.length > 0 ? (
+                  <div className="space-y-4">
+                    {pendingPlatforms.map((platform: any) => (
+                      <div key={platform.id} className="border rounded-lg p-6">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <h3 className="text-lg font-semibold">{platform.name}</h3>
+                            <p className="text-sm text-gray-600">Platform ID: {platform.id}</p>
+                            <p className="text-sm text-gray-600">Created: {new Date(platform.createdAt).toLocaleString()}</p>
+                          </div>
+                          <Badge variant="outline" className="text-orange-600 border-orange-600">
+                            Pending Approval
+                          </Badge>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                          <div>
+                            <p className="text-sm font-medium text-gray-700">Owner Details</p>
+                            <p className="text-sm">User ID: {platform.userId}</p>
+                            <p className="text-sm">Username: {platform.user?.username || 'N/A'}</p>
+                            <p className="text-sm">Email: {platform.user?.email || 'N/A'}</p>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-700">Platform Configuration</p>
+                            <p className="text-sm">Builder Code: {platform.builderCode || 'LIQUIDLAB2025'}</p>
+                            <p className="text-sm">Has Logo: {platform.logoUrl ? 'Yes' : 'No'}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-3 pt-4 border-t">
+                          <Button
+                            variant="default"
+                            className="bg-green-600 hover:bg-green-700"
+                            onClick={() => {
+                              const notes = prompt('Any approval notes? (optional)');
+                              approvePlatformMutation.mutate({ 
+                                platformId: platform.id, 
+                                notes: notes || undefined 
+                              });
+                            }}
+                            disabled={approvePlatformMutation.isPending}
+                          >
+                            <Shield className="w-4 h-4 mr-2" />
+                            Approve Platform
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            onClick={() => {
+                              const reason = prompt('Please provide a reason for rejection:');
+                              if (reason) {
+                                rejectPlatformMutation.mutate({ 
+                                  platformId: platform.id, 
+                                  reason 
+                                });
+                              }
+                            }}
+                            disabled={rejectPlatformMutation.isPending}
+                          >
+                            Reject Platform
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-gray-500">
+                    <Shield className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                    <p className="text-lg">No platforms awaiting approval</p>
+                    <p className="text-sm mt-2">New platforms will appear here for review</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="platforms" className="space-y-4">
             <Card>
