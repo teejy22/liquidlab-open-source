@@ -105,15 +105,7 @@ export class VerificationService {
       
       // Get platform details
       const [platform] = await db
-        .select({
-          id: tradingPlatforms.id,
-          name: tradingPlatforms.name,
-          isVerified: tradingPlatforms.isVerified,
-          verificationDate: tradingPlatforms.verificationDate,
-          customDomain: tradingPlatforms.customDomain,
-          builderCode: tradingPlatforms.builderCode,
-          createdAt: tradingPlatforms.createdAt,
-        })
+        .select()
         .from(tradingPlatforms)
         .where(eq(tradingPlatforms.id, token.platformId));
       
