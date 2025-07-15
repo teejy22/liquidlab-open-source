@@ -24,6 +24,8 @@ export function HyperliquidTradingInterface() {
     change24h: string;
     high24h: string;
     low24h: string;
+    fundingRate: string;
+    openInterest: string;
   } | null>(null);
 
   const address = user?.wallet?.address || '';
@@ -55,7 +57,9 @@ export function HyperliquidTradingInterface() {
             volume24h: marketData.volume24h || '0',
             change24h: marketData.change24h?.toString() || '0',
             high24h: marketData.high24h?.toString() || '0',
-            low24h: marketData.low24h?.toString() || '0'
+            low24h: marketData.low24h?.toString() || '0',
+            fundingRate: marketData.fundingRate?.toString() || '0',
+            openInterest: marketData.openInterest || '0'
           });
         }
       } catch (error) {
@@ -130,6 +134,20 @@ export function HyperliquidTradingInterface() {
                         ${parseFloat(liveMarketData.low24h).toLocaleString(undefined, { 
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 6 
+                        })}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-400">Funding APR</div>
+                      <div className={`text-sm ${parseFloat(liveMarketData.fundingRate) > 0 ? 'text-green-400' : parseFloat(liveMarketData.fundingRate) < 0 ? 'text-red-400' : 'text-gray-400'}`}>
+                        {parseFloat(liveMarketData.fundingRate).toFixed(2)}%
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-400">Open Interest</div>
+                      <div className="text-sm">
+                        ${parseFloat(liveMarketData.openInterest).toLocaleString(undefined, { 
+                          maximumFractionDigits: 0 
                         })}
                       </div>
                     </div>

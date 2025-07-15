@@ -611,6 +611,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         change24h: string;
         high24h: string;
         low24h: string;
+        fundingRate: string;
+        openInterest: string;
       } } = {};
       
       if (metaData[1]) {
@@ -632,6 +634,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
             // Volume data is in dayNtlVlm (day notional volume)
             const volume = assetCtx.dayNtlVlm || "0";
             
+            // Funding rate (8-hour rate converted to annual percentage)
+            const funding = assetCtx.funding || "0";
+            const fundingRate = (parseFloat(funding) * 365 * 3 * 100).toFixed(2); // Convert to annual %
+            
+            // Open interest in USD
+            const openInterest = assetCtx.openInterest || "0";
+            
             // Estimate high/low based on price and volatility (since Hyperliquid doesn't provide these directly)
             // Use a conservative estimate of 2% daily range
             const volatilityFactor = 0.02;
@@ -643,7 +652,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
               volume24h: volume,
               change24h: change24h,
               high24h: high24h,
-              low24h: low24h
+              low24h: low24h,
+              fundingRate: fundingRate,
+              openInterest: openInterest
             };
           }
         });
@@ -662,7 +673,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
               // Update with more accurate orderbook price
               marketDataMap[symbol] = {
                 ...marketDataMap[symbol],
-                price: midPrice
+                price: midPrice,
+                fundingRate: marketDataMap[symbol]?.fundingRate || "0",
+                openInterest: marketDataMap[symbol]?.openInterest || "0"
               };
             }
           }
