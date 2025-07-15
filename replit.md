@@ -616,6 +616,11 @@ The application uses a monorepo structure with shared types and schemas, enablin
 - **MoonPay White Screen Fix**: Added proper error handling for missing API keys
   - Shows user-friendly message instead of white screen when MoonPay API key is missing
   - Clear instructions that production API key is needed from MoonPay
+- **USD Quoting Display**: Enhanced trading interface to properly show USD values when USD mode is selected
+  - Buy/Sell buttons now show "$100 USD" instead of "0.0008 BTC" when USD mode is active
+  - Trade confirmation dialog displays size in USD format (e.g., "$100.00 USD")
+  - Fixed all text color issues in confirmation dialog - all values now display in white
+  - Cancel button in confirmation dialog now has red border and text with hover effects
 
 ### AI-Powered Chat Assistant Integration (January 16, 2025)
 - **Perplexity API Integration**: Created AI market assistant for real-time trading insights
