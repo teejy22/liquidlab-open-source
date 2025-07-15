@@ -189,9 +189,9 @@ export function HyperliquidTradingInterface() {
                 theme="dark"
               />
             ) : (
-              <TradingViewUDFChart
+              <HyperliquidLightweightChart
                 symbol={selectedMarket?.name || 'BTC'}
-                interval="15"
+                interval="15m"
               />
             )}
           </div>
