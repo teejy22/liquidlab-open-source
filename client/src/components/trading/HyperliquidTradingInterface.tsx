@@ -3,8 +3,7 @@ import { HyperliquidMarkets } from './HyperliquidMarkets';
 import { HyperliquidTradeForm } from './HyperliquidTradeForm';
 import { HyperliquidPositions } from './HyperliquidPositions';
 import { TradingViewChart } from './TradingViewChart';
-import { SimpleHyperliquidChart } from './SimpleHyperliquidChart';
-import { TradingViewUDFChart } from './TradingViewUDFChart';
+
 import { AIMarketAssistant } from './AIMarketAssistant';
 import { usePrivy } from '@privy-io/react-auth';
 import { Button } from '@/components/ui/button';
@@ -22,7 +21,7 @@ interface Market {
 export function HyperliquidTradingInterface() {
   const { authenticated, user } = usePrivy();
   const [selectedMarket, setSelectedMarket] = useState<Market | null>(null);
-  const [chartSource, setChartSource] = useState<'binance' | 'hyperliquid'>('binance');
+
   const [liveMarketData, setLiveMarketData] = useState<{
     price: string;
     volume24h: string;
@@ -160,40 +159,15 @@ export function HyperliquidTradingInterface() {
               </div>
             </div>
             
-            {/* Chart Source Toggle */}
-            <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant={chartSource === 'binance' ? 'default' : 'outline'}
-                onClick={() => setChartSource('binance')}
-                className="h-7 text-xs"
-              >
-                TradingView Charts
-              </Button>
-              <Button
-                size="sm"
-                variant={chartSource === 'hyperliquid' ? 'default' : 'outline'}
-                onClick={() => setChartSource('hyperliquid')}
-                className="h-7 text-xs"
-              >
-                Hyperliquid Charts
-              </Button>
-            </div>
+
           </div>
 
           {/* Chart */}
           <div className="flex-1">
-            {chartSource === 'binance' ? (
-              <TradingViewChart 
-                symbol={tradingViewSymbol}
-                theme="dark"
-              />
-            ) : (
-              <SimpleHyperliquidChart
-                symbol={selectedMarket?.name || 'BTC'}
-                interval="15m"
-              />
-            )}
+            <TradingViewChart 
+              symbol={tradingViewSymbol}
+              theme="dark"
+            />
           </div>
 
           {/* Positions */}

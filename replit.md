@@ -498,9 +498,11 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - `/api/udf/history` - Historical candle data endpoint with time range support
   - `/api/udf/search` - Symbol search endpoint for finding trading pairs
   - `/api/udf/time` - Server time endpoint for synchronization
-- **Chart Toggle System**: Added toggle between "TradingView Charts" and "Hyperliquid Charts"
-  - TradingView Charts: Uses Binance data through iframe embed (full professional charting)
-  - Hyperliquid Charts: Placeholder for future native Hyperliquid data integration
+- **Removed Chart Toggle System (January 17, 2025)**: Temporarily removed Hyperliquid charts
+  - Deleted SimpleHyperliquidChart.tsx and TradingViewUDFChart.tsx components
+  - Removed chart toggle functionality from trading interface
+  - Keeping only TradingView Binance charts while waiting for TradingView license approval
+  - Applied for TradingView Charting Library (1-2 week approval timeline)
 - **Market Display**: Confirmed market cards show prices with 2 decimal places for accuracy
 - **Trade Confirmation**: Verified trade confirmation dialog is fully implemented and working
   - Shows order details, leverage, margin requirements, and liquidation price
