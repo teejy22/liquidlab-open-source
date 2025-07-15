@@ -173,7 +173,7 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
           <TabsTrigger value="buy" className="text-xs data-[state=active]:bg-[#1dd1a1] data-[state=active]:text-black data-[state=inactive]:bg-gray-800 data-[state=inactive]:text-gray-400">
             Buy / Long
           </TabsTrigger>
-          <TabsTrigger value="sell" className="text-xs data-[state=active]:bg-[#1dd1a1] data-[state=active]:text-black data-[state=inactive]:bg-gray-800 data-[state=inactive]:text-gray-400">
+          <TabsTrigger value="sell" className="text-xs data-[state=active]:bg-[#f56565] data-[state=active]:text-white data-[state=inactive]:bg-gray-800 data-[state=inactive]:text-gray-400">
             Sell / Short
           </TabsTrigger>
         </TabsList>
@@ -310,7 +310,11 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
         size="sm"
         disabled={isPlacingOrder || (!authenticated ? false : !size)}
         onClick={!authenticated ? () => window.dispatchEvent(new CustomEvent('privy:login')) : handleSubmit}
-        className="w-full h-9 text-sm font-medium text-black bg-[#1dd1a1] rounded hover:bg-[#19b894] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className={`w-full h-9 text-sm font-medium rounded transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
+          side === "buy" 
+            ? "text-black bg-[#1dd1a1] hover:bg-[#19b894]" 
+            : "text-white bg-[#f56565] hover:bg-[#e53e3e]"
+        }`}
       >
         {isPlacingOrder ? (
           <>
