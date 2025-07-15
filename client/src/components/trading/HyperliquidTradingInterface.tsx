@@ -80,14 +80,13 @@ export function HyperliquidTradingInterface() {
   }, [selectedMarket]);
 
   return (
-    <div className="flex flex-col bg-black text-white" style={{ height: '600px' }}>
+    <div className="flex flex-col bg-black text-white h-screen lg:h-[600px]">
       {/* Desktop Layout */}
       <div className="hidden lg:flex flex-1 overflow-hidden">
         {/* Markets Sidebar */}
         <div className="w-44 border-r border-gray-800 overflow-y-auto">
           <HyperliquidMarkets
             onSelectMarket={setSelectedMarket}
-            selectedMarket={selectedMarket}
           />
         </div>
 
@@ -296,7 +295,6 @@ export function HyperliquidTradingInterface() {
                 setSelectedMarket(market);
                 setMobileView('chart');
               }}
-              selectedMarket={selectedMarket}
             />
           )}
 
