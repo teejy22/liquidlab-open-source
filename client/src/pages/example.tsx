@@ -165,6 +165,7 @@ export default function ExampleTradingPage() {
               platformName={platformData?.name || "Example Trading Platform"}
               isVerified={true}
               compactMode={true}
+              verificationCode={verificationCode}
               className="hidden lg:block"
             />
             <WalletConnect />

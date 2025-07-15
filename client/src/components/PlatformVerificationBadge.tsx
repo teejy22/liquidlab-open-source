@@ -12,13 +12,17 @@ interface PlatformVerificationBadgeProps {
   platformName: string;
   isVerified?: boolean;
   compactMode?: boolean;
+  verificationCode?: string;
+  className?: string;
 }
 
 export function PlatformVerificationBadge({ 
   platformId, 
   platformName,
   isVerified = true,
-  compactMode = false
+  compactMode = false,
+  verificationCode,
+  className
 }: PlatformVerificationBadgeProps) {
   return (
     <HoverCard>
@@ -54,10 +58,17 @@ export function PlatformVerificationBadge({
               <span className="text-gray-600 dark:text-gray-400">Platform Name:</span>
               <span className="font-medium">{platformName}</span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Platform ID:</span>
-              <Badge variant="outline">#{platformId}</Badge>
-            </div>
+            {verificationCode ? (
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Verification Code:</span>
+                <Badge variant="outline">{verificationCode}</Badge>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Platform ID:</span>
+                <Badge variant="outline">#{platformId}</Badge>
+              </div>
+            )}
             <div className="flex items-center justify-between">
               <span className="text-gray-600 dark:text-gray-400">Status:</span>
               <Badge variant={isVerified ? "default" : "secondary"}>
@@ -74,7 +85,7 @@ export function PlatformVerificationBadge({
           </div>
           
           <a 
-            href={`https://liquidlab.trade/verify/${platformId}`}
+            href="https://liquidlab.trade/verify"
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
