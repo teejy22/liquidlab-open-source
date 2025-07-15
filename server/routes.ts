@@ -827,6 +827,175 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // TradingView UDF endpoints for Hyperliquid data
+  // These endpoints allow TradingView Charting Library to use Hyperliquid as a data source
+  
+  // UDF config endpoint
+  app.get("/api/udf/config", (req, res) => {
+    res.json({
+      supported_resolutions: ['1', '5', '15', '30', '60', '240', '1D', '1W'],
+      supports_group_request: false,
+      supports_marks: false,
+      supports_search: true,
+      supports_timescale_marks: false,
+      supports_time: true,
+      exchanges: [
+        {
+          value: 'HYPERLIQUID',
+          name: 'Hyperliquid',
+          desc: 'Hyperliquid DEX'
+        }
+      ],
+      symbols_types: [
+        {
+          name: 'crypto',
+          value: 'crypto'
+        }
+      ]
+    });
+  });
+
+  // UDF symbol info endpoint
+  app.get("/api/udf/symbols", async (req, res) => {
+    try {
+      const symbol = req.query.symbol as string;
+      
+      // Get asset info from Hyperliquid
+      const meta = await hyperliquidService.getMeta();
+      const assetInfo = meta.universe.find((asset: any) => 
+        asset.name === symbol || `${asset.name}-USD` === symbol
+      );
+
+      if (!assetInfo) {
+        res.status(404).json({ s: 'error', errmsg: 'Symbol not found' });
+        return;
+      }
+
+      res.json({
+        name: symbol,
+        'exchange-traded': 'HYPERLIQUID',
+        'exchange-listed': 'HYPERLIQUID',
+        timezone: 'Etc/UTC',
+        minmov: 1,
+        minmov2: 0,
+        pointvalue: 1,
+        session: '24x7',
+        has_intraday: true,
+        has_no_volume: false,
+        description: `${assetInfo.name} Perpetual`,
+        type: 'crypto',
+        supported_resolutions: ['1', '5', '15', '30', '60', '240', '1D', '1W'],
+        pricescale: Math.pow(10, assetInfo.szDecimals),
+        ticker: symbol
+      });
+    } catch (error) {
+      console.error('Error fetching symbol info:', error);
+      res.status(500).json({ s: 'error', errmsg: 'Failed to fetch symbol info' });
+    }
+  });
+
+  // UDF history endpoint
+  app.get("/api/udf/history", async (req, res) => {
+    try {
+      const symbol = (req.query.symbol as string).replace('-USD', '');
+      const from = parseInt(req.query.from as string) * 1000; // Convert to milliseconds
+      const to = parseInt(req.query.to as string) * 1000;
+      const resolution = req.query.resolution as string;
+      
+      // Map TradingView resolutions to Hyperliquid intervals
+      const intervalMap: { [key: string]: string } = {
+        '1': '1m',
+        '5': '5m',
+        '15': '15m',
+        '30': '30m',
+        '60': '1h',
+        '240': '4h',
+        '1D': '1d',
+        '1W': '1w'
+      };
+      
+      const interval = intervalMap[resolution] || '1h';
+      
+      const candles = await hyperliquidService.getCandleData(
+        symbol,
+        interval,
+        from,
+        to
+      );
+
+      if (!candles || candles.length === 0) {
+        res.json({ s: 'no_data' });
+        return;
+      }
+
+      // Convert to TradingView format
+      const t: number[] = [];
+      const o: number[] = [];
+      const h: number[] = [];
+      const l: number[] = [];
+      const c: number[] = [];
+      const v: number[] = [];
+
+      candles.forEach((candle: any) => {
+        t.push(Math.floor(candle.timestamp / 1000)); // Convert to seconds
+        o.push(parseFloat(candle.open));
+        h.push(parseFloat(candle.high));
+        l.push(parseFloat(candle.low));
+        c.push(parseFloat(candle.close));
+        v.push(parseFloat(candle.volume || 0));
+      });
+
+      res.json({
+        s: 'ok',
+        t,
+        o,
+        h,
+        l,
+        c,
+        v
+      });
+    } catch (error) {
+      console.error('Error fetching history:', error);
+      res.json({ s: 'error', errmsg: error instanceof Error ? error.message : 'Failed to fetch history' });
+    }
+  });
+
+  // UDF search endpoint
+  app.get("/api/udf/search", async (req, res) => {
+    try {
+      const query = (req.query.query as string || '').toUpperCase();
+      const type = req.query.type as string;
+      const exchange = req.query.exchange as string;
+      const limit = parseInt(req.query.limit as string) || 30;
+
+      const meta = await hyperliquidService.getMeta();
+      const results = meta.universe
+        .filter((asset: any) => {
+          const symbol = asset.name;
+          return symbol.includes(query);
+        })
+        .slice(0, limit)
+        .map((asset: any) => ({
+          symbol: `${asset.name}-USD`,
+          full_name: `HYPERLIQUID:${asset.name}USD`,
+          description: `${asset.name} Perpetual`,
+          exchange: 'HYPERLIQUID',
+          ticker: `${asset.name}-USD`,
+          type: 'crypto'
+        }));
+
+      res.json(results);
+    } catch (error) {
+      console.error('Error in symbol search:', error);
+      res.json([]);
+    }
+  });
+
+  // UDF time endpoint
+  app.get("/api/udf/time", (req, res) => {
+    res.json(Math.floor(Date.now() / 1000));
+  });
+
   // Platform verification endpoints
   app.get("/api/platforms/verify/:platformId", async (req, res) => {
     try {

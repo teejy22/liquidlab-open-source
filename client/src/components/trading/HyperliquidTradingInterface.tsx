@@ -4,6 +4,7 @@ import { HyperliquidTradeForm } from './HyperliquidTradeForm';
 import { HyperliquidPositions } from './HyperliquidPositions';
 import { TradingViewChart } from './TradingViewChart';
 import { HyperliquidLightweightChart } from './HyperliquidLightweightChart';
+import { TradingViewUDFChart } from './TradingViewUDFChart';
 import { AIMarketAssistant } from './AIMarketAssistant';
 import { usePrivy } from '@privy-io/react-auth';
 import { Button } from '@/components/ui/button';
@@ -167,7 +168,7 @@ export function HyperliquidTradingInterface() {
                 onClick={() => setChartSource('binance')}
                 className="h-7 text-xs"
               >
-                Binance Charts
+                TradingView Charts
               </Button>
               <Button
                 size="sm"
@@ -188,9 +189,9 @@ export function HyperliquidTradingInterface() {
                 theme="dark"
               />
             ) : (
-              <HyperliquidLightweightChart
+              <TradingViewUDFChart
                 symbol={selectedMarket?.name || 'BTC'}
-                interval="15m"
+                interval="15"
               />
             )}
           </div>
