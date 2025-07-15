@@ -58,7 +58,7 @@ export function TradeConfirmationDialog({
           <Card className="p-4 bg-gray-800 border-gray-700">
             <div className="flex justify-between items-center">
               <span className="text-gray-400">Market</span>
-              <span className="font-semibold">{market}</span>
+              <span className="font-semibold text-white">{market}</span>
             </div>
             <div className="flex justify-between items-center mt-2">
               <span className="text-gray-400">Side</span>
@@ -73,19 +73,19 @@ export function TradeConfirmationDialog({
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-gray-400">Order Type</span>
-                <span>{isMarketOrder ? 'Market' : 'Limit'}</span>
+                <span className="text-white">{isMarketOrder ? 'Market' : 'Limit'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Size</span>
-                <span>{size.toLocaleString()} {market}</span>
+                <span className="text-white">{size.toLocaleString()} {market}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Price</span>
-                <span>${priceDisplay.toFixed(2)}</span>
+                <span className="text-white">${priceDisplay.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Leverage</span>
-                <span className="font-semibold">{leverage}x</span>
+                <span className="font-semibold text-white">{leverage}x</span>
               </div>
               {isReduceOnly && (
                 <div className="flex justify-between">
@@ -104,15 +104,15 @@ export function TradeConfirmationDialog({
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-400">Notional Value</span>
-                <span>${notionalValue.toFixed(2)}</span>
+                <span className="text-white">${notionalValue.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Required Margin</span>
-                <span>${requiredMargin.toFixed(2)}</span>
+                <span className="text-white">${requiredMargin.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Est. Fee (0.1%)</span>
-                <span>${fee.toFixed(2)}</span>
+                <span className="text-white">${fee.toFixed(2)}</span>
               </div>
               {liquidationPrice && (
                 <div className="flex justify-between">
@@ -143,7 +143,7 @@ export function TradeConfirmationDialog({
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            className="border-gray-600 hover:bg-gray-800"
+            className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white"
           >
             Cancel
           </Button>
