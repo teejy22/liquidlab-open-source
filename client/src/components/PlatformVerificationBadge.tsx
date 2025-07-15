@@ -1,4 +1,4 @@
-import { Shield, CheckCircle, AlertCircle } from "lucide-react";
+import { Shield, CheckCircle, AlertCircle, Copy, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   HoverCard,
@@ -6,6 +6,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 interface PlatformVerificationBadgeProps {
   platformId: number;
@@ -25,6 +26,20 @@ export function PlatformVerificationBadge({
   className
 }: PlatformVerificationBadgeProps) {
   console.log('PlatformVerificationBadge props:', { platformId, platformName, verificationCode });
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyCode = async () => {
+    if (verificationCode) {
+      try {
+        await navigator.clipboard.writeText(verificationCode);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+    }
+  };
+
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
@@ -62,7 +77,22 @@ export function PlatformVerificationBadge({
             {verificationCode ? (
               <div className="flex items-center justify-between">
                 <span className="text-gray-600 dark:text-gray-400">Verification Code:</span>
-                <Badge variant="outline">{verificationCode}</Badge>
+                <div className="flex items-center gap-1">
+                  <Badge variant="outline" className="font-mono">{verificationCode}</Badge>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={handleCopyCode}
+                    className="h-6 w-6 p-0 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    title="Copy verification code"
+                  >
+                    {copied ? (
+                      <Check className="h-3 w-3 text-green-600" />
+                    ) : (
+                      <Copy className="h-3 w-3" />
+                    )}
+                  </Button>
+                </div>
               </div>
             ) : (
               <div className="flex items-center justify-between">
