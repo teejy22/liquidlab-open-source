@@ -61,10 +61,13 @@ export function WalletConnect() {
         onClick={logout} 
         variant="outline" 
         size="sm"
-        className="hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/50"
+        className="bg-gradient-to-r from-purple-600/10 to-blue-600/10 border-purple-500/30 text-purple-300 hover:from-purple-600/20 hover:to-blue-600/20 hover:border-purple-400/50 hover:text-purple-200 transition-all duration-200"
       >
-        <Wallet className="w-4 h-4 mr-2" />
-        {displayAddress}
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+          <Wallet className="w-4 h-4" />
+          <span className="font-medium">{displayAddress}</span>
+        </div>
       </Button>
     );
   }
