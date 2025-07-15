@@ -324,7 +324,8 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
       </div>
       
       {/* Take Profit / Stop Loss */}
-      <div className="space-y-3 border-t border-gray-800 pt-3">
+      <div className="space-y-3 border-t border-gray-800 pt-3 mt-4 bg-gray-900/50 p-3 rounded-lg">
+        <h4 className="text-xs font-semibold text-gray-400 uppercase mb-2">Risk Management</h4>
         {/* Take Profit */}
         <div>
           <div className="flex items-center justify-between mb-2">
