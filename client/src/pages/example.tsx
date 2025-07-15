@@ -116,7 +116,7 @@ export default function ExampleTradingPage() {
       <div className="min-h-screen bg-[#0a0a0a] text-gray-100 flex flex-col">
       {/* Header */}
       <header className="bg-[#0f0f0f] border-b border-gray-800">
-        <div className="flex items-center justify-between h-36 lg:h-32 px-4 py-1 lg:py-0">
+        <div className="flex items-center justify-between h-36 lg:h-24 px-4 py-1 lg:py-0">
           <div className="flex items-center space-x-2 lg:space-x-6">
             <Link href="/" className="hidden lg:block">
               <Button 
