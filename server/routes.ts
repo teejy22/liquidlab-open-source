@@ -1112,6 +1112,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get verification code for a platform (public endpoint)
+  app.get("/api/platforms/:id/verification-code", async (req, res) => {
+    try {
+      const platformId = parseInt(req.params.id);
+      const { VerificationService } = await import("./services/verification");
+      
+      const code = await VerificationService.getActiveCode(platformId);
+      
+      res.json({ code });
+    } catch (error) {
+      console.error("Error getting verification code:", error);
+      res.json({ code: null });
+    }
+  });
+
   // Generate new verification token for a platform
   app.post("/api/admin/platforms/:platformId/generate-token", requireAdmin, async (req, res) => {
     try {

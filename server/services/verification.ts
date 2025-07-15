@@ -45,6 +45,27 @@ export class VerificationService {
   }
   
   /**
+   * Get the active verification code for a platform
+   */
+  static async getActiveCode(platformId: number): Promise<string | null> {
+    try {
+      const [token] = await db
+        .select()
+        .from(platformVerificationTokens)
+        .where(and(
+          eq(platformVerificationTokens.platformId, platformId),
+          eq(platformVerificationTokens.isActive, true),
+          gt(platformVerificationTokens.expiresAt, new Date())
+        ));
+      
+      return token?.verificationCode || null;
+    } catch (error) {
+      console.error("Error getting active verification code:", error);
+      return null;
+    }
+  }
+  
+  /**
    * Verify a platform using its verification code
    * Records the attempt for security auditing
    */
