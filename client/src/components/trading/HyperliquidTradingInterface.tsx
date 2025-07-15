@@ -21,6 +21,8 @@ interface Market {
 export function HyperliquidTradingInterface() {
   const { authenticated, user } = usePrivy();
   const [selectedMarket, setSelectedMarket] = useState<Market | null>(null);
+  const [mobileView, setMobileView] = useState<'markets' | 'chart' | 'trade' | 'ai'>('chart');
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const [liveMarketData, setLiveMarketData] = useState<{
     price: string;
@@ -79,12 +81,13 @@ export function HyperliquidTradingInterface() {
 
   return (
     <div className="flex flex-col bg-black text-white" style={{ height: '600px' }}>
-      {/* Main Trading Area */}
-      <div className="flex flex-1 overflow-hidden">
+      {/* Desktop Layout */}
+      <div className="hidden lg:flex flex-1 overflow-hidden">
         {/* Markets Sidebar */}
         <div className="w-44 border-r border-gray-800 overflow-y-auto">
           <HyperliquidMarkets
             onSelectMarket={setSelectedMarket}
+            selectedMarket={selectedMarket}
           />
         </div>
 
@@ -193,6 +196,144 @@ export function HyperliquidTradingInterface() {
               currentPrice={parseFloat(selectedMarket?.markPx || '0')}
             />
           </div>
+        </div>
+      </div>
+
+      {/* Mobile Layout */}
+      <div className="lg:hidden flex flex-col h-full">
+        {/* Mobile Header */}
+        <div className="border-b border-gray-800 bg-gray-900 sticky top-0 z-10">
+          <div className="px-4 py-2">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-white">
+                {selectedMarket?.displayName || 'Select Market'}
+              </h2>
+              <button
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
+                className="p-2 text-gray-400 hover:text-white"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
+            
+            {/* Compact Market Stats */}
+            {liveMarketData && (
+              <div className="flex items-center justify-between mt-2 text-xs">
+                <div>
+                  <span className="text-gray-400">Price: </span>
+                  <span className="font-semibold">
+                    ${parseFloat(liveMarketData.price).toLocaleString(undefined, { 
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2
+                    })}
+                  </span>
+                </div>
+                <div className={parseFloat(liveMarketData.change24h) >= 0 ? 'text-green-400' : 'text-red-400'}>
+                  {parseFloat(liveMarketData.change24h) >= 0 ? '+' : ''}{parseFloat(liveMarketData.change24h).toFixed(2)}%
+                </div>
+                <div>
+                  <span className="text-gray-400">Vol: </span>
+                  <span>
+                    ${(parseFloat(liveMarketData.volume24h) / 1000000).toFixed(1)}M
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Navigation Tabs */}
+          <div className="flex border-t border-gray-800">
+            <button
+              onClick={() => setMobileView('markets')}
+              className={`flex-1 py-2 text-xs font-medium ${
+                mobileView === 'markets' 
+                  ? 'text-white border-b-2 border-[#1dd1a1]' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Markets
+            </button>
+            <button
+              onClick={() => setMobileView('chart')}
+              className={`flex-1 py-2 text-xs font-medium ${
+                mobileView === 'chart' 
+                  ? 'text-white border-b-2 border-[#1dd1a1]' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Chart
+            </button>
+            <button
+              onClick={() => setMobileView('trade')}
+              className={`flex-1 py-2 text-xs font-medium ${
+                mobileView === 'trade' 
+                  ? 'text-white border-b-2 border-[#1dd1a1]' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Trade
+            </button>
+            <button
+              onClick={() => setMobileView('ai')}
+              className={`flex-1 py-2 text-xs font-medium ${
+                mobileView === 'ai' 
+                  ? 'text-white border-b-2 border-[#1dd1a1]' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              AI Assistant
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Content Area */}
+        <div className="flex-1 overflow-hidden">
+          {mobileView === 'markets' && (
+            <HyperliquidMarkets 
+              onSelectMarket={(market) => {
+                setSelectedMarket(market);
+                setMobileView('chart');
+              }}
+              selectedMarket={selectedMarket}
+            />
+          )}
+
+          {mobileView === 'chart' && (
+            <div className="h-full flex flex-col">
+              <div className="flex-1">
+                <TradingViewChart 
+                  symbol={tradingViewSymbol}
+                  theme="dark"
+                />
+              </div>
+              {authenticated && (
+                <div className="border-t border-gray-800 h-48 overflow-y-auto">
+                  <HyperliquidPositions address={address} />
+                </div>
+              )}
+            </div>
+          )}
+
+          {mobileView === 'trade' && (
+            <div className="h-full overflow-y-auto">
+              <HyperliquidTradeForm
+                selectedMarket={selectedMarket?.name || 'BTC'}
+                currentPrice={parseFloat(selectedMarket?.markPx || '0')}
+                maxLeverage={selectedMarket?.maxLeverage}
+              />
+            </div>
+          )}
+
+          {mobileView === 'ai' && (
+            <div className="h-full">
+              <AIMarketAssistant
+                selectedMarket={selectedMarket?.name || 'BTC'}
+                currentPrice={parseFloat(selectedMarket?.markPx || '0')}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
