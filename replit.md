@@ -123,8 +123,8 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Proper spacing and padding adjustments
   - Fixed markets tab auto-switching issue with autoSelectBTC prop
 - **Header Optimization**: Optimized header elements for better visual hierarchy
-  - Header height: 144px mobile / 96px desktop (mobile extra large, desktop reasonable)
-  - Logo height: 128px mobile / 80px desktop (mobile emphasis for brand visibility)
+  - Header height: 144px both mobile and desktop (unified large header)
+  - Logo height: 128px both mobile and desktop (prominent branding on all devices)
   - Verification badge: Compact mode with smaller icons and minimal padding
   - Mobile shows wallet connect button and simplified back arrow
   - Compact spacing on mobile devices (space-x-2 vs space-x-6)
