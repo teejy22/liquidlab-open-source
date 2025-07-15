@@ -13,7 +13,7 @@ import { PlatformVerificationBadge } from "@/components/PlatformVerificationBadg
 import { PrivyProvider } from "@/components/PrivyProvider";
 import { WalletConnect } from "@/components/WalletConnect";
 import { HyperliquidTradingInterface } from "@/components/trading/HyperliquidTradingInterface";
-import { TestWalletInput } from "@/components/TestWalletInput";
+
 import { MoonPayButton } from "@/components/MoonPayButton";
 
 interface MarketData {
@@ -31,7 +31,7 @@ export default function ExampleTradingPage() {
   const [orderType, setOrderType] = useState("limit");
   const [timeInterval, setTimeInterval] = useState("15m");
   const [isLoading, setIsLoading] = useState(true);
-  const [showTestWallet, setShowTestWallet] = useState(false);
+
   const [maxLeverage, setMaxLeverage] = useState(100); // Default to 100x
   const [marketStats, setMarketStats] = useState<MarketData>({
     price: "0.00",
@@ -153,14 +153,6 @@ export default function ExampleTradingPage() {
               platformId={platformData?.id}
               className="h-9"
             />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowTestWallet(!showTestWallet)}
-              className="text-xs hover:bg-gray-800"
-            >
-              Test Wallet
-            </Button>
           </div>
         </div>
       </header>
@@ -171,23 +163,6 @@ export default function ExampleTradingPage() {
         platformId={platformData?.id || 1}
         builderCode={platformData?.config?.builderCode || "LIQUIDLAB2025"}
       />
-
-      {/* Test Wallet Input Modal */}
-      {showTestWallet && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="relative">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute -top-10 right-0 text-white hover:bg-gray-800"
-              onClick={() => setShowTestWallet(false)}
-            >
-              <X className="w-4 h-4" />
-            </Button>
-            <TestWalletInput />
-          </div>
-        </div>
-      )}
 
       {/* Main Trading Area */}
       <div className="flex-1 overflow-hidden">
