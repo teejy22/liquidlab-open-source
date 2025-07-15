@@ -153,7 +153,7 @@ export default function Verify() {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500 mb-1">Platform Status</p>
-                        <p className="font-mono capitalize">{verificationResult.platform.status || 'Active'}</p>
+                        <p className="font-mono capitalize text-[#ffffff]">{verificationResult.platform.status || 'Active'}</p>
                       </div>
                       {verificationResult.platform.customDomain && (
                         <div>
