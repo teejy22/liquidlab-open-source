@@ -228,10 +228,10 @@ export async function signOrder(
       }
     },
     // Builder code format: {"b": builder_address, "f": fee_in_tenths_of_bps}
-    // 10 = 1 basis point = 0.01% fee
+    // 100 = 10 basis points = 0.1% fee (maximum allowed for perps)
     c: {
       b: process.env.VITE_BUILDER_WALLET_ADDRESS || '0x0000000000000000000000000000000000000000',
-      f: 10 // 1 basis point = 0.01% fee
+      f: 100 // 10 basis points = 0.1% fee
     }
   };
   

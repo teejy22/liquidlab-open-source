@@ -401,7 +401,7 @@ export default function Builder() {
                     <div>
                       <Label>Builder Fee</Label>
                       <div className="p-3 bg-gray-100 rounded-md">
-                        <p className="text-sm font-mono">0.01% (1 basis point)</p>
+                        <p className="text-sm font-mono">0.1% (10 basis points)</p>
                         <p className="text-xs text-gray-500 mt-1">
                           Users must approve your builder address before fees can be collected
                         </p>

@@ -187,6 +187,13 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - LiquidLab's 50% share of MoonPay revenue
   - Platform owners' 50% share of MoonPay revenue
 
+### Builder Fee Update (January 16, 2025)
+- **Fee Structure**: Updated builder fee to 0.1% (10 basis points) for perpetual trading
+  - This is the maximum allowed fee for perps on Hyperliquid
+  - Fee format in code: `{"b": wallet_address, "f": 100}` where 100 = 10 basis points = 0.1%
+  - Updated all UI displays to show 0.1% instead of 0.01%
+  - Revenue split remains 70% platform owner / 30% LiquidLab
+
 ### Privy Wallet Authentication Integration (January 15, 2025)
 - **Automatic Privy Integration**: All trading platforms now include Privy wallet authentication by default
   - Social logins (email, SMS) alongside wallet connections
