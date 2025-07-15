@@ -110,7 +110,6 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
           </TabsTrigger>
         </TabsList>
       </Tabs>
-
       {/* Order Type */}
       <div className="flex items-center space-x-2">
         <Select value={orderType} onValueChange={(v) => setOrderType(v as "limit" | "market")}>
@@ -145,7 +144,6 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
           <span>Reduce Only</span>
         </label>
       </div>
-
       {/* Price Input (for limit orders) */}
       {orderType === "limit" && (
         <div>
@@ -159,7 +157,6 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
           />
         </div>
       )}
-
       {/* Size Input with Mode Toggle */}
       <div>
         <div className="flex items-center justify-between mb-1">
@@ -199,7 +196,6 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
           className="bg-gray-900 border-gray-700 h-8 text-sm"
         />
       </div>
-
       {/* Leverage Selector */}
       <div>
         <div className="flex items-center justify-between mb-2">
@@ -222,7 +218,6 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
           <span>{maxLeverage}x</span>
         </div>
       </div>
-
       {/* Order Summary */}
       <div className="border-t border-gray-800 pt-3 space-y-2 text-xs">
         <div className="flex justify-between">
@@ -242,18 +237,12 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
           </div>
         )}
       </div>
-
       {/* Submit Button */}
       <Button
         size="sm"
         disabled={isPlacingOrder || (!authenticated ? false : !size)}
         onClick={!authenticated ? () => window.dispatchEvent(new CustomEvent('privy:login')) : handleSubmit}
-        className={`w-full h-9 ${
-          !authenticated ? "bg-[#00d4ff] hover:bg-[#00a8cc] text-black" :
-          side === "buy"
-            ? "bg-green-600 hover:bg-green-700"
-            : "bg-red-600 hover:bg-red-700"
-        } ${isPlacingOrder ? "opacity-50 cursor-not-allowed" : ""}`}
+        className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 rounded-md px-3 w-full h-9 hover:bg-[#00a8cc] text-black bg-[#16a34a]"
       >
         {isPlacingOrder ? (
           <>
