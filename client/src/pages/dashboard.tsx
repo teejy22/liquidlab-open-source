@@ -265,18 +265,13 @@ export default function Dashboard() {
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div>
-                  <p className="text-sm text-gray-600">LiquidLab Builder Code</p>
-                  <p className="font-mono text-lg font-semibold">LIQUIDLAB2025</p>
+                  <p className="text-sm text-gray-600">Builder Fee</p>
+                  <p className="font-mono text-lg font-semibold">0.01%</p>
+                  <p className="text-xs text-gray-500 mt-1">1 basis point on all trades</p>
                 </div>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    navigator.clipboard.writeText("LIQUIDLAB2025");
-                  }}
-                >
-                  Copy
-                </Button>
+                <div>
+                  <p className="text-xs text-gray-400">Note: Users must approve your builder wallet</p>
+                </div>
               </div>
               
               <div className="p-4 bg-gray-50 rounded-lg">

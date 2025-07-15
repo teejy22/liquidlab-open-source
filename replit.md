@@ -94,6 +94,7 @@ Preferred communication style: Simple, everyday language.
 - **DATABASE_URL**: Required environment variable for PostgreSQL connection
 - **NODE_ENV**: Determines development vs production behavior
 - **REPL_ID**: Replit-specific environment detection
+- **VITE_BUILDER_WALLET_ADDRESS**: Builder wallet address for Hyperliquid fee collection (must have 100+ USDC in perps account)
 
 The application uses a monorepo structure with shared types and schemas, enabling type safety between frontend and backend while maintaining clear separation of concerns.
 
@@ -340,8 +341,12 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Selected markets maintain white text with blue background highlight
 
 ### Centralized Fee Tracking System
-- **Single Builder Code**: All platforms now use unified "LIQUIDLAB2025" builder code
-- **Fee Collection**: Centralized revenue collection system tracks all platform trades
+- **Builder Code System**: Uses Hyperliquid's native builder fee system
+  - Builder wallet address must have 100+ USDC in perps account
+  - Users must approve builder address via ApproveBuilderFee action
+  - Fee format: `{"b": builder_wallet_address, "f": fee_in_tenths_of_bps}`
+  - Current fee: 10 = 1 basis point = 0.01% (max 0.1% for perps)
+- **Fee Collection**: Fees collected through Hyperliquid's onchain fee logic
 - **Database Schema**: Added feeTransactions and platformRevenueSummary tables
 - **Storage Implementation**: Added comprehensive fee tracking methods:
   - recordFeeTransaction: Records individual trade fees

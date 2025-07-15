@@ -227,7 +227,12 @@ export async function signOrder(
         tif: tif === TimeInForce.ALO ? 'Alo' : tif === TimeInForce.IOC ? 'Ioc' : 'Gtc'
       }
     },
-    c: 'LIQUIDLAB2025' // Automatically include the builder code
+    // Builder code format: {"b": builder_address, "f": fee_in_tenths_of_bps}
+    // 10 = 1 basis point = 0.01% fee
+    c: {
+      b: process.env.VITE_BUILDER_WALLET_ADDRESS || '0x0000000000000000000000000000000000000000',
+      f: 10 // 1 basis point = 0.01% fee
+    }
   };
   
   return {
@@ -335,7 +340,11 @@ async function signTriggerOrder(
         tpsl: tpsl
       }
     },
-    c: 'LIQUIDLAB2025'
+    // Builder code format: {"b": builder_address, "f": fee_in_tenths_of_bps}
+    c: {
+      b: process.env.VITE_BUILDER_WALLET_ADDRESS || '0x0000000000000000000000000000000000000000',
+      f: 10 // 1 basis point = 0.01% fee
+    }
   };
   
   return {

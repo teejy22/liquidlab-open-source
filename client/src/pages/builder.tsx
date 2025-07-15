@@ -44,8 +44,8 @@ export default function Builder() {
   const [savingPlatform, setSavingPlatform] = useState(false);
   const [savedPlatformId, setSavedPlatformId] = useState<number | null>(null);
 
-  // Fixed LiquidLab builder code
-  const LIQUIDLAB_BUILDER_CODE = "LIQUIDLAB2025";
+  // Builder wallet address (must have 100+ USDC in perps account)
+  const BUILDER_WALLET_ADDRESS = import.meta.env.VITE_BUILDER_WALLET_ADDRESS || "0x0000000000000000000000000000000000000000";
 
   // Redirect if not authenticated
   if (!isAuthenticated) {
@@ -372,21 +372,21 @@ export default function Builder() {
                   
                   <TabsContent value="revenue" className="space-y-4 mt-4">
                     <div>
-                      <Label>LiquidLab Builder Code</Label>
+                      <Label>Builder Wallet Address</Label>
                       <div className="flex gap-2 mt-1">
                         <Input
-                          value={LIQUIDLAB_BUILDER_CODE}
+                          value={BUILDER_WALLET_ADDRESS}
                           readOnly
-                          className="font-mono"
+                          className="font-mono text-xs"
                         />
                         <Button
                           variant="outline"
                           size="icon"
                           onClick={() => {
-                            navigator.clipboard.writeText(LIQUIDLAB_BUILDER_CODE);
+                            navigator.clipboard.writeText(BUILDER_WALLET_ADDRESS);
                             toast({
                               title: "Copied!",
-                              description: "Builder code copied to clipboard.",
+                              description: "Builder wallet address copied to clipboard.",
                             });
                           }}
                         >
@@ -394,8 +394,18 @@ export default function Builder() {
                         </Button>
                       </div>
                       <p className="text-xs text-gray-500 mt-1">
-                        All platforms use this single code for fee tracking
+                        Builder wallet must have 100+ USDC in perps account
                       </p>
+                    </div>
+                    
+                    <div>
+                      <Label>Builder Fee</Label>
+                      <div className="p-3 bg-gray-100 rounded-md">
+                        <p className="text-sm font-mono">0.01% (1 basis point)</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          Users must approve your builder address before fees can be collected
+                        </p>
+                      </div>
                     </div>
 
                     <div className="bg-green-50 p-4 rounded-lg">
