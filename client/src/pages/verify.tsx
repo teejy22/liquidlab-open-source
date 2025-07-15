@@ -198,7 +198,7 @@ export default function Verify() {
 
                     {/* Security Tips */}
                     <div className="mt-6 p-4 bg-[#0d0d0d] rounded-lg">
-                      <h3 className="text-lg font-semibold mb-3 flex items-center">
+                      <h3 className="text-lg font-semibold mb-3 flex items-center text-[#ffffff]">
                         <Shield className="w-5 h-5 mr-2 text-[#1dd1a1]" />
                         Security Tips
                       </h3>
