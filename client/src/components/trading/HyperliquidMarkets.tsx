@@ -45,6 +45,9 @@ export function HyperliquidMarkets({ onSelectMarket, autoSelectBTC = true }: { o
   const fetchMarkets = async () => {
     try {
       const response = await fetch('/api/hyperliquid/meta');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
       if (data && data[0] && data[0].universe) {
         setMarkets(data[0].universe);

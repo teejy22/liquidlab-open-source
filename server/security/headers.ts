@@ -33,6 +33,8 @@ export function configureSecurityHeaders(app: Express) {
         ],
         connectSrc: [
           "'self'",
+          "http://localhost:*", // Development
+          "https://*.replit.dev", // Replit development
           "https://api.hyperliquid.xyz",
           "https://api-hl.hyperliquid.xyz", 
           "https://api.moonpay.com",

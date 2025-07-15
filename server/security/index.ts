@@ -4,24 +4,28 @@ import { sanitizeMiddleware } from './validation';
 import { apiLimiter, authLimiter, tradingLimiter } from './rateLimiter';
 import { csrfProtection, csrfExemptRoutes } from './csrf';
 import { auditLogger, SecurityEventType } from './auditLog';
+import { platformCors } from './middleware';
 
 export function configureSecurity(app: Express) {
-  // Enable trust proxy for accurate IP detection behind proxies/load balancers
-  app.set('trust proxy', true);
+  // Enable trust proxy with specific configuration for Replit environment
+  app.set('trust proxy', process.env.NODE_ENV === 'production' ? 1 : false);
   
-  // 1. Security headers
+  // 1. CORS configuration
+  app.use('/api/', platformCors);
+  
+  // 2. Security headers
   configureSecurityHeaders(app);
   
-  // 2. Input sanitization
+  // 3. Input sanitization
   app.use(sanitizeMiddleware);
   
-  // 3. Rate limiting
+  // 4. Rate limiting
   app.use('/api/', apiLimiter);
   app.use('/api/auth/', authLimiter);
   app.use('/api/trade/', tradingLimiter);
   app.use('/api/hyperliquid/trade', tradingLimiter);
   
-  // 4. CSRF protection (temporarily disabled due to configuration issues)
+  // 5. CSRF protection (temporarily disabled due to configuration issues)
   // TODO: Re-enable CSRF after fixing configuration
   // app.use((req, res, next) => {
   //   if (csrfExemptRoutes.some(route => req.path.startsWith(route))) {
@@ -30,7 +34,7 @@ export function configureSecurity(app: Express) {
   //   csrfProtection(req, res, next);
   // });
   
-  // 5. Audit logging for security events
+  // 6. Audit logging for security events
   app.use('/api/auth/login', async (req, res, next) => {
     res.on('finish', async () => {
       const success = res.statusCode === 200;
@@ -43,7 +47,7 @@ export function configureSecurity(app: Express) {
     next();
   });
   
-  // 6. Error handling to prevent information leakage
+  // 7. Error handling to prevent information leakage
   app.use((err: any, req: any, res: any, next: any) => {
     // Log full error internally
     console.error('Security Error:', err);

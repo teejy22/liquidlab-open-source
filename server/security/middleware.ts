@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import { validateApiKey } from './apiKeys';
 import { createAuditLog } from './audit';
-import { rateLimiters } from './rateLimiter';
+// Rate limiters are imported in index.ts, not needed here
 import { ApiKey } from '@shared/schema';
 
 // Extend Express Request type
@@ -236,6 +236,5 @@ function getClientIp(req: Request): string {
 export const apiMiddleware = [
   securityHeaders,
   platformCors,
-  rateLimiters.api,
   authenticateApi,
 ];
