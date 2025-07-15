@@ -85,7 +85,8 @@ export default function Verify() {
                 placeholder="Enter Verification Code (e.g., A1B2C3D4)"
                 value={verificationCode}
                 onChange={(e) => setVerificationCode(e.target.value.toUpperCase())}
-                className="flex-1 bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500 font-mono text-lg"
+                className="flex-1 bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500 font-mono text-lg focus:text-white focus:border-[#1dd1a1]"
+                style={{ color: 'white' }}
                 maxLength={8}
               />
               <Button 
