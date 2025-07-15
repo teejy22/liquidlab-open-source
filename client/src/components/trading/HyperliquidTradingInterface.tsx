@@ -197,12 +197,11 @@ export function HyperliquidTradingInterface() {
           </div>
         </div>
       </div>
-
       {/* Mobile Layout */}
       <div className="lg:hidden flex flex-col h-full">
         {/* Mobile Header */}
         <div className="border-b border-gray-800 bg-gray-900 sticky top-0 z-10">
-          <div className="px-4 py-2">
+          <div className="px-4 py-2 bg-[#0d0000]">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-white">
                 {selectedMarket?.displayName || 'Select Market'}
@@ -218,7 +217,7 @@ export function HyperliquidTradingInterface() {
             </div>
             
             {/* Compact Market Stats */}
-            {liveMarketData && (
+            {liveMarketData ? (
               <div className="flex items-center justify-between mt-2 text-xs">
                 <div>
                   <span className="text-gray-400">Price: </span>
@@ -239,6 +238,20 @@ export function HyperliquidTradingInterface() {
                   </span>
                 </div>
               </div>
+            ) : (
+              <div className="flex items-center justify-between mt-2 text-xs">
+                <div>
+                  <span className="text-gray-400">BTC</span>
+                  <span className="font-semibold">Price: $116,322.00</span>
+                </div>
+                <div className="text-red-400">
+                  -3.11%
+                </div>
+                <div>
+                  <span className="text-gray-400">Vol: </span>
+                  <span>$7905.2M</span>
+                </div>
+              </div>
             )}
           </div>
 
@@ -246,11 +259,7 @@ export function HyperliquidTradingInterface() {
           <div className="flex border-t border-gray-800">
             <button
               onClick={() => setMobileView('markets')}
-              className={`flex-1 py-2 text-xs font-medium ${
-                mobileView === 'markets' 
-                  ? 'text-white border-b-2 border-[#1dd1a1]' 
-                  : 'text-gray-400 hover:text-white'
-              }`}
+              className="flex-1 py-2 text-xs font-medium text-gray-400 hover:text-white bg-[#000000]"
             >
               Markets
             </button>
