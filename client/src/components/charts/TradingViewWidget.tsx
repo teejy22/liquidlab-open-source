@@ -65,7 +65,7 @@ function TradingViewWidget({
       "support_host": "https://www.tradingview.com"
     };
 
-    script.innerHTML = JSON.stringify(widgetConfig);
+    script.textContent = JSON.stringify(widgetConfig);
     container.current.appendChild(script);
 
     return () => {
