@@ -173,32 +173,22 @@ export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market
             <Card
               key={market.name}
               className={`p-2 cursor-pointer transition-all group ${
-                isSelected ? 'bg-gray-800 border-blue-500' : 'hover:bg-gray-800/50 border-transparent'
+                isSelected ? 'bg-blue-600 border-blue-500' : 'bg-black hover:bg-gray-900 border-transparent'
               }`}
               onClick={() => handleMarketClick(market, originalIndex)}
             >
-              <div className={`flex justify-between items-center ${
-                isSelected ? '' : 'group-hover:text-white'
-              }`}>
+              <div className="flex justify-between items-center">
                 <div>
-                  <div className={`font-semibold text-xs ${
-                    isSelected ? 'text-white' : 'group-hover:text-white'
-                  }`}>{market.name}-USD</div>
-                  <div className={`text-[10px] ${
-                    isSelected ? 'text-gray-300' : 'text-gray-400 group-hover:text-gray-300'
-                  }`}>
+                  <div className="font-semibold text-xs text-white">{market.name}-USD</div>
+                  <div className="text-[10px] text-gray-300">
                     {market.maxLeverage}x
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className={`font-mono text-xs ${
-                    isSelected ? 'text-white' : 'group-hover:text-white'
-                  }`}>
+                  <div className="font-mono text-xs text-white">
                     ${price?.price && parseFloat(price.price) > 0 ? parseFloat(price.price).toLocaleString() : '0.00'}
                   </div>
-                  <div className={`text-[10px] ${
-                    isSelected ? 'text-gray-300' : 'text-gray-400 group-hover:text-gray-300'
-                  }`}>
+                  <div className="text-[10px] text-gray-300">
                     Vol: ${price?.volume24h ? (parseFloat(price.volume24h) / 1e6).toFixed(1) : '0'}M
                   </div>
                 </div>
