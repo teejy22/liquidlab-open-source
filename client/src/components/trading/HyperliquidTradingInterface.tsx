@@ -265,11 +265,7 @@ export function HyperliquidTradingInterface() {
             </button>
             <button
               onClick={() => setMobileView('chart')}
-              className={`flex-1 py-2 text-xs font-medium ${
-                mobileView === 'chart' 
-                  ? 'text-white border-b-2 border-[#1dd1a1]' 
-                  : 'text-gray-400 hover:text-white'
-              }`}
+              className="flex-1 py-2 text-xs font-medium text-white border-b-2 border-[#1dd1a1] bg-[#000000]"
             >
               Chart
             </button>
