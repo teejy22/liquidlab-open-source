@@ -57,30 +57,22 @@ export function WalletConnect() {
       : address;
 
     return (
-      <Button 
+      <button 
         onClick={logout} 
-        variant="outline" 
-        size="sm"
-        className="bg-gradient-to-r from-gray-800 to-gray-900 border-gray-600 text-gray-200 hover:from-gray-700 hover:to-gray-800 hover:border-gray-500 hover:text-white transition-all duration-200"
+        className="h-8 px-4 text-sm font-medium text-[#1dd1a1] bg-[#0a0a0a] border border-[#1dd1a1]/20 rounded hover:bg-[#1dd1a1]/10 hover:border-[#1dd1a1]/40 transition-all duration-200 flex items-center gap-2"
       >
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-          <Wallet className="w-4 h-4" />
-          <span className="font-medium">{displayAddress}</span>
-        </div>
-      </Button>
+        <div className="w-1.5 h-1.5 bg-[#1dd1a1] rounded-full" />
+        <span>{displayAddress}</span>
+      </button>
     );
   }
 
   return (
-    <Button 
+    <button 
       onClick={login} 
-      variant="default" 
-      size="sm"
-      className="bg-[#00d4ff] hover:bg-[#00a8cc] text-black"
+      className="h-8 px-4 text-sm font-medium text-black bg-[#1dd1a1] rounded hover:bg-[#19b894] transition-all duration-200"
     >
-      <Wallet className="w-4 h-4 mr-2" />
-      Connect Wallet
-    </Button>
+      Connect
+    </button>
   );
 }

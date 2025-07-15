@@ -87,14 +87,13 @@ export function MoonPayButton({ platformId, className }: MoonPayButtonProps) {
 
   return (
     <>
-      <Button
+      <button
         onClick={handleBuyClick}
         disabled={!moonpayConfig?.apiKey}
-        className={`bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white disabled:opacity-50 ${className}`}
+        className={`h-8 px-4 text-sm font-medium text-[#1dd1a1] bg-[#0a0a0a] border border-[#1dd1a1]/20 rounded hover:bg-[#1dd1a1]/10 hover:border-[#1dd1a1]/40 transition-all duration-200 disabled:opacity-50 ${className}`}
       >
-        <CreditCard className="mr-2 h-4 w-4" />
-        Buy Crypto
-      </Button>
+        Deposit
+      </button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-[600px] h-[700px] p-0">
