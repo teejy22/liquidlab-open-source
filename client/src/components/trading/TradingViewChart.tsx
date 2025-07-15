@@ -10,9 +10,10 @@ export const TradingViewChart = memo(({ symbol = 'BTCUSDT', theme = 'dark' }: Tr
   // Ensure we have a valid symbol
   const validSymbol = symbol && symbol.length > 0 ? symbol : 'BTCUSDT';
   
-  // Create a stable iframe URL that only changes when symbol or theme changes
+  // Use TradingView's advanced real-time chart widget URL
   const embedUrl = useMemo(() => {
-    return `https://s.tradingview.com/widgetembed/?frameElementId=tradingview_widget&symbol=BINANCE%3A${validSymbol}&interval=15&theme=${theme}&style=1&locale=en&toolbar_bg=${theme === 'dark' ? '%23131313' : '%23f1f3f6'}&enable_publishing=false&allow_symbol_change=true&container_id=tradingview_advanced`;
+    // Use the advanced chart widget that includes all tools
+    return `https://www.tradingview.com/widgetembed/?symbol=BINANCE%3A${validSymbol}&interval=15&theme=${theme}&style=1&locale=en&toolbar_bg=${theme === 'dark' ? '%23131313' : '%23f1f3f6'}&enable_publishing=false&hide_legend=false&allow_symbol_change=true&save_image=true&studies=true&hide_side_toolbar=false&show_popup_button=true&popup_width=1000&popup_height=650`;
   }, [validSymbol, theme]);
 
   return (
@@ -24,6 +25,7 @@ export const TradingViewChart = memo(({ symbol = 'BTCUSDT', theme = 'dark' }: Tr
         frameBorder={0}
         scrolling="no"
         allowFullScreen
+        allow="clipboard-write"
       />
     </div>
   );

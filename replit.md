@@ -284,6 +284,12 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Support for all time intervals from 1 minute to daily charts
   - Removed default RSI and MACD indicators for cleaner initial view
   - Users can still add any indicators they want through TradingView's built-in interface
+- **Enhanced Chart Features** (January 16, 2025): Re-enabled full TradingView advanced tools
+  - Drawing tools toolbar: Lines, trend lines, channels, Fibonacci tools, shapes
+  - Indicators menu: Hundreds of technical analysis indicators available
+  - Chart toolbar: Symbol search, timeframes, chart types, compare symbols
+  - Save/export features: Screenshot charts and save analysis templates
+  - Popup mode: Expand chart to larger window for detailed analysis
 
 ### Markets Sidebar Improvements (January 16, 2025)
 - **Compact Design**: Made perp markets column thinner (w-44) and more compact
