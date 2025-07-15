@@ -324,122 +324,110 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
       </div>
       
       {/* Take Profit / Stop Loss */}
-      <div className="space-y-3 border-t border-gray-800 pt-3 mt-4 bg-gray-900/50 p-3 rounded-lg">
-        <h4 className="text-xs font-semibold text-gray-400 uppercase mb-2">Risk Management</h4>
-        {/* Take Profit */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={enableTP}
-                onChange={(e) => setEnableTP(e.target.checked)}
-                className="w-3.5 h-3.5 rounded border-gray-600 bg-gray-800 text-[#1dd1a1] focus:ring-[#1dd1a1] focus:ring-offset-0"
-              />
-              <span className="text-xs font-medium text-gray-300">Take Profit</span>
-            </label>
+      <div className="border-t border-gray-800 pt-3 mt-3">
+        <h4 className="text-[10px] font-semibold text-gray-400 uppercase mb-2">Risk Management</h4>
+        <div className="grid grid-cols-2 gap-2">
+          {/* Take Profit */}
+          <div className="bg-gray-900/50 p-2 rounded">
+            <div className="flex items-center justify-between mb-1">
+              <label className="flex items-center space-x-1">
+                <input
+                  type="checkbox"
+                  checked={enableTP}
+                  onChange={(e) => setEnableTP(e.target.checked)}
+                  className="w-3 h-3 rounded border-gray-600 bg-gray-800 text-[#1dd1a1] focus:ring-[#1dd1a1] focus:ring-offset-0"
+                />
+                <span className="text-[10px] font-medium text-gray-300">TP</span>
+              </label>
+              {enableTP && (
+                <div className="flex items-center space-x-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setTpMode("price")}
+                    className={`px-1.5 py-0.5 text-[9px] rounded ${
+                      tpMode === "price" 
+                        ? "bg-[#1dd1a1] text-black" 
+                        : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+                    }`}
+                  >
+                    $
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTpMode("percentage")}
+                    className={`px-1.5 py-0.5 text-[9px] rounded ${
+                      tpMode === "percentage" 
+                        ? "bg-[#1dd1a1] text-black" 
+                        : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+                    }`}
+                  >
+                    %
+                  </button>
+                </div>
+              )}
+            </div>
             {enableTP && (
-              <div className="flex items-center space-x-1">
-                <button
-                  type="button"
-                  onClick={() => setTpMode("price")}
-                  className={`px-2 py-0.5 text-[10px] rounded ${
-                    tpMode === "price" 
-                      ? "bg-[#1dd1a1] text-black" 
-                      : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                  }`}
-                >
-                  Price
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTpMode("percentage")}
-                  className={`px-2 py-0.5 text-[10px] rounded ${
-                    tpMode === "percentage" 
-                      ? "bg-[#1dd1a1] text-black" 
-                      : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                  }`}
-                >
-                  %
-                </button>
-              </div>
-            )}
-          </div>
-          {enableTP && (
-            <div className="flex items-center space-x-2">
               <Input
                 type="number"
                 value={tpMode === "price" ? tpPrice : tpPercentage}
                 onChange={(e) => tpMode === "price" ? setTpPrice(e.target.value) : setTpPercentage(e.target.value)}
-                placeholder={tpMode === "price" ? "TP Price" : "TP %"}
+                placeholder={tpMode === "price" ? "Price" : "%"}
                 disabled={!enableTP}
-                className="bg-gray-900 border-gray-700 h-7 text-xs"
+                className="bg-gray-900 border-gray-700 h-6 text-[10px] px-2"
               />
-              {tpMode === "percentage" && tpPrice && (
-                <span className="text-[10px] text-gray-400 whitespace-nowrap">
-                  = ${tpPrice}
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Stop Loss */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <label className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={enableSL}
-                onChange={(e) => setEnableSL(e.target.checked)}
-                className="w-3.5 h-3.5 rounded border-gray-600 bg-gray-800 text-[#f56565] focus:ring-[#f56565] focus:ring-offset-0"
-              />
-              <span className="text-xs font-medium text-gray-300">Stop Loss</span>
-            </label>
-            {enableSL && (
-              <div className="flex items-center space-x-1">
-                <button
-                  type="button"
-                  onClick={() => setSlMode("price")}
-                  className={`px-2 py-0.5 text-[10px] rounded ${
-                    slMode === "price" 
-                      ? "bg-[#f56565] text-white" 
-                      : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                  }`}
-                >
-                  Price
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSlMode("percentage")}
-                  className={`px-2 py-0.5 text-[10px] rounded ${
-                    slMode === "percentage" 
-                      ? "bg-[#f56565] text-white" 
-                      : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                  }`}
-                >
-                  %
-                </button>
-              </div>
             )}
           </div>
-          {enableSL && (
-            <div className="flex items-center space-x-2">
+
+          {/* Stop Loss */}
+          <div className="bg-gray-900/50 p-2 rounded">
+            <div className="flex items-center justify-between mb-1">
+              <label className="flex items-center space-x-1">
+                <input
+                  type="checkbox"
+                  checked={enableSL}
+                  onChange={(e) => setEnableSL(e.target.checked)}
+                  className="w-3 h-3 rounded border-gray-600 bg-gray-800 text-[#f56565] focus:ring-[#f56565] focus:ring-offset-0"
+                />
+                <span className="text-[10px] font-medium text-gray-300">SL</span>
+              </label>
+              {enableSL && (
+                <div className="flex items-center space-x-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setSlMode("price")}
+                    className={`px-1.5 py-0.5 text-[9px] rounded ${
+                      slMode === "price" 
+                        ? "bg-[#f56565] text-white" 
+                        : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+                    }`}
+                  >
+                    $
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSlMode("percentage")}
+                    className={`px-1.5 py-0.5 text-[9px] rounded ${
+                      slMode === "percentage" 
+                        ? "bg-[#f56565] text-white" 
+                        : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+                    }`}
+                  >
+                    %
+                  </button>
+                </div>
+              )}
+            </div>
+            {enableSL && (
               <Input
                 type="number"
                 value={slMode === "price" ? slPrice : slPercentage}
                 onChange={(e) => slMode === "price" ? setSlPrice(e.target.value) : setSlPercentage(e.target.value)}
-                placeholder={slMode === "price" ? "SL Price" : "SL %"}
+                placeholder={slMode === "price" ? "Price" : "%"}
                 disabled={!enableSL}
-                className="bg-gray-900 border-gray-700 h-7 text-xs"
+                className="bg-gray-900 border-gray-700 h-6 text-[10px] px-2"
               />
-              {slMode === "percentage" && slPrice && (
-                <span className="text-[10px] text-gray-400 whitespace-nowrap">
-                  = ${slPrice}
-                </span>
-              )}
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
       
