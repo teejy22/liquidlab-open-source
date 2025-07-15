@@ -672,6 +672,14 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Trade confirmation dialog displays size in USD format (e.g., "$100.00 USD")
   - Fixed all text color issues in confirmation dialog - all values now display in white
   - Cancel button in confirmation dialog now has red border and text with hover effects
+- **Dark Scrollbar Styling** (January 16, 2025): Implemented black scrollbars throughout trading interface
+  - Global dark scrollbar styles for all scrollable areas (#000000 track, #1a1a1a thumb)
+  - Applied custom-scrollbar class to markets sidebar, positions area, and trading form
+  - All scrollbars now match Hyperliquid's ultra-dark aesthetic
+- **Dark Leverage Slider**: Created custom CSS for leverage slider component
+  - Dark track (#0d0d0d) with green range indicator (#1dd1a1)
+  - Dark thumb (#1a1a1a) with green border matching brand colors
+  - Smooth hover states and focus indicators for better UX
 
 ### AI-Powered Chat Assistant Integration (January 16, 2025)
 - **Perplexity API Integration**: Created AI market assistant for real-time trading insights

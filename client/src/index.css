@@ -58,7 +58,26 @@
     @apply bg-background text-foreground;
   }
 
-  /* Custom scrollbar for markets */
+  /* Global dark scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #000000;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #1a1a1a;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2a2a2a;
+  }
+
+  /* Custom scrollbar for specific components */
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
   }
@@ -68,13 +87,56 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #333333;
+    background: #1a1a1a;
     border-radius: 3px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #444444;
+    background: #2a2a2a;
   }
+}
+
+/* Dark leverage slider styling */
+[data-slider-root] {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 20px;
+}
+
+[data-slider-track] {
+  position: relative;
+  flex-grow: 1;
+  height: 4px;
+  background: #0d0d0d;
+  border-radius: 2px;
+}
+
+[data-slider-range] {
+  position: absolute;
+  height: 100%;
+  background: #1dd1a1;
+  border-radius: 2px;
+}
+
+[data-slider-thumb] {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  border: 2px solid #1dd1a1;
+  cursor: grab;
+  transition: background 0.2s;
+}
+
+[data-slider-thumb]:hover {
+  background: #2a2a2a;
+}
+
+[data-slider-thumb]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(29, 209, 161, 0.5);
 }
 
 .gradient-bg {

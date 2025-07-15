@@ -84,7 +84,7 @@ export function HyperliquidTradingInterface() {
       {/* Desktop Layout */}
       <div className="hidden lg:flex flex-1 overflow-hidden">
         {/* Markets Sidebar */}
-        <div className="w-44 border-r border-gray-800 overflow-y-auto">
+        <div className="w-44 border-r border-gray-800 overflow-y-auto custom-scrollbar">
           <HyperliquidMarkets
             onSelectMarket={setSelectedMarket}
           />
@@ -174,7 +174,7 @@ export function HyperliquidTradingInterface() {
 
           {/* Positions */}
           {authenticated && (
-            <div className="border-t border-gray-800 h-64 overflow-y-auto">
+            <div className="border-t border-gray-800 h-64 overflow-y-auto custom-scrollbar">
               <HyperliquidPositions address={address} />
             </div>
           )}
@@ -182,7 +182,7 @@ export function HyperliquidTradingInterface() {
 
         {/* Right Sidebar - Trading Panel & AI Assistant */}
         <div className="w-80 border-l border-gray-800 flex flex-col">
-          <div className="flex-1 overflow-y-auto border-b border-gray-800">
+          <div className="flex-1 overflow-y-auto border-b border-gray-800 custom-scrollbar">
             <HyperliquidTradeForm
               selectedMarket={selectedMarket?.name || 'BTC'}
               currentPrice={parseFloat(selectedMarket?.markPx || '0')}
