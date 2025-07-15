@@ -17,8 +17,19 @@ interface MarketPrice {
   volume24h: string;
 }
 
-export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market: string, maxLeverage?: number) => void }) {
+interface MarketSelection {
+  name: string;
+  displayName: string;
+  index: number;
+  markPx: string;
+  dayNtlVlm: string;
+  prevDayPx: string;
+  maxLeverage: number;
+}
+
+export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market: MarketSelection) => void }) {
   const [markets, setMarkets] = useState<HyperliquidMarket[]>([]);
+  const [marketContexts, setMarketContexts] = useState<any[]>([]);
   const [prices, setPrices] = useState<{[key: string]: MarketPrice}>({});
   const [loading, setLoading] = useState(true);
   const [selectedMarket, setSelectedMarket] = useState("BTC");
@@ -37,6 +48,28 @@ export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market
       const data = await response.json();
       if (data && data[0] && data[0].universe) {
         setMarkets(data[0].universe);
+        if (data[1]) {
+          setMarketContexts(data[1]);
+        }
+        
+        // Auto-select BTC on first load
+        const btcMarket = data[0].universe.find((m: HyperliquidMarket) => m.name === 'BTC');
+        if (btcMarket && data[1]) {
+          const btcIndex = data[0].universe.findIndex((m: HyperliquidMarket) => m.name === 'BTC');
+          const btcCtx = data[1][btcIndex];
+          if (btcCtx) {
+            const marketObj: MarketSelection = {
+              name: 'BTC',
+              displayName: 'BTC',
+              index: btcIndex,
+              markPx: btcCtx.markPx || '0',
+              dayNtlVlm: btcCtx.dayNtlVlm || '0',
+              prevDayPx: btcCtx.prevDayPx || '0',
+              maxLeverage: btcMarket.maxLeverage
+            };
+            onSelectMarket(marketObj);
+          }
+        }
       }
       setLoading(false);
     } catch (error) {
@@ -74,9 +107,21 @@ export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market
     }
   };
 
-  const handleMarketClick = (market: HyperliquidMarket) => {
+  const handleMarketClick = (market: HyperliquidMarket, index: number) => {
     setSelectedMarket(market.name);
-    onSelectMarket(market.name, market.maxLeverage);
+    const ctx = marketContexts[index];
+    if (ctx) {
+      const marketObj: MarketSelection = {
+        name: market.name,
+        displayName: market.name,
+        index: index,
+        markPx: ctx.markPx || '0',
+        dayNtlVlm: ctx.dayNtlVlm || '0',
+        prevDayPx: ctx.prevDayPx || '0',
+        maxLeverage: market.maxLeverage
+      };
+      onSelectMarket(marketObj);
+    }
   };
 
   if (loading) {
@@ -122,6 +167,7 @@ export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market
         {sortedMarkets.map((market) => {
           const price = prices[market.name];
           const isSelected = selectedMarket === market.name;
+          const originalIndex = markets.findIndex(m => m.name === market.name);
           
           return (
             <Card
@@ -129,7 +175,7 @@ export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market
               className={`p-2 cursor-pointer transition-all group ${
                 isSelected ? 'bg-gray-800 border-blue-500' : 'hover:bg-gray-800/50 border-transparent'
               }`}
-              onClick={() => handleMarketClick(market)}
+              onClick={() => handleMarketClick(market, originalIndex)}
             >
               <div className={`flex justify-between items-center ${
                 isSelected ? '' : 'group-hover:text-white'

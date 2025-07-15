@@ -80,7 +80,6 @@ export function HyperliquidTradingInterface() {
         {/* Markets Sidebar */}
         <div className="w-44 border-r border-gray-800 overflow-y-auto">
           <HyperliquidMarkets
-            selectedMarket={selectedMarket?.name || ''}
             onSelectMarket={setSelectedMarket}
           />
         </div>
@@ -176,8 +175,9 @@ export function HyperliquidTradingInterface() {
         {/* Right Sidebar - Trading Panel */}
         <div className="w-80 border-l border-gray-800 overflow-y-auto">
           <HyperliquidTradeForm
-            selectedMarket={selectedMarket}
-            address={address}
+            selectedMarket={selectedMarket?.name || 'BTC'}
+            currentPrice={parseFloat(selectedMarket?.markPx || '0')}
+            maxLeverage={selectedMarket?.maxLeverage}
           />
         </div>
       </div>
