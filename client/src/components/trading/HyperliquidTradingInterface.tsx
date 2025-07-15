@@ -1,16 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { HyperliquidMarkets } from './HyperliquidMarkets';
-import { HyperliquidSpotMarkets } from './HyperliquidSpotMarkets';
 import { HyperliquidTradeForm } from './HyperliquidTradeForm';
-import { HyperliquidSpotTradeForm } from './HyperliquidSpotTradeForm';
-import { HyperliquidAccountTransfer } from './HyperliquidAccountTransfer';
 import { HyperliquidPositions } from './HyperliquidPositions';
 import { TradingViewChart } from './TradingViewChart';
-import { SpotMarket } from '@/lib/hyperliquid-spot';
 import { usePrivy } from '@privy-io/react-auth';
-import { Button } from '@/components/ui/button';
-import { ArrowLeftRight } from 'lucide-react';
 
 interface Market {
   name: string;
@@ -24,10 +17,7 @@ interface Market {
 
 export function HyperliquidTradingInterface() {
   const { authenticated, user } = usePrivy();
-  const [tradingMode, setTradingMode] = useState<'perp' | 'spot'>('perp');
-  const [selectedPerpMarket, setSelectedPerpMarket] = useState<Market | null>(null);
-  const [selectedSpotMarket, setSelectedSpotMarket] = useState<SpotMarket | null>(null);
-  const [showTransfer, setShowTransfer] = useState(false);
+  const [selectedMarket, setSelectedMarket] = useState<Market | null>(null);
   const [liveMarketData, setLiveMarketData] = useState<{
     price: string;
     volume24h: string;
@@ -40,21 +30,19 @@ export function HyperliquidTradingInterface() {
 
   // Get TradingView symbol based on selected market - memoized to prevent unnecessary re-renders
   const tradingViewSymbol = useMemo(() => {
-    if (tradingMode === 'perp' && selectedPerpMarket) {
-      return `${selectedPerpMarket.name}USDT`;
-    } else if (tradingMode === 'spot' && selectedSpotMarket) {
-      return `${selectedSpotMarket.token}USDT`;
+    if (selectedMarket) {
+      return `${selectedMarket.name}USDT`;
     }
     return 'BTCUSDT';
-  }, [tradingMode, selectedPerpMarket?.name, selectedSpotMarket?.token]);
+  }, [selectedMarket?.name]);
 
   // Fetch live market data
   useEffect(() => {
-    if (!selectedPerpMarket && !selectedSpotMarket) return;
+    if (!selectedMarket) return;
 
     const fetchLiveData = async () => {
       try {
-        const marketName = tradingMode === 'perp' ? selectedPerpMarket?.name : selectedSpotMarket?.token;
+        const marketName = selectedMarket?.name;
         if (!marketName) return;
 
         const response = await fetch('/api/hyperliquid/market-prices');
@@ -79,52 +67,18 @@ export function HyperliquidTradingInterface() {
     const interval = setInterval(fetchLiveData, 2000); // Update every 2 seconds
 
     return () => clearInterval(interval);
-  }, [selectedPerpMarket, selectedSpotMarket, tradingMode]);
+  }, [selectedMarket]);
 
   return (
     <div className="flex flex-col bg-black text-white" style={{ height: '600px' }}>
-      {/* Mode Selector */}
-      <div className="border-b border-gray-800 p-2 bg-[#000000]">
-        <div className="flex items-center justify-between">
-          <Tabs value={tradingMode} onValueChange={(v) => setTradingMode(v as 'perp' | 'spot')}>
-            <TabsList className="bg-gray-800">
-              <TabsTrigger value="perp" className="data-[state=active]:bg-gray-700">
-                Perpetual
-              </TabsTrigger>
-              <TabsTrigger value="spot" className="data-[state=active]:bg-gray-700">
-                Spot
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-          
-          {authenticated && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowTransfer(!showTransfer)}
-              className="ml-4"
-            >
-              <ArrowLeftRight className="h-4 w-4 mr-2" />
-              Transfer USDC
-            </Button>
-          )}
-        </div>
-      </div>
       {/* Main Trading Area */}
       <div className="flex flex-1 overflow-hidden">
         {/* Markets Sidebar */}
         <div className="w-44 border-r border-gray-800 overflow-y-auto">
-          {tradingMode === 'perp' ? (
-            <HyperliquidMarkets
-              selectedMarket={selectedPerpMarket?.name || ''}
-              onSelectMarket={setSelectedPerpMarket}
-            />
-          ) : (
-            <HyperliquidSpotMarkets
-              selectedMarket={selectedSpotMarket?.token || ''}
-              onSelectMarket={setSelectedSpotMarket}
-            />
-          )}
+          <HyperliquidMarkets
+            selectedMarket={selectedMarket?.name || ''}
+            onSelectMarket={setSelectedMarket}
+          />
         </div>
 
         {/* Chart Area */}
@@ -134,9 +88,9 @@ export function HyperliquidTradingInterface() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <h2 className="text-lg font-semibold">
-                  {tradingMode === 'perp' ? selectedPerpMarket?.name || 'Select Market' : selectedSpotMarket?.token || 'Select Market'} / USD
+                  {selectedMarket?.name || 'Select Market'} / USD
                 </h2>
-                {liveMarketData && (selectedPerpMarket || selectedSpotMarket) && (
+                {liveMarketData && selectedMarket && (
                   <>
                     <div>
                       <div className="text-xs text-gray-400">Last Price</div>
@@ -193,8 +147,8 @@ export function HyperliquidTradingInterface() {
             />
           </div>
 
-          {/* Positions (Perp only) */}
-          {tradingMode === 'perp' && authenticated && (
+          {/* Positions */}
+          {authenticated && (
             <div className="border-t border-gray-800 h-64 overflow-y-auto">
               <HyperliquidPositions address={address} />
             </div>
@@ -203,26 +157,10 @@ export function HyperliquidTradingInterface() {
 
         {/* Right Sidebar - Trading Panel */}
         <div className="w-80 border-l border-gray-800 overflow-y-auto">
-          {showTransfer ? (
-            <HyperliquidAccountTransfer
-              address={address}
-              onTransferComplete={() => setShowTransfer(false)}
-            />
-          ) : (
-            <>
-              {tradingMode === 'perp' ? (
-                <HyperliquidTradeForm
-                  selectedMarket={selectedPerpMarket}
-                  address={address}
-                />
-              ) : (
-                <HyperliquidSpotTradeForm
-                  selectedMarket={selectedSpotMarket}
-                  address={address}
-                />
-              )}
-            </>
-          )}
+          <HyperliquidTradeForm
+            selectedMarket={selectedMarket}
+            address={address}
+          />
         </div>
       </div>
     </div>
