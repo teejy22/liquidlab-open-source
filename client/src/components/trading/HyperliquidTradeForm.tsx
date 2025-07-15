@@ -7,6 +7,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { useHyperliquidTrading } from "@/hooks/useHyperliquidTrading";
 import { Loader2 } from "lucide-react";
+import { TradeConfirmationDialog } from "./TradeConfirmationDialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
 
 interface HyperliquidTradeFormProps {
   selectedMarket: string;
@@ -23,6 +26,7 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
   const [leverage, setLeverage] = useState(1);
   const [reduceOnly, setReduceOnly] = useState(false);
   const [postOnly, setPostOnly] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   const { 
     authenticated, 
@@ -30,6 +34,8 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
     isPlacingOrder,
     accountSummary 
   } = useHyperliquidTrading();
+  
+  const { toast } = useToast();
 
   // Update price when market changes or when switching to limit order
   useEffect(() => {
@@ -47,13 +53,28 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
 
   const handleSubmit = async () => {
     if (!size || parseFloat(size) <= 0) {
+      toast({
+        title: "Invalid size",
+        description: "Please enter a valid order size",
+        variant: "destructive",
+      });
       return;
     }
 
     if (orderType === "limit" && (!price || parseFloat(price) <= 0)) {
+      toast({
+        title: "Invalid price",
+        description: "Please enter a valid limit price",
+        variant: "destructive",
+      });
       return;
     }
 
+    // Show confirmation dialog
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmOrder = async () => {
     // Calculate actual size based on mode
     let actualSize = parseFloat(size);
     if (sizeMode === "usd") {
@@ -63,19 +84,25 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
       }
     }
 
-    await placeOrder({
-      symbol: selectedMarket,
-      side,
-      price: orderType === "limit" ? parseFloat(price) : 0,
-      size: actualSize,
-      orderType,
-      reduceOnly,
-      postOnly: orderType === "limit" && postOnly,
-      ioc: orderType === "market",
-    });
+    try {
+      await placeOrder({
+        symbol: selectedMarket,
+        side,
+        price: orderType === "limit" ? parseFloat(price) : 0,
+        size: actualSize,
+        orderType,
+        reduceOnly,
+        postOnly: orderType === "limit" && postOnly,
+        ioc: orderType === "market",
+      });
 
-    // Reset form after successful order
-    setSize("");
+      // Reset form after successful order
+      setSize("");
+      setShowConfirmDialog(false);
+    } catch (error) {
+      // Error handling is done in the hook
+      setShowConfirmDialog(false);
+    }
   };
 
   const calculateOrderValue = () => {
@@ -95,6 +122,47 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
     const orderValue = parseFloat(calculateOrderValue());
     const leverageNum = parseFloat(leverage);
     return leverageNum > 0 ? (orderValue / leverageNum).toFixed(2) : "0.00";
+  };
+
+  const calculateLiquidationPrice = () => {
+    if (!size || parseFloat(size) <= 0) return undefined;
+    
+    const orderPrice = orderType === "limit" && price ? parseFloat(price) : currentPrice;
+    const orderSize = sizeMode === "usd" ? parseFloat(size) / orderPrice : parseFloat(size);
+    
+    // Liquidation price calculation
+    // For longs: Entry Price * (1 - 1/leverage + maintenance margin)
+    // For shorts: Entry Price * (1 + 1/leverage - maintenance margin)
+    const maintenanceMargin = 0.005; // 0.5% maintenance margin
+    
+    if (side === "buy") {
+      return orderPrice * (1 - 1/leverage + maintenanceMargin);
+    } else {
+      return orderPrice * (1 + 1/leverage - maintenanceMargin);
+    }
+  };
+
+  const calculateFee = () => {
+    const orderValue = parseFloat(calculateOrderValue());
+    return orderValue * 0.001; // 0.1% taker fee
+  };
+
+  const getTradeDetails = () => {
+    const orderPrice = orderType === "limit" && price ? parseFloat(price) : currentPrice;
+    const orderSize = sizeMode === "usd" ? parseFloat(size) / orderPrice : parseFloat(size);
+    const notionalValue = parseFloat(calculateOrderValue());
+    const requiredMargin = parseFloat(calculateMarginRequired());
+    const fee = calculateFee();
+    const liquidationPrice = calculateLiquidationPrice();
+
+    return {
+      orderPrice,
+      orderSize,
+      notionalValue,
+      requiredMargin,
+      fee,
+      liquidationPrice
+    };
   };
 
   return (
@@ -255,6 +323,25 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
           `${side === "buy" ? "Buy Long" : "Sell Short"} ${size || "0"} ${selectedMarket}`
         )}
       </Button>
+
+      {/* Trade Confirmation Dialog */}
+      <TradeConfirmationDialog
+        open={showConfirmDialog}
+        onOpenChange={setShowConfirmDialog}
+        onConfirm={handleConfirmOrder}
+        market={selectedMarket}
+        side={side}
+        size={getTradeDetails().orderSize}
+        price={getTradeDetails().orderPrice}
+        leverage={leverage}
+        isMarketOrder={orderType === "market"}
+        markPrice={currentPrice}
+        liquidationPrice={getTradeDetails().liquidationPrice}
+        notionalValue={getTradeDetails().notionalValue}
+        requiredMargin={getTradeDetails().requiredMargin}
+        fee={getTradeDetails().fee}
+        isReduceOnly={reduceOnly}
+      />
     </div>
   );
 }
