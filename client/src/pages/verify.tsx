@@ -149,7 +149,7 @@ export default function Verify() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-[#0d0d0d] rounded-lg">
                       <div>
                         <p className="text-sm text-gray-500 mb-1">Created Date</p>
-                        <p className="font-mono">{new Date(verificationResult.platform.createdAt).toLocaleDateString()}</p>
+                        <p className="font-mono text-[#ffffff]">{new Date(verificationResult.platform.createdAt).toLocaleDateString()}</p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-500 mb-1">Platform Status</p>
