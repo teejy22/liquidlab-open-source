@@ -24,6 +24,7 @@ export function PlatformVerificationBadge({
   verificationCode,
   className
 }: PlatformVerificationBadgeProps) {
+  console.log('PlatformVerificationBadge props:', { platformId, platformName, verificationCode });
   return (
     <HoverCard>
       <HoverCardTrigger asChild>
