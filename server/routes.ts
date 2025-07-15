@@ -809,6 +809,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/hyperliquid/candles/:symbol/:interval", async (req, res) => {
+    try {
+      const { symbol, interval } = req.params;
+      const { startTime, endTime } = req.query;
+      
+      const data = await hyperliquidService.getCandleData(
+        symbol, 
+        interval,
+        startTime ? parseInt(startTime as string) : undefined,
+        endTime ? parseInt(endTime as string) : undefined
+      );
+      
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
   // Platform verification endpoints
   app.get("/api/platforms/verify/:platformId", async (req, res) => {
     try {

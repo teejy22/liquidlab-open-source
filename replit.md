@@ -478,6 +478,19 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - No complex widget loading or "invalid signal" errors
   - Maintains dark theme and professional appearance
 
+### Stable Checkpoint - Binance Charts Working (January 17, 2025)
+- **Working State**: All trading functionality operational with Binance TradingView charts
+- **Chart Implementation**: Using iframe embed of TradingView advanced chart widget
+- **Data Source**: BINANCE exchange data for all trading pairs (e.g., BTCUSDT)
+- **Features Working**: 
+  - Full TradingView tools (drawing, indicators, analysis)
+  - Real-time price updates from Hyperliquid for market stats
+  - Trading interface with order placement
+  - Positions display with live data
+  - AI assistant integration
+- **Known Limitation**: Charts show Binance prices instead of Hyperliquid's actual DEX prices
+- **Reason for Checkpoint**: Before implementing toggle system for Hyperliquid charts
+
 ### Crypto Payout System Implementation (January 16, 2025)
 - **Complete Blockchain-Based Revenue Distribution**: Built comprehensive crypto payout system for platform owners
   - CryptoPayoutService using ethers.js for Arbitrum network integration
