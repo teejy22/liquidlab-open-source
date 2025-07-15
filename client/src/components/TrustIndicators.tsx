@@ -75,7 +75,7 @@ export function TrustIndicators({
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1.5 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded-full">
+                  <div className="flex items-center gap-1.5 dark:bg-green-900/30 px-2 py-0.5 rounded-full bg-[#0b0d0c]">
                     <div className="relative">
                       <CheckCircle className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
                       <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
