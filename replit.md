@@ -616,3 +616,21 @@ The application uses a monorepo structure with shared types and schemas, enablin
 - **MoonPay White Screen Fix**: Added proper error handling for missing API keys
   - Shows user-friendly message instead of white screen when MoonPay API key is missing
   - Clear instructions that production API key is needed from MoonPay
+
+### AI-Powered Chat Assistant Integration (January 16, 2025)
+- **Perplexity API Integration**: Created AI market assistant for real-time trading insights
+  - Built `/api/ai/market-chat` endpoint using Perplexity's llama-3.1-sonar model
+  - Supports market analysis, price predictions, and trading strategy questions
+  - Context-aware responses using current market and price data
+  - Requires PERPLEXITY_API_KEY environment variable for production
+- **Compact AI Assistant Component**: Designed space-efficient chat interface
+  - Ultra-compact 180px height to maximize trading interface space
+  - Positioned below trading form in right sidebar
+  - Minimal padding and condensed UI elements
+  - Short welcome message to save vertical space
+  - Real-time message updates with timestamps
+- **User Experience**: Professional AI assistant integrated into trading workflow
+  - Traders can ask questions while monitoring markets
+  - Instant analysis without leaving the trading interface
+  - Context-aware responses based on selected market
+  - Loading indicators and error handling for smooth experience
