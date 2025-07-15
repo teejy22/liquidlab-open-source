@@ -186,7 +186,7 @@ export function HyperliquidMarkets({ onSelectMarket }: { onSelectMarket: (market
                 </div>
                 <div className="text-right">
                   <div className="text-xs text-white">
-                    ${price?.price && parseFloat(price.price) > 0 ? parseFloat(price.price).toFixed(0) : '0'}
+                    ${price?.price && parseFloat(price.price) > 0 ? parseFloat(price.price).toFixed(2) : '0.00'}
                   </div>
                   <div className="text-[10px] text-gray-300">
                     Vol: ${price?.volume24h ? (parseFloat(price.volume24h) / 1e6).toFixed(0) : '0'}M
