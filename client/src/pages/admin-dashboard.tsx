@@ -67,6 +67,13 @@ export default function AdminDashboard() {
     enabled: !!dashboardData, // Only fetch users if dashboard data is loaded
   });
 
+  const { data: walletBalance } = useQuery({
+    queryKey: ['/api/admin/wallet-balance'],
+    retry: false,
+    enabled: !!dashboardData,
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
   const resetPasswordMutation = useMutation({
     mutationFn: async ({ userId, newPassword }: { userId: number; newPassword: string }) => {
       await apiRequest("POST", `/api/admin/users/${userId}/reset-password`, { newPassword });
@@ -642,6 +649,16 @@ export default function AdminDashboard() {
                       <div>
                         <p className="text-sm text-gray-600 mb-1">Currency</p>
                         <Badge variant="secondary">USDC</Badge>
+                      </div>
+                      
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">Current Balance</p>
+                        <p className="text-2xl font-bold text-green-600">
+                          ${walletBalance?.balance || '0.00'} USDC
+                        </p>
+                        {walletBalance?.error && (
+                          <p className="text-xs text-red-500 mt-1">{walletBalance.error}</p>
+                        )}
                       </div>
                       
                       <div>

@@ -246,6 +246,29 @@ export class CryptoPayoutService {
       return false;
     }
   }
+
+  /**
+   * Get the current USDC balance of the payout wallet
+   */
+  async getWalletBalance(): Promise<string> {
+    if (!this.payoutWallet || !this.usdcContract) {
+      console.error('Payout wallet not configured');
+      return '0.00';
+    }
+
+    try {
+      const balance = await this.usdcContract.balanceOf(this.payoutWallet.address);
+      const decimals = await this.usdcContract.decimals();
+      
+      // Format balance with proper decimals (USDC has 6 decimals)
+      const formattedBalance = ethers.formatUnits(balance, decimals);
+      
+      return parseFloat(formattedBalance).toFixed(2);
+    } catch (error) {
+      console.error('Error fetching wallet balance:', error);
+      return '0.00';
+    }
+  }
 }
 
 export const cryptoPayout = new CryptoPayoutService();

@@ -1254,6 +1254,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin-only: Get wallet balance
+  app.get("/api/admin/wallet-balance", requireAdmin, async (req, res) => {
+    try {
+      if (!process.env.PAYOUT_WALLET_PRIVATE_KEY) {
+        return res.json({ 
+          balance: '0.00',
+          error: 'Payout wallet not configured' 
+        });
+      }
+      
+      const { cryptoPayout } = await import('./services/cryptoPayout');
+      const balance = await cryptoPayout.getWalletBalance();
+      
+      res.json({ balance });
+    } catch (error) {
+      console.error('Error fetching wallet balance:', error);
+      res.json({ 
+        balance: '0.00',
+        error: 'Failed to fetch balance' 
+      });
+    }
+  });
+
   // Admin-only: Process payouts
   app.post("/api/payouts/process", requireAdmin, async (req, res) => {
     try {

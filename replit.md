@@ -121,6 +121,7 @@ The application uses a monorepo structure with shared types and schemas, enablin
 - **Wallet Management Tab** (January 17, 2025): Added dedicated wallet management functionality
   - Main Collection Wallet: Shows LIQUIDLAB2025 builder code and total collected revenue
   - Payout Wallet Configuration: Displays Arbitrum network, USDC currency, weekly schedule
+  - Real-time USDC balance display with 30-second auto-refresh
   - Revenue Distribution: Visual breakdown of LiquidLab (30%) vs Platform Owners (70%) shares
   - Manual Actions: Process payouts and export revenue reports buttons
   - Pending payouts display for tracking outstanding platform owner payments
