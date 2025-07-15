@@ -45,7 +45,7 @@ export default function Security() {
             <CardContent>
               <p className="text-gray-600 dark:text-gray-400">
                 Every LiquidLab platform is verified and assigned a unique ID. Check any 
-                platform's authenticity at liquidlab.com/verify.
+                platform's authenticity at liquidlab.trade/verify.
               </p>
             </CardContent>
           </Card>
@@ -311,11 +311,11 @@ export default function Security() {
                   <div className="space-y-3">
                     <Button className="w-full justify-start" variant="outline">
                       <ExternalLink className="w-4 h-4 mr-2" />
-                      Report via liquidlab.com/report
+                      Report via liquidlab.trade/report
                     </Button>
                     <Button className="w-full justify-start" variant="outline">
                       <ExternalLink className="w-4 h-4 mr-2" />
-                      Email: security@liquidlab.com
+                      Email: security@liquidlab.trade
                     </Button>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       Include the suspicious URL, screenshots, and any other relevant information.

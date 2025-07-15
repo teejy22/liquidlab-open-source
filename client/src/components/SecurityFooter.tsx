@@ -71,7 +71,7 @@ export function SecurityFooter({ platformName, platformId, builderCode }: Securi
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
                 <a 
-                  href="https://docs.liquidlab.com/security"
+                  href="https://docs.liquidlab.trade/security"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:text-blue-300"
@@ -81,7 +81,7 @@ export function SecurityFooter({ platformName, platformId, builderCode }: Securi
               </li>
               <li>
                 <a 
-                  href="https://liquidlab.com/report"
+                  href="https://liquidlab.trade/report"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:text-blue-300"
@@ -91,7 +91,7 @@ export function SecurityFooter({ platformName, platformId, builderCode }: Securi
               </li>
               <li>
                 <a 
-                  href="https://status.liquidlab.com"
+                  href="https://status.liquidlab.trade"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-400 hover:text-blue-300"
@@ -107,7 +107,7 @@ export function SecurityFooter({ platformName, platformId, builderCode }: Securi
           <p>
             Powered by{" "}
             <a 
-              href="https://liquidlab.com" 
+              href="https://liquidlab.trade" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-blue-400 hover:text-blue-300"

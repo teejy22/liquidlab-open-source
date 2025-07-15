@@ -20,6 +20,7 @@ import Signup from "@/pages/signup";
 import AdminLogin from "@/pages/admin-login";
 import AdminDashboard from "@/pages/admin-dashboard";
 import Security from "@/pages/security";
+import Verify from "@/pages/verify";
 
 function Router() {
   return (
@@ -39,6 +40,7 @@ function Router() {
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/security" component={Security} />
+      <Route path="/verify" component={Verify} />
       <Route component={NotFound} />
     </Switch>
   );
