@@ -1070,6 +1070,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Verify platform by code (new rotating token system)
+  app.post("/api/platforms/verify", async (req, res) => {
+    try {
+      const { code } = req.body;
+      if (!code) {
+        return res.status(400).json({ error: "Verification code required" });
+      }
+
+      // Get client IP
+      const ipAddress = req.ip || req.connection.remoteAddress || 'unknown';
+      const userAgent = req.headers['user-agent'];
+
+      // Import VerificationService
+      const { VerificationService } = await import("./services/verification");
+
+      // Check rate limit
+      const withinLimit = await VerificationService.checkRateLimit(ipAddress);
+      if (!withinLimit) {
+        return res.status(429).json({ error: "Too many attempts. Please try again later." });
+      }
+
+      // Verify the platform
+      const result = await VerificationService.verifyPlatform(code, ipAddress, userAgent);
+      
+      if (result.success) {
+        res.json({
+          success: true,
+          platform: result.platform,
+          securityHash: result.securityHash,
+        });
+      } else {
+        res.status(400).json({ 
+          success: false, 
+          error: result.error 
+        });
+      }
+    } catch (error) {
+      console.error("Error verifying platform:", error);
+      res.status(500).json({ error: "System error during verification" });
+    }
+  });
+
+  // Generate new verification token for a platform
+  app.post("/api/admin/platforms/:platformId/generate-token", requireAdmin, async (req, res) => {
+    try {
+      const { platformId } = req.params;
+      const { VerificationService } = await import("./services/verification");
+      
+      const { code, hash } = await VerificationService.generateToken(parseInt(platformId));
+      
+      res.json({ 
+        success: true, 
+        verificationCode: code,
+        securityHash: hash,
+        expiresIn: "24 hours"
+      });
+    } catch (error) {
+      console.error("Error generating verification token:", error);
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
   app.post("/api/admin/platforms/:platformId/verify", requireAdmin, async (req, res) => {
     try {
       const { platformId } = req.params;

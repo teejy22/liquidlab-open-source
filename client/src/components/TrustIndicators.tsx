@@ -14,13 +14,15 @@ interface TrustIndicatorsProps {
   platformId: number;
   builderCode: string;
   customDomain?: string;
+  verificationCode?: string;
 }
 
 export function TrustIndicators({ 
   platformName, 
   platformId, 
   builderCode,
-  customDomain 
+  customDomain,
+  verificationCode 
 }: TrustIndicatorsProps) {
   const [showDetails, setShowDetails] = useState(false);
 
@@ -61,17 +63,19 @@ export function TrustIndicators({
 
 
 
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1">
-                    <Info className="w-3 h-3 text-green-600 dark:text-green-400" />
-                    <span className="text-[10px] text-green-800 dark:text-green-200">ID: #{platformId}</span>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Unique platform identifier for verification</p>
-                </TooltipContent>
-              </Tooltip>
+              {verificationCode && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center gap-1 dark:bg-blue-900/30 px-1.5 py-0.5 rounded bg-[#0b0d0c]">
+                      <Shield className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                      <span className="text-[10px] text-blue-800 dark:text-blue-200 font-mono font-bold">{verificationCode}</span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Verification code - verify at liquidlab.trade/verify</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
 
               <Tooltip>
                 <TooltipTrigger asChild>

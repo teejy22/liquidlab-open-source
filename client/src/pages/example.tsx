@@ -42,9 +42,10 @@ export default function ExampleTradingPage() {
   });
   const [allMarketData, setAllMarketData] = useState<{[key: string]: any}>({});
   const [platformData, setPlatformData] = useState<any>(null);
+  const [verificationCode, setVerificationCode] = useState<string | null>(null);
   const [hyperliquidPrices, setHyperliquidPrices] = useState<{[key: string]: string}>({});
 
-  // Fetch platform data
+  // Fetch platform data and verification code
   useEffect(() => {
     const fetchPlatformData = async () => {
       try {
@@ -55,6 +56,13 @@ export default function ExampleTradingPage() {
           if (platforms.length > 0) {
             const latestPlatform = platforms[platforms.length - 1];
             setPlatformData(latestPlatform);
+            
+            // Fetch verification code for this platform
+            const verifyResponse = await fetch(`/api/platforms/${latestPlatform.id}/verification-code`);
+            if (verifyResponse.ok) {
+              const verifyData = await verifyResponse.json();
+              setVerificationCode(verifyData.code);
+            }
           }
         }
       } catch (error) {
@@ -173,6 +181,7 @@ export default function ExampleTradingPage() {
         platformName={platformData?.name || "Example Trading Platform"}
         platformId={platformData?.id || 1}
         builderCode={platformData?.config?.builderCode || "LIQUIDLAB2025"}
+        verificationCode={verificationCode || undefined}
       />
 
       {/* Main Trading Area */}

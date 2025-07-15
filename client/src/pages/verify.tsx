@@ -9,19 +9,37 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, CheckCircle, XCircle, AlertTriangle, Shield, Search } from "lucide-react";
 
 export default function Verify() {
-  const [platformId, setPlatformId] = useState("");
-  const [searchId, setSearchId] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationResult, setVerificationResult] = useState<any>(null);
+  const [verificationError, setVerificationError] = useState<string | null>(null);
 
-  const { data: platform, isLoading, error } = useQuery({
-    queryKey: [`/api/platforms/verify/${searchId}`],
-    enabled: !!searchId,
-    retry: false,
-  });
-
-  const handleSearch = (e: React.FormEvent) => {
+  const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (platformId.trim()) {
-      setSearchId(platformId.trim());
+    if (!verificationCode.trim()) return;
+
+    setIsVerifying(true);
+    setVerificationError(null);
+    setVerificationResult(null);
+
+    try {
+      const response = await fetch("/api/platforms/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: verificationCode.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setVerificationResult(data);
+      } else {
+        setVerificationError(data.error || "Verification failed");
+      }
+    } catch (error) {
+      setVerificationError("Network error. Please try again.");
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -60,21 +78,22 @@ export default function Verify() {
 
         {/* Search Form */}
         <Card className="bg-[#0d0d0d] border-gray-800 mb-8">
-          <form onSubmit={handleSearch} className="p-6">
+          <form onSubmit={handleVerify} className="p-6">
             <div className="flex flex-col md:flex-row gap-4">
               <Input
                 type="text"
-                placeholder="Enter Platform ID (e.g., 1234)"
-                value={platformId}
-                onChange={(e) => setPlatformId(e.target.value)}
-                className="flex-1 bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500"
+                placeholder="Enter Verification Code (e.g., A1B2C3D4)"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value.toUpperCase())}
+                className="flex-1 bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500 font-mono text-lg"
+                maxLength={8}
               />
               <Button 
                 type="submit" 
-                disabled={!platformId.trim() || isLoading}
+                disabled={!verificationCode.trim() || isVerifying}
                 className="bg-[#1dd1a1] hover:bg-[#19b894] text-black"
               >
-                {isLoading ? (
+                {isVerifying ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Verifying...
@@ -88,31 +107,31 @@ export default function Verify() {
               </Button>
             </div>
             <p className="text-sm text-gray-500 mt-2">
-              Platform ID can be found in the verification badge on any LiquidLab trading platform
+              Enter the 8-character verification code displayed on the trading platform
             </p>
           </form>
         </Card>
 
         {/* Results */}
-        {searchId && !isLoading && (
+        {(verificationError || verificationResult) && (
           <>
-            {error ? (
+            {verificationError ? (
               <Alert className="bg-red-900/20 border-red-800">
                 <XCircle className="h-4 w-4 text-red-500" />
-                <AlertTitle className="text-red-500">Platform Not Found</AlertTitle>
+                <AlertTitle className="text-red-500">Verification Failed</AlertTitle>
                 <AlertDescription className="text-gray-300">
-                  No platform found with ID: {searchId}. Please check the ID and try again.
+                  {verificationError}
                 </AlertDescription>
               </Alert>
-            ) : platform ? (
-              <Card className={`border-2 ${platform.isVerified ? 'bg-green-900/10 border-green-800' : 'bg-yellow-900/10 border-yellow-800'}`}>
+            ) : verificationResult ? (
+              <Card className={`border-2 ${verificationResult.platform.isVerified ? 'bg-green-900/10 border-green-800' : 'bg-yellow-900/10 border-yellow-800'}`}>
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h2 className="text-2xl font-bold mb-2">{platform.name}</h2>
-                      <p className="text-gray-400">Platform ID: {platform.id}</p>
+                      <h2 className="text-2xl font-bold mb-2">{verificationResult.platform.name}</h2>
+                      <p className="text-gray-400">Platform ID: {verificationResult.platform.id}</p>
                     </div>
-                    {platform.isVerified ? (
+                    {verificationResult.platform.isVerified ? (
                       <Badge className="bg-green-900/30 text-green-400 border-green-700">
                         <CheckCircle className="w-4 h-4 mr-1" />
                         Verified
@@ -130,16 +149,16 @@ export default function Verify() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-[#0d0d0d] rounded-lg">
                       <div>
                         <p className="text-sm text-gray-500 mb-1">Created Date</p>
-                        <p className="font-mono">{new Date(platform.createdAt).toLocaleDateString()}</p>
+                        <p className="font-mono">{new Date(verificationResult.platform.createdAt).toLocaleDateString()}</p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-500 mb-1">Platform Status</p>
-                        <p className="font-mono capitalize">{platform.status || 'Active'}</p>
+                        <p className="font-mono capitalize">{verificationResult.platform.status || 'Active'}</p>
                       </div>
-                      {platform.customDomain && (
+                      {verificationResult.platform.customDomain && (
                         <div>
                           <p className="text-sm text-gray-500 mb-1">Custom Domain</p>
-                          <p className="font-mono">{platform.customDomain}</p>
+                          <p className="font-mono">{verificationResult.platform.customDomain}</p>
                         </div>
                       )}
                       <div>
@@ -149,7 +168,7 @@ export default function Verify() {
                     </div>
 
                     {/* Verification Status Alert */}
-                    {platform.isVerified ? (
+                    {verificationResult.platform.isVerified ? (
                       <Alert className="bg-green-900/20 border-green-800">
                         <CheckCircle className="h-4 w-4 text-green-500" />
                         <AlertTitle className="text-green-500">This platform is verified by LiquidLab</AlertTitle>
@@ -198,18 +217,18 @@ export default function Verify() {
           </>
         )}
 
-        {/* How to Find Platform ID */}
-        {!searchId && (
+        {/* How to Find Verification Code */}
+        {!verificationResult && !verificationError && (
           <Card className="bg-[#0d0d0d] border-gray-800">
             <div className="p-6">
-              <h3 className="text-xl font-semibold mb-4">How to Find Platform ID</h3>
+              <h3 className="text-xl font-semibold mb-4">How to Find Verification Code</h3>
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
                   <div className="bg-[#1dd1a1] text-black rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-sm font-bold">
                     1
                   </div>
                   <p className="text-gray-400">
-                    Look for the verification badge in the header of any LiquidLab trading platform
+                    Look for the verification code in the security bar at the top of any LiquidLab trading platform
                   </p>
                 </div>
                 <div className="flex items-start space-x-3">
@@ -217,7 +236,7 @@ export default function Verify() {
                     2
                   </div>
                   <p className="text-gray-400">
-                    Hover over the badge to see the platform details including the ID
+                    The code will be displayed as an 8-character alphanumeric string (e.g., A1B2C3D4)
                   </p>
                 </div>
                 <div className="flex items-start space-x-3">
@@ -225,7 +244,7 @@ export default function Verify() {
                     3
                   </div>
                   <p className="text-gray-400">
-                    Enter the platform ID above to verify its authenticity
+                    Enter the verification code above to verify the platform's authenticity
                   </p>
                 </div>
               </div>

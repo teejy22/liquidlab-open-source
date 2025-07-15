@@ -219,6 +219,36 @@ export const payoutRecords = pgTable("payout_records", {
   index("idx_payout_processed").on(table.processedAt),
 ]);
 
+// Platform verification tokens that rotate periodically
+export const platformVerificationTokens = pgTable("platform_verification_tokens", {
+  id: serial("id").primaryKey(),
+  platformId: integer("platform_id").notNull().references(() => tradingPlatforms.id, { onDelete: "cascade" }),
+  verificationCode: varchar("verification_code", { length: 12 }).notNull().unique(), // Short code for easy typing
+  securityHash: varchar("security_hash", { length: 64 }).notNull().unique(), // SHA-256 hash for cryptographic verification
+  isActive: boolean("is_active").notNull().default(true),
+  expiresAt: timestamp("expires_at").notNull(), // Token expires after 24 hours
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_verification_code").on(table.verificationCode),
+  index("idx_verification_active").on(table.isActive, table.expiresAt),
+  index("idx_verification_platform").on(table.platformId),
+]);
+
+// Verification attempts for security auditing
+export const verificationAttempts = pgTable("verification_attempts", {
+  id: serial("id").primaryKey(),
+  attemptedCode: varchar("attempted_code", { length: 255 }).notNull(),
+  ipAddress: varchar("ip_address", { length: 45 }).notNull(),
+  userAgent: text("user_agent"),
+  success: boolean("success").notNull(),
+  platformId: integer("platform_id"), // Null if verification failed
+  errorReason: varchar("error_reason", { length: 255 }), // 'invalid_code', 'expired', 'rate_limited'
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_attempt_ip").on(table.ipAddress, table.createdAt),
+  index("idx_attempt_code").on(table.attemptedCode),
+]);
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   platforms: many(tradingPlatforms),
@@ -245,6 +275,8 @@ export const tradingPlatformsRelations = relations(tradingPlatforms, ({ one, man
   revenueSummaries: many(platformRevenueSummary),
   moonpayTransactions: many(moonpayTransactions),
   payoutRecords: many(payoutRecords),
+  verificationTokens: many(platformVerificationTokens),
+  verificationAttempts: many(verificationAttempts),
 }));
 
 export const templatesRelations = relations(templates, ({ many }) => ({
@@ -339,6 +371,20 @@ export const payoutRecordsRelations = relations(payoutRecords, ({ one }) => ({
   }),
 }));
 
+export const platformVerificationTokensRelations = relations(platformVerificationTokens, ({ one }) => ({
+  platform: one(tradingPlatforms, {
+    fields: [platformVerificationTokens.platformId],
+    references: [tradingPlatforms.id],
+  }),
+}));
+
+export const verificationAttemptsRelations = relations(verificationAttempts, ({ one }) => ({
+  platform: one(tradingPlatforms, {
+    fields: [verificationAttempts.platformId],
+    references: [tradingPlatforms.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -420,6 +466,16 @@ export const insertPayoutRecordSchema = createInsertSchema(payoutRecords).omit({
   processedAt: true,
 });
 
+export const insertPlatformVerificationTokenSchema = createInsertSchema(platformVerificationTokens).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertVerificationAttemptSchema = createInsertSchema(verificationAttempts).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -449,3 +505,7 @@ export type MoonpayTransaction = typeof moonpayTransactions.$inferSelect;
 export type InsertMoonpayTransaction = z.infer<typeof insertMoonpayTransactionSchema>;
 export type PayoutRecord = typeof payoutRecords.$inferSelect;
 export type InsertPayoutRecord = z.infer<typeof insertPayoutRecordSchema>;
+export type PlatformVerificationToken = typeof platformVerificationTokens.$inferSelect;
+export type InsertPlatformVerificationToken = z.infer<typeof insertPlatformVerificationTokenSchema>;
+export type VerificationAttempt = typeof verificationAttempts.$inferSelect;
+export type InsertVerificationAttempt = z.infer<typeof insertVerificationAttemptSchema>;
