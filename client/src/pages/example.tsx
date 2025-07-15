@@ -116,9 +116,9 @@ export default function ExampleTradingPage() {
       <div className="min-h-screen bg-[#0a0a0a] text-gray-100 flex flex-col">
       {/* Header */}
       <header className="bg-[#0f0f0f] border-b border-gray-800">
-        <div className="flex items-center justify-between h-20 px-4">
-          <div className="flex items-center space-x-6">
-            <Link href="/">
+        <div className="flex items-center justify-between h-16 lg:h-20 px-4">
+          <div className="flex items-center space-x-2 lg:space-x-6">
+            <Link href="/" className="hidden lg:block">
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -128,30 +128,40 @@ export default function ExampleTradingPage() {
                 Back to LiquidLab
               </Button>
             </Link>
+            <Link href="/" className="lg:hidden">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="bg-transparent border-gray-700 hover:bg-gray-800 p-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+            </Link>
             {platformData?.logoUrl ? (
               <img 
                 src={platformData.logoUrl} 
                 alt={platformData.name || "Trading Platform"} 
-                className="h-32 w-auto"
+                className="h-12 lg:h-24 w-auto"
               />
             ) : (
               <img 
                 src={liquidLabLogo} 
                 alt="LiquidLab" 
-                className="h-32 w-auto"
+                className="h-12 lg:h-24 w-auto"
               />
             )}
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 lg:space-x-4">
             <PlatformVerificationBadge
               platformId={platformData?.id || 1}
               platformName={platformData?.name || "Example Trading Platform"}
               isVerified={true}
+              className="hidden lg:block"
             />
             <WalletConnect />
             <MoonPayButton 
               platformId={platformData?.id}
-              className="h-9"
+              className="h-8 lg:h-9 hidden lg:block"
             />
           </div>
         </div>

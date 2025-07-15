@@ -121,19 +121,24 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Touch-friendly tab navigation with clear visual indicators
   - Full-width components on mobile devices
   - Proper spacing and padding adjustments
+  - Fixed markets tab auto-switching issue with autoSelectBTC prop
 - **Header Optimization**: Reduced header and logo sizes for mobile devices
-  - Header height: 64px mobile / 80px desktop (previously 224px)
-  - Logo height: 48px mobile / 64px desktop (previously 208px)
-  - Improved mobile menu button with hover states and accessibility labels
-- **TrustIndicators Component**: Enhanced mobile layout
-  - Stacked layout on small screens
-  - Responsive flex wrapping for trust badges
-  - Better touch targets for Details button
+  - Header height: 64px mobile / 80px desktop
+  - Logo height: 48px mobile / 96px desktop
+  - Mobile shows wallet connect button and simplified back arrow
+  - Compact spacing on mobile devices (space-x-2 vs space-x-6)
+- **TrustIndicators Component**: Enhanced mobile layout with compact design
+  - Reduced to minimal height with px-2 py-1 padding
+  - Tiny text size (text-[10px]) for all elements
+  - Smaller icons (w-3 h-3) throughout
+  - Compact Details button (h-5 with px-2)
+  - More efficient use of screen space on mobile
 - **Example Trading Page**: Complete mobile overhaul
-  - Tabbed interface for space-efficient navigation
-  - Mobile-optimized market selector
+  - Tabbed interface for space-efficient navigation (Markets, Chart, Trade, AI)
+  - Mobile-optimized market selector that stays open when selected
   - Responsive position details cards
   - Proper price display spacing
+  - Full-screen height on mobile (h-screen) vs fixed desktop height
 - **Navigation**: Added mobile hamburger menu with improved UX
   - Smooth transitions and hover states
   - Touch-friendly tap targets

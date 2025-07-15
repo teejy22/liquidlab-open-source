@@ -25,21 +25,21 @@ export function TrustIndicators({
   const [showDetails, setShowDetails] = useState(false);
 
   return (
-    <div className="dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg px-3 py-2 mb-2 bg-[#080505]">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
-          <div className="flex items-center gap-2">
-            <Shield className="w-4 h-4 text-green-600 dark:text-green-400" />
-            <span className="text-xs font-medium text-green-900 dark:text-green-100">Secure Platform</span>
+    <div className="dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-md px-2 py-1 mb-1 bg-[#080505]">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+          <div className="flex items-center gap-1.5">
+            <Shield className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
+            <span className="text-[10px] font-medium text-green-900 dark:text-green-100">Secure Platform</span>
           </div>
           
           <TooltipProvider>
-            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1.5">
-                    <CheckCircle className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
-                    <span className="text-xs text-green-800 dark:text-green-200">SSL</span>
+                  <div className="flex items-center gap-1">
+                    <CheckCircle className="w-3 h-3 text-green-600 dark:text-green-400" />
+                    <span className="text-[10px] text-green-800 dark:text-green-200">SSL</span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -49,9 +49,9 @@ export function TrustIndicators({
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1.5">
-                    <Lock className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
-                    <span className="text-xs text-green-800 dark:text-green-200">Privy</span>
+                  <div className="flex items-center gap-1">
+                    <Lock className="w-3 h-3 text-green-600 dark:text-green-400" />
+                    <span className="text-[10px] text-green-800 dark:text-green-200">Privy</span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -63,9 +63,9 @@ export function TrustIndicators({
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1.5">
-                    <Info className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
-                    <span className="text-xs text-green-800 dark:text-green-200">ID: #{platformId}</span>
+                  <div className="flex items-center gap-1">
+                    <Info className="w-3 h-3 text-green-600 dark:text-green-400" />
+                    <span className="text-[10px] text-green-800 dark:text-green-200">ID: #{platformId}</span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -75,12 +75,12 @@ export function TrustIndicators({
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1.5 dark:bg-green-900/30 px-2 py-0.5 rounded-full bg-[#0b0d0c]">
+                  <div className="flex items-center gap-1 dark:bg-green-900/30 px-1.5 py-0.5 rounded-full bg-[#0b0d0c]">
                     <div className="relative">
-                      <CheckCircle className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
-                      <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <CheckCircle className="w-3 h-3 text-green-600 dark:text-green-400" />
+                      <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
                     </div>
-                    <span className="text-xs text-green-800 dark:text-green-200 font-medium">Connected to Hyperliquid</span>
+                    <span className="text-[10px] text-green-800 dark:text-green-200 font-medium">Connected to Hyperliquid</span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -95,7 +95,7 @@ export function TrustIndicators({
           variant="ghost"
           size="sm"
           onClick={() => setShowDetails(!showDetails)}
-          className="text-xs text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/20 h-7 px-3 self-start sm:self-auto"
+          className="text-[10px] text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/20 h-5 px-2 self-start sm:self-auto"
         >
           {showDetails ? "Hide" : "Details"}
         </Button>
