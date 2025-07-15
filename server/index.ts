@@ -3,22 +3,32 @@ import session from "express-session";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { scheduler } from "./services/scheduler";
+import { configureSecurity } from "./security";
+import { configureSecureSession } from "./security/auth";
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
-// Session configuration
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'dev-secret-change-in-production',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-  }
-}));
+// Body parsers must come before CSRF protection
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+
+// Session configuration with enhanced security must come before CSRF
+const sessionConfig = process.env.SESSION_SECRET 
+  ? configureSecureSession()
+  : {
+      secret: 'dev-secret-change-in-production',
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      }
+    };
+app.use(session(sessionConfig));
+
+// Apply security configuration after body parsers and session
+configureSecurity(app);
 
 // Serve uploaded files statically
 app.use('/uploads', express.static('uploads'));
