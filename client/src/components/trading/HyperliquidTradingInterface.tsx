@@ -189,16 +189,10 @@ export function HyperliquidTradingInterface() {
                 theme="dark"
               />
             ) : (
-              <div className="h-full w-full bg-[#0a0a0a] flex items-center justify-center">
-                <div className="text-center">
-                  <h3 className="text-xl font-semibold text-white mb-2">Hyperliquid Charts</h3>
-                  <p className="text-gray-400 mb-4">Coming Soon</p>
-                  <p className="text-sm text-gray-500 max-w-md">
-                    Native Hyperliquid DEX price charts are under development. 
-                    For now, please use TradingView charts with Binance data.
-                  </p>
-                </div>
-              </div>
+              <HyperliquidLightweightChart
+                symbol={selectedMarket?.name || 'BTC'}
+                interval="15m"
+              />
             )}
           </div>
 

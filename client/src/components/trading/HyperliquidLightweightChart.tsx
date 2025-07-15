@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { createChart, ColorType } from 'lightweight-charts';
+import { createChart, ColorType, IChartApi, ISeriesApi } from 'lightweight-charts';
 import { useQuery } from '@tanstack/react-query';
 
 interface HyperliquidLightweightChartProps {
@@ -21,12 +21,12 @@ export const HyperliquidLightweightChart: React.FC<HyperliquidLightweightChartPr
   interval = '15m' 
 }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<any>(null);
-  const candlestickSeriesRef = useRef<any>(null);
+  const chartRef = useRef<IChartApi | null>(null);
+  const candlestickSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
 
   // Fetch historical candles from Hyperliquid
-  const { data: candleData, refetch } = useQuery({
-    queryKey: [`/api/hyperliquid/candles/${symbol}/${interval}`],
+  const { data: candleResponse } = useQuery({
+    queryKey: [`/api/hyperliquid/candles/${symbol}?interval=${interval}`],
     refetchInterval: 5000, // Update every 5 seconds
   });
 
@@ -91,17 +91,16 @@ export const HyperliquidLightweightChart: React.FC<HyperliquidLightweightChartPr
 
   // Update chart data
   useEffect(() => {
-    if (!candlestickSeriesRef.current || !candleData || !Array.isArray(candleData)) return;
+    if (!candlestickSeriesRef.current || !candleResponse || !candleResponse.candles) return;
 
     try {
       // Convert data to lightweight-charts format
-      const formattedData = candleData.map((candle: any) => ({
-        time: Math.floor(candle.timestamp / 1000),
+      const formattedData = candleResponse.candles.map((candle: any) => ({
+        time: Math.floor(candle.time / 1000),
         open: parseFloat(candle.open),
         high: parseFloat(candle.high),
         low: parseFloat(candle.low),
         close: parseFloat(candle.close),
-        volume: parseFloat(candle.volume || 0),
       })).sort((a: any, b: any) => a.time - b.time);
 
       if (formattedData.length > 0) {
@@ -111,7 +110,7 @@ export const HyperliquidLightweightChart: React.FC<HyperliquidLightweightChartPr
     } catch (error) {
       console.error('Error formatting candle data:', error);
     }
-  }, [candleData]);
+  }, [candleResponse]);
 
   return (
     <div className="relative h-full w-full bg-[#0a0a0a]">
