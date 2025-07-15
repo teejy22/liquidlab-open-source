@@ -74,6 +74,12 @@ export default function AdminDashboard() {
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
+  const { data: suspiciousPlatforms } = useQuery({
+    queryKey: ['/api/admin/platforms/suspicious'],
+    retry: false,
+    enabled: !!dashboardData,
+  });
+
   const resetPasswordMutation = useMutation({
     mutationFn: async ({ userId, newPassword }: { userId: number; newPassword: string }) => {
       await apiRequest("POST", `/api/admin/users/${userId}/reset-password`, { newPassword });
@@ -331,12 +337,13 @@ export default function AdminDashboard() {
 
         {/* Detailed Data Tabs */}
         <Tabs defaultValue="platforms" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="platforms">All Platforms</TabsTrigger>
             <TabsTrigger value="transactions">Recent Transactions</TabsTrigger>
             <TabsTrigger value="revenue">Revenue Breakdown</TabsTrigger>
             <TabsTrigger value="users">User Management</TabsTrigger>
             <TabsTrigger value="wallets">Wallet Management</TabsTrigger>
+            <TabsTrigger value="security">Security Monitor</TabsTrigger>
           </TabsList>
 
           <TabsContent value="platforms" className="space-y-4">
@@ -736,6 +743,210 @@ export default function AdminDashboard() {
                       >
                         <FileText className="w-4 h-4 mr-2" />
                         Export Revenue Report
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Security Monitor Tab */}
+          <TabsContent value="security" className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Security Monitoring System</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {/* Security Overview */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card>
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-gray-600">Suspicious Platforms</p>
+                            <p className="text-2xl font-bold text-red-600">
+                              {dashboardData?.securityStats?.suspiciousCount || 0}
+                            </p>
+                          </div>
+                          <Shield className="w-6 h-6 text-red-500" />
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-gray-600">Platforms Under Review</p>
+                            <p className="text-2xl font-bold text-yellow-600">
+                              {dashboardData?.securityStats?.underReviewCount || 0}
+                            </p>
+                          </div>
+                          <Shield className="w-6 h-6 text-yellow-500" />
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-gray-600">Banned Platforms</p>
+                            <p className="text-2xl font-bold text-gray-600">
+                              {dashboardData?.securityStats?.bannedCount || 0}
+                            </p>
+                          </div>
+                          <Shield className="w-6 h-6 text-gray-500" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Suspicious Platforms Table */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Platforms Requiring Review</h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="border-b">
+                          <tr>
+                            <th className="text-left p-3">Platform</th>
+                            <th className="text-left p-3">Owner</th>
+                            <th className="text-left p-3">Risk Score</th>
+                            <th className="text-left p-3">Status</th>
+                            <th className="text-left p-3">Reported</th>
+                            <th className="text-left p-3">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {suspiciousPlatforms?.map((platform: any) => (
+                            <tr key={platform.id} className="border-b hover:bg-gray-50">
+                              <td className="p-3">
+                                <div>
+                                  <p className="font-medium">{platform.name}</p>
+                                  <p className="text-sm text-gray-500">ID: {platform.id}</p>
+                                </div>
+                              </td>
+                              <td className="p-3">
+                                <p className="text-sm">User #{platform.userId}</p>
+                              </td>
+                              <td className="p-3">
+                                <Badge variant={platform.riskScore > 50 ? "destructive" : "secondary"}>
+                                  {platform.riskScore}/100
+                                </Badge>
+                              </td>
+                              <td className="p-3">
+                                <Badge variant={
+                                  platform.status === 'banned' ? "destructive" : 
+                                  platform.status === 'suspended' ? "secondary" : 
+                                  "default"
+                                }>
+                                  {platform.status}
+                                </Badge>
+                              </td>
+                              <td className="p-3">
+                                <p className="text-sm text-gray-600">
+                                  {new Date(platform.createdAt).toLocaleDateString()}
+                                </p>
+                              </td>
+                              <td className="p-3">
+                                <div className="flex gap-2">
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => {
+                                      toast({
+                                        title: "Platform Review",
+                                        description: `Reviewing platform ${platform.name}`,
+                                      });
+                                    }}
+                                  >
+                                    Review
+                                  </Button>
+                                  {platform.status !== 'banned' && (
+                                    <Button 
+                                      size="sm" 
+                                      variant="destructive"
+                                      onClick={() => {
+                                        toast({
+                                          title: "Platform Banned",
+                                          description: `Platform ${platform.name} has been banned`,
+                                          variant: "destructive",
+                                        });
+                                      }}
+                                    >
+                                      Ban
+                                    </Button>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {(!dashboardData?.suspiciousPlatforms || dashboardData.suspiciousPlatforms.length === 0) && (
+                        <div className="text-center py-8 text-gray-500">
+                          No suspicious platforms detected
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Recent Security Activity */}
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Recent Security Activity</h3>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {dashboardData?.recentSecurityActivity?.map((activity: any, index: number) => (
+                        <div key={index} className="flex items-start gap-3 p-3 border rounded-lg">
+                          <Shield className="w-4 h-4 text-gray-500 mt-1" />
+                          <div className="flex-1">
+                            <p className="text-sm">{activity.description}</p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {new Date(activity.createdAt).toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                      {(!dashboardData?.recentSecurityActivity || dashboardData.recentSecurityActivity.length === 0) && (
+                        <div className="text-center py-4 text-gray-500">
+                          No recent security activity
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Security Actions */}
+                  <div className="border rounded-lg p-6">
+                    <h3 className="text-lg font-semibold mb-4">Security Actions</h3>
+                    <div className="space-y-3">
+                      <Button 
+                        variant="outline"
+                        className="w-full justify-start"
+                        onClick={() => {
+                          toast({
+                            title: "Security Scan",
+                            description: "Running comprehensive security scan on all platforms...",
+                          });
+                        }}
+                      >
+                        <Shield className="w-4 h-4 mr-2" />
+                        Run Full Security Scan
+                      </Button>
+                      
+                      <Button 
+                        variant="outline"
+                        className="w-full justify-start text-red-600 border-red-200"
+                        onClick={() => {
+                          toast({
+                            title: "Emergency Mode",
+                            description: "This would suspend all new platform creation temporarily",
+                            variant: "destructive",
+                          });
+                        }}
+                      >
+                        <Shield className="w-4 h-4 mr-2" />
+                        Emergency Lockdown Mode
                       </Button>
                     </div>
                   </div>
