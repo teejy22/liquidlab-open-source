@@ -118,8 +118,8 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="bg-gray-900 border-gray-700">
-            <SelectItem value="limit">Limit</SelectItem>
-            <SelectItem value="market">Market</SelectItem>
+            <SelectItem value="limit" className="text-gray-200 focus:bg-gray-800 focus:text-white">Limit</SelectItem>
+            <SelectItem value="market" className="text-gray-200 focus:bg-gray-800 focus:text-white">Market</SelectItem>
           </SelectContent>
         </Select>
         
