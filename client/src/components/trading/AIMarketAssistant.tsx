@@ -22,7 +22,7 @@ export function AIMarketAssistant({ selectedMarket = 'BTC', currentPrice }: AIMa
     {
       id: '1',
       role: 'assistant',
-      content: `Hi! I'm your AI trading assistant. Ask me about ${selectedMarket} market analysis, price predictions, trading strategies, or any crypto market questions.`,
+      content: `Ask me about ${selectedMarket} analysis or strategies.`,
       timestamp: new Date()
     }
   ]);
@@ -96,10 +96,10 @@ export function AIMarketAssistant({ selectedMarket = 'BTC', currentPrice }: AIMa
 
   return (
     <Card className="bg-gray-900 border-gray-800 h-full flex flex-col">
-      <div className="p-3 border-b border-gray-800">
-        <h3 className="text-sm font-semibold flex items-center gap-2 text-[#ffffff]">
-          <Bot className="h-4 w-4 text-blue-400" />
-          AI Market Assistant
+      <div className="p-2 border-b border-gray-800">
+        <h3 className="text-xs font-semibold flex items-center gap-1.5 text-[#ffffff]">
+          <Bot className="h-3.5 w-3.5 text-blue-400" />
+          AI Assistant
         </h3>
       </div>
       <ScrollArea className="flex-1 p-2" ref={scrollAreaRef}>

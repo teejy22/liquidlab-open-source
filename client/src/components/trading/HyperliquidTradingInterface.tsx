@@ -182,7 +182,7 @@ export function HyperliquidTradingInterface() {
               maxLeverage={selectedMarket?.maxLeverage}
             />
           </div>
-          <div className="h-[250px] overflow-hidden">
+          <div className="h-[180px] overflow-hidden">
             <AIMarketAssistant
               selectedMarket={selectedMarket?.name || 'BTC'}
               currentPrice={parseFloat(selectedMarket?.markPx || '0')}
