@@ -146,14 +146,20 @@ export class VerificationService {
       };
       
     } catch (error) {
-      // Record error attempt
-      await db.insert(verificationAttempts).values({
-        attemptedCode: code,
-        ipAddress,
-        userAgent,
-        success: false,
-        errorReason: 'system_error',
-      });
+      console.error("Error in verifyPlatform:", error);
+      
+      // Try to record error attempt but don't fail if this also errors
+      try {
+        await db.insert(verificationAttempts).values({
+          attemptedCode: code,
+          ipAddress,
+          userAgent,
+          success: false,
+          errorReason: 'system_error',
+        });
+      } catch (attemptError) {
+        console.error("Error recording verification attempt:", attemptError);
+      }
       
       return { success: false, error: 'System error during verification' };
     }
