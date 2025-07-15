@@ -1,6 +1,6 @@
 import { db } from "../db";
 import { platformVerificationTokens, verificationAttempts, tradingPlatforms } from "@shared/schema";
-import { eq, and, lt, gt } from "drizzle-orm";
+import { eq, and, lt, gt, count } from "drizzle-orm";
 import crypto from "crypto";
 
 export class VerificationService {
@@ -173,7 +173,7 @@ export class VerificationService {
     windowStart.setMinutes(windowStart.getMinutes() - windowMinutes);
     
     const [result] = await db
-      .select({ count: db.count() })
+      .select({ count: count() })
       .from(verificationAttempts)
       .where(and(
         eq(verificationAttempts.ipAddress, ipAddress),
