@@ -368,6 +368,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const platformData = insertTradingPlatformSchema.parse(req.body);
       const platform = await storage.createTradingPlatform(platformData);
+      
+      // Import SecurityService
+      const { SecurityService } = await import("./services/security");
+      
+      // Initialize security monitoring for the platform
+      await SecurityService.initializePlatformSecurity(platform.id);
+      
+      // Scan platform content for suspicious elements
+      const isClean = await SecurityService.scanPlatformContent(platform.id, {
+        name: platform.name,
+        config: platform.config,
+        logoUrl: platform.logoUrl
+      });
+      
+      if (!isClean) {
+        // Mark platform for review if suspicious content detected
+        await SecurityService.updateRiskScore(platform.id, 50);
+      }
+      
       res.json(platform);
     } catch (error) {
       res.status(400).json({ error: handleError(error) });
@@ -391,6 +410,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = parseInt(req.params.id);
       const updates = req.body;
+      
+      // Check if platform is allowed to be updated
+      const { SecurityService } = await import("./services/security");
+      const isAllowed = await SecurityService.isPlatformAllowed(id);
+      if (!isAllowed) {
+        return res.status(403).json({ error: "This platform has been suspended. Please contact support." });
+      }
+      
+      // Scan for suspicious content if platform details are being updated
+      if (updates.name || updates.config || updates.logoUrl) {
+        const isClean = await SecurityService.scanPlatformContent(id, {
+          name: updates.name,
+          config: updates.config,
+          logoUrl: updates.logoUrl
+        });
+        
+        if (!isClean) {
+          await SecurityService.updateRiskScore(id, 30);
+        }
+      }
+      
       const platform = await storage.updateTradingPlatform(id, updates);
       res.json(platform);
     } catch (error) {
@@ -1569,6 +1609,90 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true, userId: user.id });
     } catch (error) {
       console.error("Error saving wallet address:", error);
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  // Admin platform security endpoints
+  app.get("/api/admin/platforms/suspicious", requireAdmin, async (req, res) => {
+    try {
+      const { SecurityService } = await import("./services/security");
+      const { suspiciousActivity, platformSecurity } = await import("@shared/schema");
+      
+      // Get all suspicious platforms
+      const suspiciousReports = await db
+        .select({
+          activity: suspiciousActivity,
+          security: platformSecurity,
+          platform: tradingPlatforms,
+        })
+        .from(suspiciousActivity)
+        .leftJoin(platformSecurity, eq(suspiciousActivity.platformId, platformSecurity.platformId))
+        .leftJoin(tradingPlatforms, eq(suspiciousActivity.platformId, tradingPlatforms.id))
+        .orderBy(desc(suspiciousActivity.reportedAt))
+        .limit(50);
+      
+      res.json({ reports: suspiciousReports });
+    } catch (error) {
+      console.error("Error fetching suspicious platforms:", error);
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+  
+  app.get("/api/admin/platforms/:id/security", requireAdmin, async (req, res) => {
+    try {
+      const platformId = parseInt(req.params.id);
+      const { SecurityService } = await import("./services/security");
+      
+      const securityStatus = await SecurityService.getPlatformSecurityStatus(platformId);
+      res.json(securityStatus);
+    } catch (error) {
+      console.error("Error fetching platform security:", error);
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+  
+  app.post("/api/admin/platforms/:id/review", requireAdmin, async (req, res) => {
+    try {
+      const platformId = parseInt(req.params.id);
+      const { reviewNotes, approve } = req.body;
+      
+      const { SecurityService } = await import("./services/security");
+      await SecurityService.reviewPlatform(platformId, reviewNotes, approve);
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error reviewing platform:", error);
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+  
+  app.post("/api/admin/platforms/:id/suspend", requireAdmin, async (req, res) => {
+    try {
+      const platformId = parseInt(req.params.id);
+      const { reason } = req.body;
+      
+      const { SecurityService } = await import("./services/security");
+      await SecurityService.suspendPlatform(platformId, reason);
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error suspending platform:", error);
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+  
+  app.post("/api/admin/platforms/:id/ban", requireAdmin, async (req, res) => {
+    try {
+      const platformId = parseInt(req.params.id);
+      const { reason } = req.body;
+      
+      const { SecurityService } = await import("./services/security");
+      await SecurityService.banPlatform(platformId, reason);
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error banning platform:", error);
       res.status(500).json({ error: handleError(error) });
     }
   });

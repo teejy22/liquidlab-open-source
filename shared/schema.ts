@@ -249,6 +249,47 @@ export const verificationAttempts = pgTable("verification_attempts", {
   index("idx_attempt_code").on(table.attemptedCode),
 ]);
 
+// Platform security monitoring
+export const platformSecurity = pgTable("platform_security", {
+  id: serial("id").primaryKey(),
+  platformId: integer("platform_id").notNull().references(() => tradingPlatforms.id, { onDelete: "cascade" }),
+  status: varchar("status", { length: 50 }).notNull().default("active"), // active, suspended, banned, under-review
+  suspendedAt: timestamp("suspended_at"),
+  suspendedReason: text("suspended_reason"),
+  bannedAt: timestamp("banned_at"),
+  bannedReason: text("banned_reason"),
+  lastReviewedAt: timestamp("last_reviewed_at"),
+  reviewNotes: text("review_notes"),
+  riskScore: integer("risk_score").default(0), // 0-100, higher = more suspicious
+  flaggedContent: jsonb("flagged_content"), // Store suspicious URLs, scripts, etc.
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  unique("idx_platform_security_unique").on(table.platformId),
+  index("idx_platform_security_status").on(table.status),
+]);
+
+// Suspicious activity logs
+export const suspiciousActivity = pgTable("suspicious_activity", {
+  id: serial("id").primaryKey(),
+  platformId: integer("platform_id").references(() => tradingPlatforms.id),
+  userId: integer("user_id").references(() => users.id),
+  activityType: varchar("activity_type", { length: 100 }).notNull(), // rapid_verification_attempts, suspicious_links, content_violation, etc.
+  description: text("description").notNull(),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  metadata: jsonb("metadata"),
+  severity: varchar("severity", { length: 20 }).notNull().default("medium"), // low, medium, high, critical
+  isResolved: boolean("is_resolved").default(false),
+  resolvedAt: timestamp("resolved_at"),
+  resolvedBy: integer("resolved_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_suspicious_activity_platform").on(table.platformId),
+  index("idx_suspicious_activity_type").on(table.activityType),
+  index("idx_suspicious_activity_severity").on(table.severity),
+]);
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   platforms: many(tradingPlatforms),

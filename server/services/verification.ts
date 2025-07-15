@@ -2,6 +2,7 @@ import { db } from "../db";
 import { platformVerificationTokens, verificationAttempts, tradingPlatforms } from "@shared/schema";
 import { eq, and, lt, gt, count } from "drizzle-orm";
 import crypto from "crypto";
+import { SecurityService } from "./security";
 
 export class VerificationService {
   private static TOKEN_EXPIRY_HOURS = 24;
@@ -80,6 +81,20 @@ export class VerificationService {
     securityHash?: string;
   }> {
     try {
+      // Check for rapid verification attempts from this IP
+      const isRapidAttempt = await SecurityService.checkRapidVerificationAttempts(ipAddress);
+      if (isRapidAttempt) {
+        await db.insert(verificationAttempts).values({
+          attemptedCode: code,
+          ipAddress,
+          userAgent,
+          success: false,
+          errorReason: 'rate_limited',
+        });
+        
+        return { success: false, error: 'Too many verification attempts. Please try again later.' };
+      }
+
       // Find active token with this code
       const [token] = await db
         .select()
@@ -120,6 +135,21 @@ export class VerificationService {
         });
         
         return { success: false, error: 'Platform not found' };
+      }
+      
+      // Check if platform is allowed to operate (not suspended/banned)
+      const isAllowed = await SecurityService.isPlatformAllowed(platform.id);
+      if (!isAllowed) {
+        await db.insert(verificationAttempts).values({
+          attemptedCode: code,
+          ipAddress,
+          userAgent,
+          success: false,
+          errorReason: 'platform_suspended',
+          platformId: platform.id,
+        });
+        
+        return { success: false, error: 'This platform has been suspended. Please contact support.' };
       }
       
       // Update platform as verified

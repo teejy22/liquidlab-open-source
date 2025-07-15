@@ -566,6 +566,34 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Clear visual confirmation that the platform is connected to Hyperliquid DEX
   - Tooltip explains "Live connection to Hyperliquid DEX established"
 
+### Anti-Scam Security System Implementation (January 17, 2025)
+- **Complete Security Infrastructure**: Built comprehensive anti-scam system to protect users from malicious platforms
+  - SecurityService handles all security operations: platform monitoring, risk scoring, suspension/ban actions
+  - Automatic security initialization when new platforms are created
+  - Real-time content scanning for suspicious keywords and patterns on platform creation/updates
+  - Risk score tracking with automatic suspension threshold (>100 points)
+- **Database Schema Additions**: Added security-focused tables for complete monitoring
+  - `platformSecurity`: Tracks security status, risk scores, and review states for each platform
+  - `suspiciousActivity`: Records all security-related incidents and reports
+  - Both tables have proper relations defined for database integrity
+- **Automated Content Monitoring**: Proactive detection of scam patterns
+  - Scans platform names, configs, and logos for suspicious content
+  - Keywords detection: "guaranteed returns", "investment opportunity", "crypto mining", etc.
+  - URL pattern matching for known phishing domains
+  - Automatic risk score increases when suspicious content is detected
+- **Admin Security Management**: Complete admin tools for platform moderation
+  - GET /api/admin/platforms/suspicious - View all reported suspicious platforms
+  - GET /api/admin/platforms/:id/security - Get detailed security status for a platform
+  - POST /api/admin/platforms/:id/review - Review and approve/reject platforms
+  - POST /api/admin/platforms/:id/suspend - Temporarily suspend platforms
+  - POST /api/admin/platforms/:id/ban - Permanently ban malicious platforms
+- **Integration with Core Features**: Security checks integrated throughout the platform
+  - Platform creation automatically initializes security monitoring
+  - Platform updates check if platform is allowed (not suspended/banned)
+  - Content scanning on all platform modifications
+  - Verification service checks security status before allowing verification
+  - Dynamic imports used throughout routes.ts for proper async security handling
+
 ### Custom Domain Support System (January 16, 2025)
 - **Domain Management Service**: Created comprehensive domain management system for platform owners
   - domainManager service handles domain operations (add, verify, remove)
