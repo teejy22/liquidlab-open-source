@@ -61,7 +61,7 @@ export function WalletConnect() {
         onClick={logout} 
         variant="outline" 
         size="sm"
-        className="bg-gradient-to-r from-purple-600/10 to-blue-600/10 border-purple-500/30 text-purple-300 hover:from-purple-600/20 hover:to-blue-600/20 hover:border-purple-400/50 hover:text-purple-200 transition-all duration-200"
+        className="bg-gradient-to-r from-gray-800 to-gray-900 border-gray-600 text-gray-200 hover:from-gray-700 hover:to-gray-800 hover:border-gray-500 hover:text-white transition-all duration-200"
       >
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
