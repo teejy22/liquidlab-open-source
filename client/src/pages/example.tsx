@@ -116,7 +116,7 @@ export default function ExampleTradingPage() {
       <div className="min-h-screen bg-[#0a0a0a] text-gray-100 flex flex-col">
       {/* Header */}
       <header className="bg-[#0f0f0f] border-b border-gray-800">
-        <div className="flex items-center justify-between h-24 lg:h-44 px-4 py-2">
+        <div className="flex items-center justify-between h-36 lg:h-72 px-4 py-2">
           <div className="flex items-center space-x-2 lg:space-x-6">
             <Link href="/" className="hidden lg:block">
               <Button 
@@ -141,13 +141,13 @@ export default function ExampleTradingPage() {
               <img 
                 src={platformData.logoUrl} 
                 alt={platformData.name || "Trading Platform"} 
-                className="h-20 lg:h-40 w-auto"
+                className="h-32 lg:h-64 w-auto"
               />
             ) : (
               <img 
                 src={liquidLabLogo} 
                 alt="LiquidLab" 
-                className="h-20 lg:h-40 w-auto"
+                className="h-32 lg:h-64 w-auto"
               />
             )}
           </div>
