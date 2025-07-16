@@ -1,5 +1,19 @@
 # Security Changelog
 
+## [1.0.2] - 2025-01-17
+
+### Fixed
+- **ReDoS (Regular Expression Denial of Service) vulnerability**
+  - Fixed polynomial time complexity regex patterns in security scanner
+  - Replaced complex regex patterns with simple string matching where possible
+  - Added input size limits (10KB max) to prevent DoS attacks
+  - Created antiRedos.ts with safe pattern matching implementation
+  - Specific fixes:
+    - Removed `\s*` repetitions that could cause backtracking
+    - Replaced `\w+` with specific event names
+    - Replaced `[^>]*` with word boundary checks
+    - Split complex patterns into multiple simple checks
+
 ## [1.0.1] - 2025-01-17
 
 ### Fixed

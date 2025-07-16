@@ -186,24 +186,63 @@ export class SecurityService {
     config?: any;
     logoUrl?: string;
   }): Promise<boolean> {
-    const suspiciousPatterns = [
-      /liquidlab\.com/i, // Old domain
-      /verify\s*code\s*:\s*[A-Z0-9]{8}/i, // Fake verification codes
-      /<script[^>]*>/i, // Script tags
-      /javascript:/i, // JavaScript URLs
-      /on\w+\s*=/i, // Event handlers
-      /phishing|scam|hack/i, // Obvious scam words
-      /connect\s*wallet\s*now/i, // Urgency tactics
-      /100%\s*guaranteed/i, // Unrealistic promises
+    // Limit input size to prevent ReDoS attacks
+    const contentString = JSON.stringify(content);
+    if (contentString.length > 10000) {
+      await this.reportSuspiciousActivity({
+        platformId,
+        activityType: this.ACTIVITY_TYPES.CONTENT_VIOLATION,
+        description: "Platform content exceeds maximum allowed size",
+        severity: "high",
+        metadata: { contentLength: contentString.length }
+      });
+      return false;
+    }
+
+    // Use simple string checks instead of complex regex to avoid ReDoS
+    const suspiciousKeywords = [
+      'liquidlab.com', // Old domain
+      'phishing',
+      'scam',
+      'hack',
+      '100% guaranteed',
+      'guaranteed returns',
+      'investment opportunity',
+      'crypto mining'
     ];
 
-    const contentString = JSON.stringify(content);
-    const flaggedPatterns: string[] = [];
+    // Safe regex patterns with bounded complexity
+    const safePatterns = [
+      /javascript:/i, // Simple pattern, no backtracking
+      /<script\b/i, // Word boundary instead of [^>]*
+      /on(?:click|load|error|mouseover)\s*=/i, // Specific events instead of \w+
+    ];
 
-    for (const pattern of suspiciousPatterns) {
+    const flaggedPatterns: string[] = [];
+    const lowerContent = contentString.toLowerCase();
+
+    // Check simple keywords
+    for (const keyword of suspiciousKeywords) {
+      if (lowerContent.includes(keyword.toLowerCase())) {
+        flaggedPatterns.push(keyword);
+      }
+    }
+
+    // Check safe regex patterns
+    for (const pattern of safePatterns) {
       if (pattern.test(contentString)) {
         flaggedPatterns.push(pattern.source);
       }
+    }
+
+    // Check for fake verification codes more safely
+    if (lowerContent.includes('verify') && lowerContent.includes('code') && /[A-Z0-9]{8}/.test(contentString)) {
+      flaggedPatterns.push('Potential fake verification code');
+    }
+
+    // Check for wallet connection urgency
+    if (lowerContent.includes('connect') && lowerContent.includes('wallet') && lowerContent.includes('now')) {
+      flaggedPatterns.push('Urgent wallet connection request');
     }
 
     if (flaggedPatterns.length > 0) {
