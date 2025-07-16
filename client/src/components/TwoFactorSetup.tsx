@@ -33,9 +33,16 @@ export default function TwoFactorSetup({ enabled, onStatusChange }: TwoFactorSet
     try {
       setLoading(true);
       const response = await apiRequest("GET", "/api/auth/2fa/setup");
+      console.log("2FA Setup Response:", response);
+      
+      if (!response || !response.qrCode || !response.secret || !response.backupCodes) {
+        throw new Error("Invalid 2FA setup response");
+      }
+      
       setSetupData(response);
       setIsSetupDialogOpen(true);
     } catch (error: any) {
+      console.error("2FA Setup Error:", error);
       toast({
         title: "Setup Failed",
         description: error.message || "Failed to initialize 2FA setup",
@@ -160,7 +167,13 @@ export default function TwoFactorSetup({ enabled, onStatusChange }: TwoFactorSet
                   Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)
                 </p>
                 <div className="flex justify-center">
-                  <img src={setupData.qrCode} alt="2FA QR Code" className="border rounded" />
+                  {setupData.qrCode ? (
+                    <img src={setupData.qrCode} alt="2FA QR Code" className="border rounded" />
+                  ) : (
+                    <div className="p-4 border rounded bg-gray-50 dark:bg-gray-900">
+                      <p className="text-sm text-gray-600">QR Code loading...</p>
+                    </div>
+                  )}
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-500 mt-2 text-center">
                   Can't scan? Enter this code manually: <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">{setupData.secret}</code>
