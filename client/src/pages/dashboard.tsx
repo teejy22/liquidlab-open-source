@@ -19,7 +19,9 @@ import {
   Calendar
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import TwoFactorSetup from "@/components/TwoFactorSetup";
+import { queryClient } from "@/lib/queryClient";
 
 export default function Dashboard() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
@@ -309,11 +311,12 @@ export default function Dashboard() {
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Fee Tracking & Revenue</h2>
         
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="transactions">Recent Transactions</TabsTrigger>
             <TabsTrigger value="platforms">Platform Revenues</TabsTrigger>
             <TabsTrigger value="payouts">Payouts</TabsTrigger>
+            <TabsTrigger value="account">Account</TabsTrigger>
           </TabsList>
           
           <TabsContent value="overview" className="space-y-4">
@@ -605,6 +608,51 @@ export default function Dashboard() {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="account" className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Account Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Account Information</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <p className="text-sm text-gray-600 mb-1">Username</p>
+                      <p className="font-semibold">{user?.username || 'Not set'}</p>
+                    </div>
+                    
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <p className="text-sm text-gray-600 mb-1">Email</p>
+                      <p className="font-semibold">{user?.email}</p>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <p className="text-sm text-gray-600 mb-1">Wallet Address</p>
+                      <p className="font-mono text-sm">{user?.walletAddress || 'Not connected'}</p>
+                    </div>
+
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <p className="text-sm text-gray-600 mb-1">Member Since</p>
+                      <p className="font-semibold">
+                        {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Security Settings */}
+              <TwoFactorSetup 
+                enabled={user?.twoFactorEnabled || false}
+                onStatusChange={() => {
+                  // Refetch user data to update 2FA status
+                  queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+                }}
+              />
+            </div>
           </TabsContent>
         </Tabs>
       </div>

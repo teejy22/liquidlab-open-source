@@ -11,6 +11,9 @@ export const users = pgTable("users", {
   walletAddress: text("wallet_address"),
   builderCode: text("builder_code").unique(),
   referralCode: text("referral_code").unique(),
+  twoFactorSecret: text("two_factor_secret"),
+  twoFactorEnabled: boolean("two_factor_enabled").default(false),
+  twoFactorBackupCodes: text("two_factor_backup_codes"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

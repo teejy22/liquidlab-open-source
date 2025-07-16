@@ -13,9 +13,11 @@ export default function AdminLogin() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [requires2FA, setRequires2FA] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    totp: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,7 +25,17 @@ export default function AdminLogin() {
     
     setLoading(true);
     try {
-      await apiRequest("POST", "/api/admin/login", formData);
+      const response = await apiRequest("POST", "/api/admin/login", formData);
+      
+      // Check if 2FA is required
+      if (response.requiresTwoFactor) {
+        setRequires2FA(true);
+        toast({
+          title: "2FA Required",
+          description: "Please enter your admin authentication code",
+        });
+        return;
+      }
       
       toast({
         title: "Admin Access Granted",
@@ -52,35 +64,58 @@ export default function AdminLogin() {
           <div className="mx-auto mb-4 bg-red-100 p-3 rounded-full w-fit">
             <Shield className="w-8 h-8 text-red-600" />
           </div>
-          <CardTitle>Admin Access</CardTitle>
+          <CardTitle>{requires2FA ? "Admin 2FA Verification" : "Admin Access"}</CardTitle>
           <CardDescription>
-            This area is restricted to LiquidLab administrators only
+            {requires2FA 
+              ? "Enter your admin authentication code"
+              : "This area is restricted to LiquidLab administrators only"}
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="email">Admin Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="admin@liquidlab.com"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="password">Admin Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                required
-              />
-            </div>
+            {!requires2FA ? (
+              <>
+                <div>
+                  <Label htmlFor="email">Admin Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="admin@liquidlab.trade"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="password">Admin Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    required
+                  />
+                </div>
+              </>
+            ) : (
+              <div>
+                <Label htmlFor="totp">Authentication Code</Label>
+                <Input
+                  id="totp"
+                  type="text"
+                  placeholder="123456"
+                  value={formData.totp}
+                  onChange={(e) => setFormData({ ...formData, totp: e.target.value })}
+                  maxLength={6}
+                  required
+                  autoFocus
+                />
+                <p className="text-sm text-gray-600 mt-2">
+                  Enter the 6-digit code from your authenticator app
+                </p>
+              </div>
+            )}
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             <Button
@@ -91,17 +126,31 @@ export default function AdminLogin() {
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Authenticating...
+                  {requires2FA ? "Verifying..." : "Authenticating..."}
                 </>
               ) : (
-                "Access Admin Dashboard"
+                requires2FA ? "Verify Code" : "Access Admin Dashboard"
               )}
             </Button>
-            <Link href="/">
-              <Button variant="link" className="text-sm">
-                Return to Main Site
+            {requires2FA ? (
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => {
+                  setRequires2FA(false);
+                  setFormData({ ...formData, totp: "" });
+                }}
+              >
+                Back to Login
               </Button>
-            </Link>
+            ) : (
+              <Link href="/">
+                <Button variant="link" className="text-sm">
+                  Return to Main Site
+                </Button>
+              </Link>
+            )}
           </CardFooter>
         </form>
       </Card>

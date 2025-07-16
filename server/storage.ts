@@ -42,6 +42,13 @@ export interface IStorage {
   getAllUsers(): Promise<User[]>;
   updateUserPassword(userId: number, newPassword: string): Promise<void>;
   
+  // 2FA management
+  setup2FA(userId: number, secret: string, backupCodes: string[]): Promise<void>;
+  enable2FA(userId: number): Promise<void>;
+  disable2FA(userId: number): Promise<void>;
+  get2FASecret(userId: number): Promise<string | null>;
+  verify2FABackupCode(userId: number, code: string): Promise<boolean>;
+  
   // Trading platforms
   getTradingPlatforms(userId?: string): Promise<TradingPlatform[]>;
   getTradingPlatform(id: number): Promise<TradingPlatform | undefined>;
@@ -710,6 +717,76 @@ export class DatabaseStorage implements IStorage {
 
   private generateSlug(name: string): string {
     return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  }
+
+  // 2FA management
+  async setup2FA(userId: number, secret: string, backupCodes: string[]): Promise<void> {
+    await db
+      .update(users)
+      .set({
+        twoFactorSecret: secret,
+        twoFactorBackupCodes: JSON.stringify(backupCodes),
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async enable2FA(userId: number): Promise<void> {
+    await db
+      .update(users)
+      .set({
+        twoFactorEnabled: true,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async disable2FA(userId: number): Promise<void> {
+    await db
+      .update(users)
+      .set({
+        twoFactorEnabled: false,
+        twoFactorSecret: null,
+        twoFactorBackupCodes: null,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async get2FASecret(userId: number): Promise<string | null> {
+    const [user] = await db
+      .select({ twoFactorSecret: users.twoFactorSecret })
+      .from(users)
+      .where(eq(users.id, userId));
+    
+    return user?.twoFactorSecret || null;
+  }
+
+  async verify2FABackupCode(userId: number, code: string): Promise<boolean> {
+    const [user] = await db
+      .select({ twoFactorBackupCodes: users.twoFactorBackupCodes })
+      .from(users)
+      .where(eq(users.id, userId));
+    
+    if (!user?.twoFactorBackupCodes) return false;
+    
+    const backupCodes = JSON.parse(user.twoFactorBackupCodes) as string[];
+    const codeIndex = backupCodes.indexOf(code);
+    
+    if (codeIndex !== -1) {
+      // Remove used backup code
+      backupCodes.splice(codeIndex, 1);
+      await db
+        .update(users)
+        .set({
+          twoFactorBackupCodes: JSON.stringify(backupCodes),
+          updatedAt: new Date()
+        })
+        .where(eq(users.id, userId));
+      return true;
+    }
+    
+    return false;
   }
 }
 

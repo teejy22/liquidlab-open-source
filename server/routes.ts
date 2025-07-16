@@ -66,7 +66,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/admin/login", async (req, res) => {
     try {
-      const { email, password } = req.body;
+      const { email, password, totp } = req.body;
       
       // Check if admin credentials are configured
       if (!ADMIN_PASSWORD) {
@@ -82,6 +82,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validPassword = await bcrypt.compare(password, ADMIN_PASSWORD);
       if (!validPassword) {
         return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      // Check if admin 2FA is enabled
+      const admin2FASecret = process.env.ADMIN_2FA_SECRET;
+      const admin2FAEnabled = process.env.ADMIN_2FA_ENABLED === 'true';
+      
+      if (admin2FAEnabled && admin2FASecret) {
+        if (!totp) {
+          return res.status(200).json({ 
+            requiresTwoFactor: true 
+          });
+        }
+
+        // Import auth utilities dynamically
+        const { verify2FAToken } = await import("./security/auth");
+        
+        if (!verify2FAToken(admin2FASecret, totp)) {
+          return res.status(401).json({ message: "Invalid 2FA code" });
+        }
       }
       
       // Set admin session
@@ -281,7 +300,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/auth/signin", async (req, res) => {
     try {
-      const { email, password } = req.body;
+      const { email, password, totp } = req.body;
       
       const user = await storage.getUserByEmail(email);
       if (!user) {
@@ -292,6 +311,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validPassword = await bcrypt.compare(password, user.password);
       if (!validPassword) {
         return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      // Check if 2FA is enabled
+      if (user.twoFactorEnabled) {
+        if (!totp) {
+          return res.status(200).json({ 
+            requiresTwoFactor: true,
+            userId: user.id 
+          });
+        }
+
+        // Import auth utilities dynamically
+        const { verify2FAToken } = await import("./security/auth");
+        const secret = await storage.get2FASecret(user.id);
+        
+        if (!secret || !verify2FAToken(secret, totp)) {
+          // Try backup code
+          const isBackupValid = await storage.verify2FABackupCode(user.id, totp);
+          if (!isBackupValid) {
+            return res.status(401).json({ error: "Invalid 2FA code" });
+          }
+        }
       }
       
       // Set session
@@ -341,6 +382,119 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(500).json({ error: "Failed to logout" });
         }
         res.json({ success: true });
+      });
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  // 2FA management endpoints
+  app.get("/api/auth/2fa/setup", async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const { generate2FASecret, generateQRCode } = await import("./security/auth");
+      const secret = generate2FASecret(user.email);
+      
+      // Generate backup codes
+      const backupCodes: string[] = [];
+      for (let i = 0; i < 8; i++) {
+        backupCodes.push(Math.random().toString(36).substring(2, 10).toUpperCase());
+      }
+
+      // Save secret and backup codes temporarily
+      await storage.setup2FA(user.id, secret.base32, backupCodes);
+
+      // Generate QR code
+      const qrCode = await generateQRCode(secret.otpauth_url!);
+
+      res.json({
+        secret: secret.base32,
+        qrCode,
+        backupCodes
+      });
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  app.post("/api/auth/2fa/enable", async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const { totp } = req.body;
+      if (!totp) {
+        return res.status(400).json({ error: "2FA code required" });
+      }
+
+      const secret = await storage.get2FASecret(req.session.userId);
+      if (!secret) {
+        return res.status(400).json({ error: "2FA not set up" });
+      }
+
+      const { verify2FAToken } = await import("./security/auth");
+      if (!verify2FAToken(secret, totp)) {
+        return res.status(400).json({ error: "Invalid 2FA code" });
+      }
+
+      await storage.enable2FA(req.session.userId);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  app.post("/api/auth/2fa/disable", async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const { password } = req.body;
+      if (!password) {
+        return res.status(400).json({ error: "Password required" });
+      }
+
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Verify password
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword) {
+        return res.status(401).json({ error: "Invalid password" });
+      }
+
+      await storage.disable2FA(req.session.userId);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  app.get("/api/auth/2fa/status", async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json({
+        enabled: user.twoFactorEnabled || false
       });
     } catch (error) {
       res.status(500).json({ error: handleError(error) });
