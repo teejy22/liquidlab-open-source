@@ -564,6 +564,12 @@ export default function Home() {
                 title: "Revenue Sharing",
                 description: "Earn revenue through builder codes and referral programs automatically.",
                 color: "bg-green-500/10 text-green-500"
+              },
+              {
+                icon: Users,
+                title: "Trader Support Included",
+                description: "Basic trader support provided by LiquidLab for all platforms, ensuring your users get help when needed.",
+                color: "bg-indigo-500/10 text-indigo-500"
               }
             ].map((feature, index) => (
               <div key={index} className="text-center">
