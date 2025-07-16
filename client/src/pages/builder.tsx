@@ -112,8 +112,11 @@ export default function Builder() {
   useEffect(() => {
     if (platformVerificationCode?.code) {
       setVerificationCode(platformVerificationCode.code);
+    } else if (savedPlatformId) {
+      // If we have a saved platform but no code yet, refetch
+      queryClient.invalidateQueries({ queryKey: [`/api/platforms/${savedPlatformId}/verification-code`] });
     }
-  }, [platformVerificationCode]);
+  }, [platformVerificationCode, savedPlatformId]);
 
   // Load selected platform data
   const handleLoadPlatform = async (platformId: string) => {
@@ -157,6 +160,8 @@ export default function Builder() {
         description: "Your platform configuration has been saved successfully.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/platforms'] });
+      // Also invalidate the verification code query to fetch the newly generated code
+      queryClient.invalidateQueries({ queryKey: [`/api/platforms/${data.id}/verification-code`] });
     },
     onError: (error: any) => {
       toast({
