@@ -4,6 +4,7 @@ import { HyperliquidTradeForm } from './HyperliquidTradeForm';
 import { HyperliquidPositions } from './HyperliquidPositions';
 import { TradingViewChart } from './TradingViewChart';
 import { HyperliquidDeposit } from './HyperliquidDeposit';
+import { PolymarketInterface } from './PolymarketInterface';
 import { usePrivy } from '@privy-io/react-auth';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -21,7 +22,7 @@ interface Market {
 export function HyperliquidTradingInterface() {
   const { authenticated, user } = usePrivy();
   const [selectedMarket, setSelectedMarket] = useState<Market | null>(null);
-  const [mobileView, setMobileView] = useState<'markets' | 'chart' | 'trade' | 'funds'>('chart');
+  const [mobileView, setMobileView] = useState<'markets' | 'chart' | 'trade' | 'funds' | 'predictions'>('chart');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const [liveMarketData, setLiveMarketData] = useState<{
@@ -186,6 +187,7 @@ export function HyperliquidTradingInterface() {
             <TabsList className="w-full rounded-none bg-[#000000] border-b border-gray-800 p-0">
               <TabsTrigger value="trade" className="flex-1 rounded-none data-[state=active]:bg-[#1a1a1a] data-[state=active]:text-white data-[state=inactive]:bg-[#0a0a0a] data-[state=inactive]:text-gray-500 h-10 font-medium transition-all">Trade</TabsTrigger>
               <TabsTrigger value="funds" className="flex-1 rounded-none data-[state=active]:bg-[#1a1a1a] data-[state=active]:text-white data-[state=inactive]:bg-[#0a0a0a] data-[state=inactive]:text-gray-500 h-10 font-medium transition-all">Funds</TabsTrigger>
+              <TabsTrigger value="predictions" className="flex-1 rounded-none data-[state=active]:bg-[#1a1a1a] data-[state=active]:text-white data-[state=inactive]:bg-[#0a0a0a] data-[state=inactive]:text-gray-500 h-10 font-medium transition-all">Predictions</TabsTrigger>
             </TabsList>
             <TabsContent value="trade" className="flex-1 overflow-y-auto border-b border-gray-800 custom-scrollbar m-0">
               <HyperliquidTradeForm
@@ -196,6 +198,9 @@ export function HyperliquidTradingInterface() {
             </TabsContent>
             <TabsContent value="funds" className="flex-1 overflow-y-auto border-b border-gray-800 custom-scrollbar m-0 p-4">
               <HyperliquidDeposit />
+            </TabsContent>
+            <TabsContent value="predictions" className="flex-1 overflow-y-auto border-b border-gray-800 custom-scrollbar m-0">
+              <PolymarketInterface />
             </TabsContent>
           </Tabs>
         </div>
@@ -324,6 +329,22 @@ export function HyperliquidTradingInterface() {
                 <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#1dd1a1]" />
               )}
             </button>
+            <button
+              onClick={() => {
+                console.log('Setting mobile view to predictions');
+                setMobileView('predictions');
+              }}
+              className={`flex-1 py-2 text-xs font-medium bg-[#000000] relative ${
+                mobileView === 'predictions' 
+                  ? 'text-white' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Predict
+              {mobileView === 'predictions' && (
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#1dd1a1]" />
+              )}
+            </button>
           </div>
         </div>
 
@@ -368,6 +389,12 @@ export function HyperliquidTradingInterface() {
           {mobileView === 'funds' && (
             <div className="h-full overflow-y-auto p-4">
               <HyperliquidDeposit />
+            </div>
+          )}
+
+          {mobileView === 'predictions' && (
+            <div className="h-full overflow-hidden">
+              <PolymarketInterface />
             </div>
           )}
         </div>
