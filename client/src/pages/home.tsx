@@ -23,7 +23,8 @@ import {
   Key,
   AlertTriangle,
   Activity,
-  FileText
+  FileText,
+  Eye
 } from "lucide-react";
 
 export default function Home() {
@@ -327,6 +328,18 @@ export default function Home() {
                 <h3 className="text-lg font-semibold text-white mb-2">Security Audit Logging</h3>
                 <p className="text-gray-400 text-sm">
                   Comprehensive audit logs track all security events, login attempts, and transactions for complete transparency.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800/50 border-gray-700 backdrop-blur">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mb-4">
+                  <Eye className="w-6 h-6 text-green-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">24/7 Security Monitoring</h3>
+                <p className="text-gray-400 text-sm">
+                  Real-time security monitoring detects and prevents threats. Automated systems track suspicious patterns and protect against emerging risks.
                 </p>
               </CardContent>
             </Card>
