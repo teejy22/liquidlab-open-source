@@ -68,6 +68,17 @@ This open source release is part of our commitment to transparency. Users with s
 
 MIT License - See LICENSE file for details
 
+## Security Documentation
+
+- [Security Changelog](./SECURITY_CHANGELOG.md) - All security fixes and updates
+- [Security Best Practices](./SECURITY_BEST_PRACTICES.md) - Guidelines for secure development
+
+### Recent Security Improvements
+- Fixed ReDoS vulnerabilities in regex patterns
+- Added rate limiting to all expensive operations  
+- Implemented comprehensive input validation
+- Enhanced authentication security measures
+
 ## Security Disclosure
 
 If you discover a security vulnerability, please email security@liquidlab.trade

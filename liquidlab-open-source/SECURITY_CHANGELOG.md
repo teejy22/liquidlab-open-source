@@ -14,6 +14,16 @@
     - Replaced `[^>]*` with word boundary checks
     - Split complex patterns into multiple simple checks
 
+- **Missing Rate Limiting on Expensive Operations**
+  - Added rate limiting middleware to platform verification endpoint
+  - Added specialized upload rate limiter (10 uploads per 15 minutes)
+  - Applied rate limiting BEFORE expensive operations like:
+    - Database queries
+    - File uploads
+    - Dynamic imports
+    - External API calls
+  - Prevents DoS attacks by limiting request frequency at middleware level
+
 ## [1.0.1] - 2025-01-17
 
 ### Fixed

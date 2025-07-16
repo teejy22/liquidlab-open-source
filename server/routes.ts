@@ -1341,8 +1341,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Import rate limiter for verification endpoint
+  const { authLimiter } = await import("./security/customRateLimiter");
+
   // Verify platform by code (new rotating token system)
-  app.post("/api/platforms/verify", async (req, res) => {
+  // Apply rate limiting middleware BEFORE any expensive operations
+  app.post("/api/platforms/verify", authLimiter, async (req, res) => {
     try {
       const { code } = req.body;
       if (!code) {
@@ -1356,7 +1360,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Import VerificationService
       const { VerificationService } = await import("./services/verification");
 
-      // Check rate limit
+      // Check rate limit (secondary check for IP-based limiting)
       const withinLimit = await VerificationService.checkRateLimit(ipAddress);
       if (!withinLimit) {
         return res.status(429).json({ error: "Too many attempts. Please try again later." });
@@ -1896,8 +1900,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Logo upload endpoint with enhanced error handling
-  app.post("/api/upload-logo", (req, res) => {
+  // Import rate limiter for file upload
+  const { createRateLimiter } = await import("./security/customRateLimiter");
+  
+  // Create specific rate limiter for file uploads (more restrictive)
+  const uploadLimiter = createRateLimiter({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // max 10 uploads per windowMs
+    message: 'Too many file uploads. Please try again later.',
+    standardHeaders: true,
+  });
+
+  // Logo upload endpoint with enhanced error handling and rate limiting
+  app.post("/api/upload-logo", uploadLimiter, (req, res) => {
     upload.single('logo')(req, res, async (err) => {
       try {
         console.log("Upload request received");

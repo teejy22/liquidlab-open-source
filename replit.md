@@ -838,6 +838,21 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Trade batch runs every 10 minutes to check for new trades
   - Real-time revenue tracking and distribution enabled
 
+### Security Vulnerabilities Fixed (January 16, 2025)
+- **CVE-2023-42282 SSRF Vulnerability**: Replaced express-rate-limit with custom rate limiting solution to avoid vulnerable dependency
+- **ReDoS Vulnerability**: Fixed polynomial time complexity regex patterns in security scanner
+  - Replaced complex regex patterns with simple string matching
+  - Added input size limits (10KB max) to prevent DoS attacks
+  - Created antiRedos.ts with safe pattern matching implementation
+- **Missing Rate Limiting**: Added rate limiting middleware to expensive operations
+  - Platform verification endpoint (uses auth limiter)
+  - File upload endpoint (10 uploads per 15 minutes)
+  - Applied rate limiting BEFORE expensive operations like database queries
+- **Security Documentation**: Created comprehensive security resources
+  - SECURITY_CHANGELOG.md documents all security fixes
+  - SECURITY_BEST_PRACTICES.md provides secure development guidelines
+  - Updated open source repository README with security references
+
 ### Integrated USDC Deposit/Withdrawal System (January 17, 2025)
 - **Critical User Retention Feature**: Implemented integrated deposit system to prevent users from leaving to Hyperliquid main site
   - Users can now deposit USDC from Arbitrum directly within our trading interface
