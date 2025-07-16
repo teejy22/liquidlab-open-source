@@ -96,16 +96,25 @@ export default function Header() {
             }`}>
               Example
             </Link>
-            <Link href="/analytics" className={`font-medium transition-colors ${
-              isActive('/analytics') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
+            <Link href="/enterprise" className={`font-medium transition-colors ${
+              isActive('/enterprise') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
             }`}>
-              Analytics
+              Enterprise
             </Link>
-            <Link href="/dashboard" className={`font-medium transition-colors ${
-              isActive('/dashboard') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
-            }`}>
-              Dashboard
-            </Link>
+            {isAuthenticated && (
+              <>
+                <Link href="/analytics" className={`font-medium transition-colors ${
+                  isActive('/analytics') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
+                }`}>
+                  Analytics
+                </Link>
+                <Link href="/dashboard" className={`font-medium transition-colors ${
+                  isActive('/dashboard') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
+                }`}>
+                  Dashboard
+                </Link>
+              </>
+            )}
           </nav>
           
           {/* Authentication */}
@@ -181,16 +190,25 @@ export default function Header() {
               }`}>
                 Example
               </Link>
-              <Link href="/analytics" className={`block px-3 py-2 text-base font-medium transition-colors ${
-                isActive('/analytics') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
+              <Link href="/enterprise" className={`block px-3 py-2 text-base font-medium transition-colors ${
+                isActive('/enterprise') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
               }`}>
-                Analytics
+                Enterprise
               </Link>
-              <Link href="/dashboard" className={`block px-3 py-2 text-base font-medium transition-colors ${
-                isActive('/dashboard') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
-              }`}>
-                Dashboard
-              </Link>
+              {isAuthenticated && (
+                <>
+                  <Link href="/analytics" className={`block px-3 py-2 text-base font-medium transition-colors ${
+                    isActive('/analytics') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
+                  }`}>
+                    Analytics
+                  </Link>
+                  <Link href="/dashboard" className={`block px-3 py-2 text-base font-medium transition-colors ${
+                    isActive('/dashboard') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
+                  }`}>
+                    Dashboard
+                  </Link>
+                </>
+              )}
             </nav>
             
             {walletState.isConnected && (
