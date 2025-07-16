@@ -294,7 +294,7 @@ export function PolymarketInterface() {
 
       <div className="flex-1 overflow-hidden flex">
         {/* Markets List */}
-        <div className="w-2/3 border-r border-gray-800 overflow-y-auto custom-scrollbar">
+        <div className={`${selectedMarket ? 'w-2/3 border-r' : 'w-full'} border-gray-800 overflow-y-auto custom-scrollbar`}>
           {/* Category Filter */}
           <div className="p-3 border-b border-gray-800">
             <div className="flex gap-2">
@@ -362,8 +362,8 @@ export function PolymarketInterface() {
         </div>
 
         {/* Betting Interface */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar">
-          {selectedMarket ? (
+        {selectedMarket && (
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
             <div className="p-4 space-y-4">
               <Card className="bg-[#0d0d0d] border-gray-800 p-4">
                 <h3 className="text-sm font-semibold mb-3">{selectedMarket.question}</h3>
@@ -452,12 +452,8 @@ export function PolymarketInterface() {
                 </div>
               </Card>
             </div>
-          ) : (
-            <div className="flex items-center justify-center h-full text-gray-500 text-sm">
-              <p>Select a market to place a prediction</p>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
