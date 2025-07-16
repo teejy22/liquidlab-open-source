@@ -12,8 +12,6 @@ import { useToast } from '@/hooks/use-toast';
 import { queryClient } from '@/lib/queryClient';
 
 const ARBITRUM_CHAIN_ID = 42161;
-const HYPERLIQUID_BRIDGE_ADDRESS = '0x2df1c51e09aecf9cacb7bc98cb1742757f163df7';
-const USDC_CONTRACT_ADDRESS = '0xaf88d065e77c8cc2239327c5edb3a432268e5831'; // Arbitrum USDC
 
 export function HyperliquidDeposit() {
   const { authenticated, ready, getEthersProvider, user } = usePrivy();
@@ -21,6 +19,12 @@ export function HyperliquidDeposit() {
   const [depositAmount, setDepositAmount] = useState('');
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Get validated contract addresses from backend
+  const { data: depositConfig, isLoading: configLoading } = useQuery({
+    queryKey: ['/api/deposit/config'],
+    enabled: authenticated,
+  });
 
   // Get user balances
   const { data: balances, isLoading: balancesLoading } = useQuery({
@@ -47,7 +51,8 @@ export function HyperliquidDeposit() {
         'function decimals() view returns (uint8)'
       ];
       
-      const usdcContract = new ethers.Contract(USDC_CONTRACT_ADDRESS, usdcAbi, signer);
+      if (!depositConfig?.arbitrumUSDC) return '0';
+      const usdcContract = new ethers.Contract(depositConfig.arbitrumUSDC, usdcAbi, signer);
       const balance = await usdcContract.balanceOf(user.wallet.address);
       const decimals = await usdcContract.decimals();
       
@@ -78,12 +83,16 @@ export function HyperliquidDeposit() {
         'function decimals() view returns (uint8)'
       ];
       
-      const usdcContract = new ethers.Contract(USDC_CONTRACT_ADDRESS, usdcAbi, signer);
+      if (!depositConfig?.arbitrumUSDC || !depositConfig?.hyperliquidBridge) {
+        throw new Error('Contract addresses not loaded');
+      }
+      
+      const usdcContract = new ethers.Contract(depositConfig.arbitrumUSDC, usdcAbi, signer);
       const decimals = await usdcContract.decimals();
       const amountWei = ethers.utils.parseUnits(amount, decimals);
       
       // Send USDC to bridge
-      const tx = await usdcContract.transfer(HYPERLIQUID_BRIDGE_ADDRESS, amountWei);
+      const tx = await usdcContract.transfer(depositConfig.hyperliquidBridge, amountWei);
       
       // Wait for confirmation
       const receipt = await tx.wait();
