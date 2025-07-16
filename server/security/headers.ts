@@ -52,6 +52,7 @@ export function configureSecurityHeaders(app: Express) {
       }
     },
     crossOriginEmbedderPolicy: false, // Required for TradingView
+    frameguard: process.env.NODE_ENV === 'production', // Disable frameguard in development
     hsts: {
       maxAge: 31536000,
       includeSubDomains: true,
@@ -59,14 +60,8 @@ export function configureSecurityHeaders(app: Express) {
     }
   }));
 
-  // Additional security headers
+  // Additional security headers (X-Frame-Options handled by Helmet frameguard)
   app.use((req, res, next) => {
-    // Prevent clickjacking
-    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-    
-    // Prevent MIME type sniffing
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    
     // Enable XSS filter
     res.setHeader('X-XSS-Protection', '1; mode=block');
     
