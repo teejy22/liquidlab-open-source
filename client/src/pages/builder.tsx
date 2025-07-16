@@ -53,6 +53,7 @@ export default function Builder() {
   const [savingPlatform, setSavingPlatform] = useState(false);
   const [savedPlatformId, setSavedPlatformId] = useState<number | null>(null);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
+  const [verificationCode, setVerificationCode] = useState<string | null>(null);
 
   // Builder wallet address (must have 100+ USDC in perps account)
   const BUILDER_WALLET_ADDRESS = import.meta.env.VITE_BUILDER_WALLET_ADDRESS || "0x0000000000000000000000000000000000000000";
@@ -67,6 +68,7 @@ export default function Builder() {
     setSavedChanges(false);
     setPreviewMode('desktop');
     setIsCreatingNew(true);
+    setVerificationCode(null);
     toast({
       title: "Creating New Platform",
       description: "Form cleared. Enter details for your new platform.",
@@ -93,8 +95,20 @@ export default function Builder() {
   // Don't auto-load any platform - start with blank form
   // Users can explicitly choose to load an existing platform if they want
 
+  // Fetch verification code for saved platform
+  const { data: platformVerificationCode } = useQuery({
+    queryKey: [`/api/platforms/${savedPlatformId}/verification-code`],
+    enabled: !!savedPlatformId
+  });
+
+  useEffect(() => {
+    if (platformVerificationCode?.code) {
+      setVerificationCode(platformVerificationCode.code);
+    }
+  }, [platformVerificationCode]);
+
   // Load selected platform data
-  const handleLoadPlatform = (platformId: string) => {
+  const handleLoadPlatform = async (platformId: string) => {
     if (platformId === "new") {
       resetFormForNewPlatform();
       return;
@@ -505,6 +519,35 @@ export default function Builder() {
                           You keep 70% of all builder fees
                         </p>
                       </div>
+                    </div>
+
+                    <div>
+                      <Label>Platform Verification Code</Label>
+                      <div className="flex gap-2 mt-1">
+                        <Input
+                          value={verificationCode || "Save platform to generate"}
+                          readOnly
+                          className="font-mono text-sm"
+                        />
+                        {verificationCode && (
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => {
+                              navigator.clipboard.writeText(verificationCode);
+                              toast({
+                                title: "Copied!",
+                                description: "Verification code copied to clipboard.",
+                              });
+                            }}
+                          >
+                            <Copy className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Users can verify your platform at liquidlab.trade/verify with this code
+                      </p>
                     </div>
                   </TabsContent>
                   
