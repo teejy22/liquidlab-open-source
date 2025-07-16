@@ -1,10 +1,10 @@
 import { Shield, CheckCircle, AlertCircle, Copy, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
@@ -41,8 +41,8 @@ export function PlatformVerificationBadge({
   };
 
   return (
-    <HoverCard>
-      <HoverCardTrigger asChild>
+    <Popover>
+      <PopoverTrigger asChild>
         <Button 
           variant="ghost" 
           size={compactMode ? "sm" : "default"}
@@ -61,8 +61,8 @@ export function PlatformVerificationBadge({
             </>
           )}
         </Button>
-      </HoverCardTrigger>
-      <HoverCardContent className="w-80">
+      </PopoverTrigger>
+      <PopoverContent className="w-80">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Shield className="w-5 h-5 text-green-600 dark:text-green-400" />
@@ -124,7 +124,7 @@ export function PlatformVerificationBadge({
             Verify on LiquidLab.trade →
           </a>
         </div>
-      </HoverCardContent>
-    </HoverCard>
+      </PopoverContent>
+    </Popover>
   );
 }
