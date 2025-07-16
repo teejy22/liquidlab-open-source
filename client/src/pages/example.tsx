@@ -76,9 +76,9 @@ export default function ExampleTradingPage() {
           if (platformId) {
             // If platformId is in URL, use that specific platform
             selectedPlatform = platforms.find((p: any) => p.id === parseInt(platformId));
-          } else if (platforms.length > 0) {
-            // Otherwise, use the most recently created platform
-            selectedPlatform = platforms[platforms.length - 1];
+          } else {
+            // Otherwise, use LiquidL platform (ID 13)
+            selectedPlatform = platforms.find((p: any) => p.id === 13) || platforms[0];
           }
           
           if (selectedPlatform) {
