@@ -28,8 +28,16 @@ import {
   ExternalLink,
   Upload,
   Image,
-  Plus
+  Plus,
+  FolderOpen
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function Builder() {
   const { toast } = useToast();
@@ -82,18 +90,31 @@ export default function Builder() {
     enabled: !!user?.id
   });
 
-  // Set the first platform as the saved platform if exists
-  useEffect(() => {
-    // Only load existing platform if we're not creating a new one
-    if (platforms && platforms.length > 0 && !savedPlatformId && !isCreatingNew) {
-      const latestPlatform = platforms[platforms.length - 1];
-      setSavedPlatformId(latestPlatform.id);
-      setPlatformName(latestPlatform.name || '');
-      setLogoUrl(latestPlatform.logoUrl || '');
-      setPayoutWallet(latestPlatform.payoutWallet || '');
-      setSavedChanges(true);
+  // Don't auto-load any platform - start with blank form
+  // Users can explicitly choose to load an existing platform if they want
+
+  // Load selected platform data
+  const handleLoadPlatform = (platformId: string) => {
+    if (platformId === "new") {
+      resetFormForNewPlatform();
+      return;
     }
-  }, [platforms, isCreatingNew]);
+    
+    const platform = platforms?.find(p => p.id.toString() === platformId);
+    if (platform) {
+      setSavedPlatformId(platform.id);
+      setPlatformName(platform.name || '');
+      setLogoUrl(platform.logoUrl || '');
+      setPayoutWallet(platform.payoutWallet || '');
+      setCustomDomain(platform.customDomain || '');
+      setSavedChanges(true);
+      setIsCreatingNew(false);
+      toast({
+        title: "Platform Loaded",
+        description: `Loaded "${platform.name}" for editing.`,
+      });
+    }
+  };
 
   const savePlatformMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -298,6 +319,38 @@ export default function Builder() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* Platform Selector */}
+                <div>
+                  <Label className="flex items-center mb-2">
+                    <FolderOpen className="w-4 h-4 mr-2" />
+                    Load Existing Platform
+                  </Label>
+                  <Select 
+                    value={savedPlatformId?.toString() || "new"} 
+                    onValueChange={handleLoadPlatform}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a platform" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="new">
+                        <span className="flex items-center">
+                          <Plus className="w-4 h-4 mr-2" />
+                          Create New Platform
+                        </span>
+                      </SelectItem>
+                      {platforms?.map((platform) => (
+                        <SelectItem key={platform.id} value={platform.id.toString()}>
+                          {platform.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Select an existing platform to edit or create a new one
+                  </p>
+                </div>
+
                 <Tabs defaultValue="basic" className="w-full">
                   <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="basic">Basic</TabsTrigger>
