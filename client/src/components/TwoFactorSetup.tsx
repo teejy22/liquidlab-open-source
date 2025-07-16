@@ -162,7 +162,7 @@ export default function TwoFactorSetup({ enabled, onStatusChange }: TwoFactorSet
 
       {/* Setup Dialog */}
       <Dialog open={isSetupDialogOpen} onOpenChange={setIsSetupDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Set Up Two-Factor Authentication</DialogTitle>
             <DialogDescription>
@@ -171,38 +171,39 @@ export default function TwoFactorSetup({ enabled, onStatusChange }: TwoFactorSet
           </DialogHeader>
           
           {setupData && (
-            <div className="space-y-6">
+            <div className="space-y-4 pb-4">
               <div>
-                <h3 className="font-medium mb-2">Step 1: Scan QR Code</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                <h3 className="font-medium mb-1 text-sm">Step 1: Scan QR Code</h3>
+                <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
                   Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)
                 </p>
-                <div className="flex justify-center">
+                <div className="flex justify-center mb-2">
                   {setupData.qrCode ? (
-                    <img src={setupData.qrCode} alt="2FA QR Code" className="border rounded" />
+                    <img src={setupData.qrCode} alt="2FA QR Code" className="border rounded h-48 w-48" />
                   ) : (
                     <div className="p-4 border rounded bg-gray-50 dark:bg-gray-900">
                       <p className="text-sm text-gray-600">QR Code loading...</p>
                     </div>
                   )}
                 </div>
-                <p className="text-xs text-gray-500 dark:text-gray-500 mt-2 text-center">
-                  Can't scan? Enter this code manually: <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">{setupData.secret}</code>
+                <p className="text-xs text-gray-500 dark:text-gray-500 text-center">
+                  Can't scan? Enter manually: <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs">{setupData.secret}</code>
                 </p>
               </div>
 
               <div>
-                <h3 className="font-medium mb-2">Step 2: Save Backup Codes</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  Save these backup codes in a safe place. You can use them to access your account if you lose your authenticator.
+                <h3 className="font-medium mb-1 text-sm">Step 2: Save Backup Codes</h3>
+                <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                  Save these backup codes. Use them if you lose your authenticator.
                 </p>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-1 text-xs max-h-32 overflow-y-auto">
                   {setupData.backupCodes.map((code, index) => (
-                    <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-gray-900 p-2 rounded">
-                      <code className="text-sm">{code}</code>
+                    <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-gray-900 p-1 rounded">
+                      <code className="text-xs">{code}</code>
                       <Button
                         size="sm"
                         variant="ghost"
+                        className="h-6 w-6 p-0"
                         onClick={() => copyBackupCode(code, index)}
                       >
                         {copiedIndex === index ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
@@ -213,12 +214,12 @@ export default function TwoFactorSetup({ enabled, onStatusChange }: TwoFactorSet
               </div>
 
               <div>
-                <h3 className="font-medium mb-2">Step 3: Verify Setup</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  Enter the 6-digit code from your authenticator app to complete setup
+                <h3 className="font-medium mb-1 text-sm">Step 3: Verify Setup</h3>
+                <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                  Enter the 6-digit code from your authenticator app
                 </p>
-                <div className="space-y-2">
-                  <Label htmlFor="verification-code">Verification Code</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="verification-code" className="text-xs">Verification Code</Label>
                   <Input
                     id="verification-code"
                     type="text"
@@ -226,24 +227,25 @@ export default function TwoFactorSetup({ enabled, onStatusChange }: TwoFactorSet
                     value={verificationCode}
                     onChange={(e) => setVerificationCode(e.target.value)}
                     maxLength={6}
+                    className="h-8"
                   />
                 </div>
               </div>
 
-              <Alert>
-                <AlertDescription>
-                  <strong>Important:</strong> After enabling 2FA, you'll need to enter a code from your authenticator app every time you log in.
+              <Alert className="p-2">
+                <AlertDescription className="text-xs">
+                  <strong>Important:</strong> You'll need a code from your authenticator app every time you log in.
                 </AlertDescription>
               </Alert>
             </div>
           )}
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsSetupDialogOpen(false)}>
+          <DialogFooter className="mt-2">
+            <Button variant="outline" size="sm" onClick={() => setIsSetupDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleEnable} disabled={!verificationCode || loading}>
-              Enable 2FA
+            <Button size="sm" onClick={handleEnable} disabled={!verificationCode || loading}>
+              {loading ? "Enabling..." : "Enable 2FA"}
             </Button>
           </DialogFooter>
         </DialogContent>
