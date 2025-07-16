@@ -299,12 +299,37 @@ export const suspiciousActivity = pgTable("suspicious_activity", {
   index("idx_suspicious_activity_severity").on(table.severity),
 ]);
 
+// Deposit transactions tracking
+export const depositTransactions = pgTable("deposit_transactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  walletAddress: varchar("wallet_address", { length: 255 }).notNull(),
+  amount: decimal("amount", { precision: 20, scale: 6 }).notNull(),
+  currency: varchar("currency", { length: 10 }).notNull().default('USDC'),
+  fromNetwork: varchar("from_network", { length: 50 }).notNull().default('arbitrum'),
+  toNetwork: varchar("to_network", { length: 50 }).notNull().default('hyperliquid'),
+  txHash: varchar("tx_hash", { length: 255 }),
+  status: varchar("status", { length: 50 }).notNull().default('pending'), // pending, confirmed, failed
+  bridgeAddress: varchar("bridge_address", { length: 255 }).notNull(),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  confirmedAt: timestamp("confirmed_at"),
+}, (table) => [
+  index("idx_deposit_user").on(table.userId),
+  index("idx_deposit_wallet").on(table.walletAddress),
+  index("idx_deposit_status").on(table.status),
+  index("idx_deposit_created").on(table.createdAt),
+]);
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   platforms: many(tradingPlatforms),
   revenueRecords: many(revenueRecords),
   referrals: many(referrals, { relationName: "referrer" }),
   referredBy: many(referrals, { relationName: "referred" }),
+  depositTransactions: many(depositTransactions),
 }));
 
 export const tradingPlatformsRelations = relations(tradingPlatforms, ({ one, many }) => ({
@@ -435,6 +460,13 @@ export const verificationAttemptsRelations = relations(verificationAttempts, ({ 
   }),
 }));
 
+export const depositTransactionsRelations = relations(depositTransactions, ({ one }) => ({
+  user: one(users, {
+    fields: [depositTransactions.userId],
+    references: [users.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -526,6 +558,12 @@ export const insertVerificationAttemptSchema = createInsertSchema(verificationAt
   createdAt: true,
 });
 
+export const insertDepositTransactionSchema = createInsertSchema(depositTransactions).omit({
+  id: true,
+  createdAt: true,
+  confirmedAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -559,3 +597,5 @@ export type PlatformVerificationToken = typeof platformVerificationTokens.$infer
 export type InsertPlatformVerificationToken = z.infer<typeof insertPlatformVerificationTokenSchema>;
 export type VerificationAttempt = typeof verificationAttempts.$inferSelect;
 export type InsertVerificationAttempt = z.infer<typeof insertVerificationAttemptSchema>;
+export type DepositTransaction = typeof depositTransactions.$inferSelect;
+export type InsertDepositTransaction = z.infer<typeof insertDepositTransactionSchema>;

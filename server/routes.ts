@@ -11,6 +11,9 @@ import bcrypt from "bcryptjs";
 import { db } from "./db";
 import { desc, sql, eq } from "drizzle-orm";
 // Removed webhook imports - using batch processing instead
+import ConfigurationService from "./services/configService";
+import DepositService from "./services/depositService";
+import { authLimiter } from "./security/customRateLimiter";
 
 // Extend Express session types
 declare module "express-session" {
@@ -1117,6 +1120,115 @@ export async function registerRoutes(app: Express): Promise<Server> {
         destination: destination
       });
       
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  // Get validated contract addresses for secure deposits
+  app.get("/api/deposit/config", async (req, res) => {
+    try {
+      const config = ConfigurationService.getContractAddresses();
+      const rateLimits = ConfigurationService.getDepositRateLimits();
+      
+      res.json({
+        addresses: {
+          hyperliquidBridge: config.hyperliquidBridge,
+          arbitrumUSDC: config.arbitrumUSDC,
+        },
+        minimumAmount: config.minimumDepositAmount,
+        rateLimits: {
+          maxPerHour: rateLimits.maxDepositsPerHour,
+          maxPerDay: rateLimits.maxDepositsPerDay,
+          maxAmount: rateLimits.maxAmountPerDeposit,
+        },
+        environment: config.environment,
+      });
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  // Record a new deposit transaction
+  app.post("/api/deposit/record", async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const { amount, walletAddress, bridgeAddress, tokenAddress, txHash } = req.body;
+      
+      // Validate request body
+      if (!amount || !walletAddress || !bridgeAddress || !tokenAddress) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      // Record deposit with security checks
+      const result = await DepositService.recordDeposit({
+        userId: req.session.userId,
+        walletAddress,
+        amount,
+        bridgeAddress,
+        tokenAddress,
+        txHash,
+        ipAddress: req.ip,
+        userAgent: req.get('user-agent'),
+      });
+
+      if (!result.success) {
+        return res.status(400).json({ error: result.error });
+      }
+
+      res.json({
+        success: true,
+        depositId: result.depositId,
+        message: "Deposit recorded successfully",
+      });
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  // Get user's recent deposits
+  app.get("/api/deposit/history", async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const limit = parseInt(req.query.limit as string) || 10;
+      const deposits = await DepositService.getUserDeposits(req.session.userId, limit);
+      
+      res.json({
+        deposits,
+        count: deposits.length,
+      });
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  // Get deposit rate limit status
+  app.get("/api/deposit/rate-status", async (req, res) => {
+    try {
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const rateCheck = await DepositService.checkDepositRateLimits(req.session.userId, "0");
+      const limits = ConfigurationService.getDepositRateLimits();
+      
+      res.json({
+        allowed: rateCheck.allowed,
+        hourlyCount: rateCheck.hourlyCount,
+        dailyCount: rateCheck.dailyCount,
+        dailyVolume: rateCheck.dailyVolume,
+        limits: {
+          maxPerHour: limits.maxDepositsPerHour,
+          maxPerDay: limits.maxDepositsPerDay,
+          maxDailyVolume: limits.maxDailyVolume,
+        },
+      });
     } catch (error) {
       res.status(500).json({ error: handleError(error) });
     }
