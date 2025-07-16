@@ -201,11 +201,11 @@ export default function Pricing() {
             <Card>
               <CardHeader>
                 <DollarSign className="w-10 h-10 mb-2 text-primary" />
-                <CardTitle>Instant Payouts</CardTitle>
+                <CardTitle>Weekly Payouts</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Your trading fee revenue is automatically deposited to your wallet. No waiting periods.
+                  Your trading fee revenue is deposited to your wallet weekly. Automated USDC transfers on Arbitrum.
                 </p>
               </CardContent>
             </Card>
