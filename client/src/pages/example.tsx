@@ -42,7 +42,7 @@ export default function ExampleTradingPage() {
   });
   const [allMarketData, setAllMarketData] = useState<{[key: string]: any}>({});
   const [platformData, setPlatformData] = useState<any>(null);
-  const [verificationCode, setVerificationCode] = useState<string | null>(null);
+  const [verificationCode, setVerificationCode] = useState<string>("");
   const [hyperliquidPrices, setHyperliquidPrices] = useState<{[key: string]: string}>({});
 
   // Fetch platform data and verification code
@@ -58,11 +58,17 @@ export default function ExampleTradingPage() {
             setPlatformData(latestPlatform);
             
             // Fetch verification code for this platform
+            console.log('Fetching verification code for platform:', latestPlatform.id);
             const verifyResponse = await fetch(`/api/platforms/${latestPlatform.id}/verification-code`);
             if (verifyResponse.ok) {
               const verifyData = await verifyResponse.json();
-              console.log('Verification code fetched:', verifyData.code);
-              setVerificationCode(verifyData.code);
+              console.log('Verification response:', verifyData);
+              if (verifyData.code) {
+                console.log('Setting verification code:', verifyData.code);
+                setVerificationCode(verifyData.code);
+              } else {
+                console.warn('No verification code in response');
+              }
             } else {
               console.error('Failed to fetch verification code:', verifyResponse.status);
             }
