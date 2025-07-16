@@ -4,7 +4,6 @@ import { HyperliquidTradeForm } from './HyperliquidTradeForm';
 import { HyperliquidPositions } from './HyperliquidPositions';
 import { TradingViewChart } from './TradingViewChart';
 import { HyperliquidDeposit } from './HyperliquidDeposit';
-import { AIMarketAssistant } from './AIMarketAssistant';
 import { usePrivy } from '@privy-io/react-auth';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -22,7 +21,7 @@ interface Market {
 export function HyperliquidTradingInterface() {
   const { authenticated, user } = usePrivy();
   const [selectedMarket, setSelectedMarket] = useState<Market | null>(null);
-  const [mobileView, setMobileView] = useState<'markets' | 'chart' | 'trade' | 'funds' | 'ai'>('chart');
+  const [mobileView, setMobileView] = useState<'markets' | 'chart' | 'trade' | 'funds'>('chart');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const [liveMarketData, setLiveMarketData] = useState<{
@@ -199,12 +198,6 @@ export function HyperliquidTradingInterface() {
               <HyperliquidDeposit />
             </TabsContent>
           </Tabs>
-          <div className="h-[180px] overflow-hidden">
-            <AIMarketAssistant
-              selectedMarket={selectedMarket?.name || 'BTC'}
-              currentPrice={parseFloat(selectedMarket?.markPx || '0')}
-            />
-          </div>
         </div>
       </div>
       {/* Mobile Layout */}
@@ -331,22 +324,6 @@ export function HyperliquidTradingInterface() {
                 <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#1dd1a1]" />
               )}
             </button>
-            <button
-              onClick={() => {
-                console.log('Setting mobile view to ai');
-                setMobileView('ai');
-              }}
-              className={`flex-1 py-2 text-xs font-medium bg-[#000000] relative ${
-                mobileView === 'ai' 
-                  ? 'text-white' 
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              AI
-              {mobileView === 'ai' && (
-                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#1dd1a1]" />
-              )}
-            </button>
           </div>
         </div>
 
@@ -391,15 +368,6 @@ export function HyperliquidTradingInterface() {
           {mobileView === 'funds' && (
             <div className="h-full overflow-y-auto p-4">
               <HyperliquidDeposit />
-            </div>
-          )}
-
-          {mobileView === 'ai' && (
-            <div className="h-full">
-              <AIMarketAssistant
-                selectedMarket={selectedMarket?.name || 'BTC'}
-                currentPrice={parseFloat(selectedMarket?.markPx || '0')}
-              />
             </div>
           )}
         </div>
