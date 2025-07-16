@@ -43,7 +43,7 @@ LiquidLab is a white-label trading platform builder for Hyperliquid DEX. This op
 - All platforms share the same verified codebase
 
 ### Security Measures
-- Rate limiting to prevent API abuse
+- Custom rate limiting implementation (no vulnerable dependencies)
 - CSRF protection on all state-changing operations
 - Input sanitization to prevent XSS attacks
 - Anti-phishing protection with verification codes

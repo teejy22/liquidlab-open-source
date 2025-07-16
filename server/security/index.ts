@@ -1,7 +1,7 @@
 import { Express } from 'express';
 import { configureSecurityHeaders } from './headers';
 import { sanitizeMiddleware } from './validation';
-import { apiLimiter, authLimiter, tradingLimiter } from './rateLimiter';
+import { apiLimiter, authLimiter, tradingLimiter } from './customRateLimiter';
 import { csrfProtection, csrfExemptRoutes } from './csrf';
 import { auditLogger, SecurityEventType } from './auditLog';
 import { platformCors } from './middleware';
