@@ -33,13 +33,14 @@ export default function TwoFactorSetup({ enabled, onStatusChange }: TwoFactorSet
     try {
       setLoading(true);
       const response = await apiRequest("GET", "/api/auth/2fa/setup");
-      console.log("2FA Setup Response:", response);
+      const data = await response.json();
+      console.log("2FA Setup Response:", data);
       
-      if (!response || !response.qrCode || !response.secret || !response.backupCodes) {
+      if (!data || !data.qrCode || !data.secret || !data.backupCodes) {
         throw new Error("Invalid 2FA setup response");
       }
       
-      setSetupData(response);
+      setSetupData(data);
       setIsSetupDialogOpen(true);
     } catch (error: any) {
       console.error("2FA Setup Error:", error);
@@ -56,17 +57,22 @@ export default function TwoFactorSetup({ enabled, onStatusChange }: TwoFactorSet
   const handleEnable = async () => {
     try {
       setLoading(true);
-      await apiRequest("POST", "/api/auth/2fa/enable", { totp: verificationCode });
+      const response = await apiRequest("POST", "/api/auth/2fa/enable", { totp: verificationCode });
+      const data = await response.json();
       
-      toast({
-        title: "2FA Enabled",
-        description: "Two-factor authentication has been successfully enabled for your account.",
-      });
-      
-      setIsSetupDialogOpen(false);
-      setSetupData(null);
-      setVerificationCode("");
-      onStatusChange();
+      if (data.success) {
+        toast({
+          title: "2FA Enabled",
+          description: "Two-factor authentication has been successfully enabled for your account.",
+        });
+        
+        setIsSetupDialogOpen(false);
+        setSetupData(null);
+        setVerificationCode("");
+        onStatusChange();
+      } else {
+        throw new Error(data.error || "Failed to enable 2FA");
+      }
     } catch (error: any) {
       toast({
         title: "Verification Failed",
@@ -81,16 +87,21 @@ export default function TwoFactorSetup({ enabled, onStatusChange }: TwoFactorSet
   const handleDisable = async () => {
     try {
       setLoading(true);
-      await apiRequest("POST", "/api/auth/2fa/disable", { password });
+      const response = await apiRequest("POST", "/api/auth/2fa/disable", { password });
+      const data = await response.json();
       
-      toast({
-        title: "2FA Disabled",
-        description: "Two-factor authentication has been disabled for your account.",
-      });
-      
-      setIsDisableDialogOpen(false);
-      setPassword("");
-      onStatusChange();
+      if (data.success) {
+        toast({
+          title: "2FA Disabled",
+          description: "Two-factor authentication has been disabled for your account.",
+        });
+        
+        setIsDisableDialogOpen(false);
+        setPassword("");
+        onStatusChange();
+      } else {
+        throw new Error(data.error || "Failed to disable 2FA");
+      }
     } catch (error: any) {
       toast({
         title: "Disable Failed",
