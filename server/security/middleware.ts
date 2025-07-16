@@ -38,7 +38,7 @@ export async function authenticateApi(
       resource: 'api',
       ipAddress: getClientIp(req),
       userAgent: req.headers['user-agent'] || null,
-      metadata: { apiKey },
+      metadata: { apiKeyPrefix: apiKey ? apiKey.substring(0, 8) + '...' : 'none' },
     });
 
     return res.status(401).json({

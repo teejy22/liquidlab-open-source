@@ -24,6 +24,13 @@
     - External API calls
   - Prevents DoS attacks by limiting request frequency at middleware level
 
+- **Clear-text Logging of Sensitive Information**
+  - Removed logging of admin password hash details and actual passwords
+  - Replaced logging of platform content with content length only
+  - Redacted API keys to show only prefix (first 8 chars) in audit logs
+  - Sanitized security event logging to exclude sensitive details
+  - Applied fixes to both main codebase and open source repository
+
 ## [1.0.1] - 2025-01-17
 
 ### Fixed

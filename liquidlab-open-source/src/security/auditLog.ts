@@ -31,10 +31,17 @@ export class SecurityAuditLogger {
   async logEvent(event: SecurityEvent): Promise<void> {
     try {
       // In production, this would write to a dedicated audit log table
-      console.log('[SECURITY AUDIT]', {
-        ...event,
-        timestamp: new Date().toISOString()
-      });
+      // Redact sensitive details from console logging
+      const sanitizedEvent = {
+        type: event.type,
+        userId: event.userId,
+        platformId: event.platformId,
+        ipAddress: event.ipAddress,
+        timestamp: new Date().toISOString(),
+        // Don't log potentially sensitive details to console
+        detailsRedacted: true
+      };
+      console.log('[SECURITY AUDIT]', sanitizedEvent);
       
       // TODO: Implement database logging
       // await db.insert(auditLogs).values(event);

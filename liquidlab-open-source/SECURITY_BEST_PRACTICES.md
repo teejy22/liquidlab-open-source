@@ -157,11 +157,49 @@ app.use(helmet({
 }));
 ```
 
+## Secure Logging Practices
+
+### 1. Never Log Sensitive Data
+```javascript
+// BAD: Logging passwords or tokens
+console.log(`User password: ${password}`);
+console.log(`API Key: ${apiKey}`);
+console.log(`Environment: ${JSON.stringify(process.env)}`);
+
+// GOOD: Log only necessary information
+console.log('User authentication successful');
+console.log(`API Key used: ${apiKey.substring(0, 8)}...`);
+console.log('Environment variables loaded');
+```
+
+### 2. Redact Sensitive Information
+```javascript
+// Create sanitized objects for logging
+const sanitizedEvent = {
+  type: event.type,
+  userId: event.userId,
+  timestamp: new Date().toISOString(),
+  detailsRedacted: true  // Don't log sensitive details
+};
+console.log('[AUDIT]', sanitizedEvent);
+```
+
+### 3. What NOT to Log
+- Passwords or password hashes
+- API keys, tokens, or secrets
+- Full credit card numbers
+- Personal identification numbers
+- Database connection strings
+- Session tokens
+- Private keys
+
 ## Monitoring & Logging
 
 1. Log security events (login attempts, failed auth, etc.)
 2. Monitor for anomalies
 3. Set up alerts for suspicious patterns
 4. Regularly review security logs
+5. Use structured logging for easier analysis
+6. Store logs securely with proper access controls
 
 Remember: Security is not a feature, it's a requirement. Always think about security implications when writing code.

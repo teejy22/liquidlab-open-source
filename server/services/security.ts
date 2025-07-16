@@ -251,7 +251,7 @@ export class SecurityService {
         activityType: this.ACTIVITY_TYPES.CONTENT_VIOLATION,
         description: "Platform content contains suspicious patterns",
         severity: "high",
-        metadata: { flaggedPatterns, content }
+        metadata: { flaggedPatterns, contentLength: contentString.length }
       });
 
       // Update platform security with flagged content

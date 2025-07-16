@@ -14,8 +14,7 @@ if (!ADMIN_PASSWORD) {
 }
 
 console.log('✅ ADMIN_PASSWORD is set');
-console.log(`📏 Hash length: ${ADMIN_PASSWORD.length} characters`);
-console.log(`🔐 Hash starts with: ${ADMIN_PASSWORD.substring(0, 7)}...`);
+// Removed sensitive logging that exposed hash details
 
 // Check if it's a valid bcrypt hash
 if (!ADMIN_PASSWORD.startsWith('$2a$') && !ADMIN_PASSWORD.startsWith('$2b$')) {
@@ -42,10 +41,10 @@ console.log('Testing common passwords...\n');
 for (const password of testPasswords) {
   const matches = bcrypt.compareSync(password, ADMIN_PASSWORD);
   if (matches) {
-    console.log(`✅ Found match! Your admin password is: "${password}"`);
+    console.log(`✅ Found match! Password verified.`);
     console.log('\nLogin with:');
     console.log('Email: admin@liquidlab.trade');
-    console.log(`Password: ${password}`);
+    console.log('Password: [REDACTED - check your configuration]');
     process.exit(0);
   }
 }
