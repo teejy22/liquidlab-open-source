@@ -27,7 +27,8 @@ import {
   Copy,
   ExternalLink,
   Upload,
-  Image
+  Image,
+  Plus
 } from "lucide-react";
 
 export default function Builder() {
@@ -46,6 +47,21 @@ export default function Builder() {
 
   // Builder wallet address (must have 100+ USDC in perps account)
   const BUILDER_WALLET_ADDRESS = import.meta.env.VITE_BUILDER_WALLET_ADDRESS || "0x0000000000000000000000000000000000000000";
+
+  // Function to reset all form fields for a new platform
+  const resetFormForNewPlatform = () => {
+    setPlatformName("");
+    setCustomDomain("");
+    setLogoUrl("");
+    setPayoutWallet("");
+    setSavedPlatformId(null);
+    setSavedChanges(false);
+    setPreviewMode('desktop');
+    toast({
+      title: "Creating New Platform",
+      description: "Form cleared. Enter details for your new platform.",
+    });
+  };
 
   // Redirect if not authenticated
   if (!isAuthenticated) {
@@ -236,6 +252,15 @@ export default function Builder() {
             </p>
           </div>
           <div className="flex items-center space-x-4">
+            {savedPlatformId && (
+              <Button 
+                variant="outline" 
+                onClick={resetFormForNewPlatform}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                New Platform
+              </Button>
+            )}
             <Button 
               variant="outline" 
               onClick={handleSave}
