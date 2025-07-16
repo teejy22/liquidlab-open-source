@@ -233,3 +233,21 @@
   outline: 2px solid #1dd1a1;
   outline-offset: 2px;
 }
+
+/* Custom horizontal scrollbar for category filter */
+.custom-scrollbar-horizontal::-webkit-scrollbar {
+  height: 4px;
+}
+
+.custom-scrollbar-horizontal::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+.custom-scrollbar-horizontal::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+  border-radius: 2px;
+}
+
+.custom-scrollbar-horizontal::-webkit-scrollbar-thumb:hover {
+  background: #3a3a3a;
+}

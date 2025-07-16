@@ -296,14 +296,14 @@ export function PolymarketInterface() {
         {/* Markets List */}
         <div className={`${selectedMarket ? 'w-2/3 border-r' : 'w-full'} border-gray-800 overflow-y-auto custom-scrollbar`}>
           {/* Category Filter */}
-          <div className="p-3 border-b border-gray-800">
-            <div className="flex gap-2">
+          <div className="p-3 border-b border-gray-800 overflow-x-auto custom-scrollbar-horizontal">
+            <div className="flex gap-2 min-w-max">
               {['All', 'Crypto', 'Politics', 'Economics', 'Sports'].map((category) => (
                 <Button
                   key={category}
                   variant={selectedCategory === category ? "default" : "outline"}
                   size="sm"
-                  className={`h-7 text-xs ${
+                  className={`h-7 text-xs whitespace-nowrap flex-shrink-0 ${
                     selectedCategory === category 
                       ? 'bg-purple-600 hover:bg-purple-700 border-purple-600' 
                       : 'bg-[#0d0d0d] border-gray-700 hover:border-purple-600 text-gray-300'
@@ -332,7 +332,7 @@ export function PolymarketInterface() {
                 <div className="space-y-2">
                   <p className="text-sm font-medium leading-tight text-white">{market.question}</p>
                   <div className="flex items-center space-x-3 text-xs text-gray-500">
-                    <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-gray-700">
+                    <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-gray-600 text-gray-300">
                       {market.category}
                     </Badge>
                     <span>Vol: ${(market.volume / 1000000).toFixed(1)}M</span>
@@ -347,11 +347,11 @@ export function PolymarketInterface() {
                           : 'bg-red-950/50 border border-red-900/50'
                         }
                       `}>
-                        <p className="text-[10px] text-gray-400">{outcome.name}</p>
-                        <p className="text-sm font-semibold">
+                        <p className="text-[10px] text-gray-300">{outcome.name}</p>
+                        <p className="text-base font-bold text-white">
                           {outcome.probability}%
                         </p>
-                        <p className="text-[10px] text-gray-500">${outcome.price}</p>
+                        <p className="text-[10px] text-gray-400">${outcome.price}</p>
                       </div>
                     ))}
                   </div>
