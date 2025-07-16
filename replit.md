@@ -997,6 +997,11 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Updated templates page with 3 options: Hyperliquid only (free), Hyperliquid + Polymarket ($50/month), Polymarket only ($50/month)
   - Added Premium Add-Ons section to pricing page showcasing Polymarket benefits
   - Consistent purple theme and pricing ($50/month + 0.5% platform fee) across all mentions
+- **Desktop Scrolling Fix**: Resolved critical scrolling issue in Polymarket prediction markets
+  - Applied absolute positioning with `inset-0` to ensure proper height constraints
+  - Wrapped PolymarketInterface in container with relative positioning
+  - Users can now scroll through all prediction markets in crypto category without cutoff
+  - Fixed issue where bottom options were inaccessible due to overflow constraints
 
 ### Payout Management System Implementation (January 17, 2025)
 - **Critical Issue Resolved**: Fixed automated payout failures caused by Hyperliquid's manual claiming requirement
