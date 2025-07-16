@@ -48,8 +48,12 @@ export function configureSecurityHeaders(app: Express) {
           "https://widget.moonpay.com"
         ],
         objectSrc: ["'none'"],
-        upgradeInsecureRequests: []
-        // frameAncestors removed in development to allow iframe embedding
+        upgradeInsecureRequests: [],
+        // Allow iframe embedding from any source in development
+        frameAncestors: process.env.NODE_ENV === 'development' ? ["*"] : ["'self'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+        scriptSrcAttr: ["'none'"]
       }
     },
     crossOriginEmbedderPolicy: false, // Required for TradingView
