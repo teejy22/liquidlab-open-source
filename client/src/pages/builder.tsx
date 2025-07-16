@@ -44,6 +44,7 @@ export default function Builder() {
   const [payoutWallet, setPayoutWallet] = useState("");
   const [savingPlatform, setSavingPlatform] = useState(false);
   const [savedPlatformId, setSavedPlatformId] = useState<number | null>(null);
+  const [isCreatingNew, setIsCreatingNew] = useState(false);
 
   // Builder wallet address (must have 100+ USDC in perps account)
   const BUILDER_WALLET_ADDRESS = import.meta.env.VITE_BUILDER_WALLET_ADDRESS || "0x0000000000000000000000000000000000000000";
@@ -57,6 +58,7 @@ export default function Builder() {
     setSavedPlatformId(null);
     setSavedChanges(false);
     setPreviewMode('desktop');
+    setIsCreatingNew(true);
     toast({
       title: "Creating New Platform",
       description: "Form cleared. Enter details for your new platform.",
@@ -82,7 +84,8 @@ export default function Builder() {
 
   // Set the first platform as the saved platform if exists
   useEffect(() => {
-    if (platforms && platforms.length > 0 && !savedPlatformId) {
+    // Only load existing platform if we're not creating a new one
+    if (platforms && platforms.length > 0 && !savedPlatformId && !isCreatingNew) {
       const latestPlatform = platforms[platforms.length - 1];
       setSavedPlatformId(latestPlatform.id);
       setPlatformName(latestPlatform.name || '');
@@ -90,7 +93,7 @@ export default function Builder() {
       setPayoutWallet(latestPlatform.payoutWallet || '');
       setSavedChanges(true);
     }
-  }, [platforms]);
+  }, [platforms, isCreatingNew]);
 
   const savePlatformMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -105,6 +108,7 @@ export default function Builder() {
     onSuccess: (data) => {
       setSavedChanges(true);
       setSavedPlatformId(data.id);
+      setIsCreatingNew(false); // Reset the creating new flag after successful save
       toast({
         title: "Platform Saved",
         description: "Your platform configuration has been saved successfully.",
