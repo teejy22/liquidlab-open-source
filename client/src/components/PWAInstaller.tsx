@@ -8,7 +8,11 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-export function PWAInstaller() {
+interface PWAInstallerProps {
+  platformName?: string;
+}
+
+export function PWAInstaller({ platformName = "LiquidLab" }: PWAInstallerProps) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -56,7 +60,7 @@ export function PWAInstaller() {
       setShowInstallBanner(false);
       toast({
         title: "App Installed!",
-        description: "LiquidLab has been added to your home screen.",
+        description: `${platformName} has been added to your home screen.`,
       });
     });
 
@@ -105,7 +109,7 @@ export function PWAInstaller() {
         <div className="flex items-start space-x-3">
           <Download className="w-5 h-5 text-[#1dd1a1] mt-0.5" />
           <div>
-            <h3 className="font-semibold text-white">Install LiquidLab</h3>
+            <h3 className="font-semibold text-white">Install {platformName}</h3>
             <p className="text-sm text-gray-400 mt-1">
               Add to your home screen for the best trading experience
             </p>

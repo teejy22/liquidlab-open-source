@@ -15,6 +15,7 @@ import { WalletConnect } from "@/components/WalletConnect";
 import { HyperliquidTradingInterface } from "@/components/trading/HyperliquidTradingInterface";
 
 import { MoonPayButton } from "@/components/MoonPayButton";
+import { PWAInstaller } from "@/components/PWAInstaller";
 
 interface MarketData {
   price: string;
@@ -212,6 +213,9 @@ export default function ExampleTradingPage() {
       <div className="flex-1 overflow-hidden">
         <HyperliquidTradingInterface />
       </div>
+      
+      {/* PWA Installer */}
+      <PWAInstaller platformName={platformData?.name || "Trading Platform"} />
       </div>
     </PrivyProvider>
   );
