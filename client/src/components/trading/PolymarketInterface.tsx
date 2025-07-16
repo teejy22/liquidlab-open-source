@@ -33,9 +33,11 @@ export function PolymarketInterface() {
   const [selectedOutcome, setSelectedOutcome] = useState<string>('');
   const { toast } = useToast();
 
-  // Check current network
+  // Check current network only if authenticated
   useEffect(() => {
-    checkNetwork();
+    if (authenticated) {
+      checkNetwork();
+    }
   }, [authenticated]);
 
   const checkNetwork = async () => {
@@ -55,6 +57,15 @@ export function PolymarketInterface() {
   // Switch to Polygon network
   const switchToPolygon = async () => {
     try {
+      if (!authenticated) {
+        toast({
+          title: "Connect wallet first",
+          description: "Please connect your wallet to place predictions",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const provider = await getEthereumProvider();
       if (!provider) {
         toast({
@@ -121,12 +132,10 @@ export function PolymarketInterface() {
     }
   };
 
-  // Fetch sample markets (in production, this would call Polymarket API)
+  // Fetch sample markets - always load them, regardless of auth status
   useEffect(() => {
-    if (authenticated && currentNetwork === '0x89') {
-      fetchMarkets();
-    }
-  }, [authenticated, currentNetwork]);
+    fetchMarkets();
+  }, []);
 
   const fetchMarkets = async () => {
     // Sample data for testing
@@ -182,6 +191,22 @@ export function PolymarketInterface() {
       return;
     }
 
+    // Check authentication first
+    if (!authenticated) {
+      toast({
+        title: "Connect wallet",
+        description: "Please connect your wallet to place predictions",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check network
+    if (currentNetwork !== '0x89') {
+      await switchToPolygon();
+      return;
+    }
+
     const platformFee = parseFloat(betAmount) * 0.005; // 0.5% fee
     const totalAmount = parseFloat(betAmount) + platformFee;
 
@@ -193,40 +218,7 @@ export function PolymarketInterface() {
     // In production, this would interact with Polymarket contracts
   };
 
-  if (!authenticated) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-gray-400">Please connect your wallet to access predictions</p>
-      </div>
-    );
-  }
 
-  if (currentNetwork !== '0x89') {
-    return (
-      <div className="flex flex-col items-center justify-center h-full space-y-4">
-        <Alert className="max-w-md">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Predictions require Polygon network. Click below to switch.
-          </AlertDescription>
-        </Alert>
-        <Button 
-          onClick={switchToPolygon} 
-          disabled={loading}
-          className="bg-purple-600 hover:bg-purple-700"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Switching...
-            </>
-          ) : (
-            'Switch to Polygon'
-          )}
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col h-full bg-[#0a0a0a] text-white">
