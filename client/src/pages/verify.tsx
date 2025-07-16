@@ -221,7 +221,7 @@ export default function Verify() {
         {!verificationResult && !verificationError && (
           <Card className="bg-[#0d0d0d] border-gray-800">
             <div className="p-6">
-              <h3 className="text-xl font-semibold mb-4">How to Find Verification Code</h3>
+              <h3 className="text-xl font-semibold mb-4 text-[#ffffff]">How to Find Verification Code</h3>
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
                   <div className="bg-[#1dd1a1] text-black rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-sm font-bold">
