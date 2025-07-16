@@ -611,6 +611,13 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Created missing platform_security record with status = 'active' 
   - All three verification requirements now met: valid code, security clearance, and approval
   - Verification now works with code AEE08D54 for the example platform
+- **Enhanced Verification Code Display** (January 17, 2025): Made verification codes prominently visible on trading platforms
+  - Added dedicated blue-themed verification code section below trust indicators bar
+  - Large, bold font display of the 8-character code with shield icon
+  - One-click copy button for easy sharing
+  - Clear instructions pointing to liquidlab.trade/verify
+  - Fixed duplicate verification code display in builder Revenue tab
+  - Verification codes now clearly visible to all platform visitors before they connect wallets
 
 ### TradingView UDF Server Implementation (January 16, 2025)
 - **UDF Server Endpoints**: Implemented complete TradingView Universal Data Feed for Hyperliquid data

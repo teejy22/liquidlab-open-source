@@ -546,7 +546,7 @@ export default function Builder() {
                           <Input
                             value={verificationCode || 'Loading...'}
                             readOnly
-                            className="font-mono text-xs"
+                            className="font-mono text-sm"
                           />
                           <Button
                             variant="outline"
@@ -566,39 +566,10 @@ export default function Builder() {
                           </Button>
                         </div>
                         <p className="text-xs text-gray-500 mt-1">
-                          This code verifies your platform's authenticity
+                          Users can verify your platform at liquidlab.trade/verify with this code
                         </p>
                       </div>
                     )}
-
-                    <div>
-                      <Label>Platform Verification Code</Label>
-                      <div className="flex gap-2 mt-1">
-                        <Input
-                          value={verificationCode || "Save platform to generate"}
-                          readOnly
-                          className="font-mono text-sm"
-                        />
-                        {verificationCode && (
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => {
-                              navigator.clipboard.writeText(verificationCode);
-                              toast({
-                                title: "Copied!",
-                                description: "Verification code copied to clipboard.",
-                              });
-                            }}
-                          >
-                            <Copy className="w-4 h-4" />
-                          </Button>
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Users can verify your platform at liquidlab.trade/verify with this code
-                      </p>
-                    </div>
                   </TabsContent>
                   
                   <TabsContent value="domain" className="space-y-4 mt-4">
