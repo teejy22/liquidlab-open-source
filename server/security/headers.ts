@@ -48,13 +48,12 @@ export function configureSecurityHeaders(app: Express) {
           "https://widget.moonpay.com"
         ],
         objectSrc: ["'none'"],
-        upgradeInsecureRequests: [],
-        // Allow iframe embedding in development
-        frameAncestors: process.env.NODE_ENV === 'development' ? ["'self'", "https://*.replit.dev"] : ["'self'"]
+        upgradeInsecureRequests: []
+        // frameAncestors removed in development to allow iframe embedding
       }
     },
     crossOriginEmbedderPolicy: false, // Required for TradingView
-    frameguard: process.env.NODE_ENV === 'production', // Disable frameguard in development
+    frameguard: false, // Completely disable frameguard to allow iframe embedding
     hsts: {
       maxAge: 31536000,
       includeSubDomains: true,
