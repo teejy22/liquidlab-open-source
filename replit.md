@@ -250,6 +250,12 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Eliminates CORS errors by routing through backend
   - Existing backend endpoint handles all CoinGecko API requests
 
+### Rate Limiting Adjustment (January 17, 2025)
+- **Authentication Rate Limit**: Increased from 5 to 20 attempts per 15 minutes
+  - Previous limit was too restrictive for development and testing
+  - Users were frequently hitting 429 errors during normal testing workflows
+  - Still maintains security while allowing reasonable testing patterns
+
 ### EIP-712 Wallet Signing Infrastructure Implementation (January 16, 2025)
 - **Complete Hyperliquid Trading Integration**: Implemented full EIP-712 signing infrastructure for real trading
   - Created `hyperliquid-signing.ts` with complete order signing logic using EIP-712 standard
