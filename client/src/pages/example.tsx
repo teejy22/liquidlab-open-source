@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, BarChart3, Volume2, Activity, X, Shield, Copy } from "lucide-react";
+import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, BarChart3, Volume2, Activity, X } from "lucide-react";
 import liquidLabLogo from "@assets/Trade (6)_1752434284086.png";
 import { TrustIndicators } from "@/components/TrustIndicators";
 import { PlatformVerificationBadge } from "@/components/PlatformVerificationBadge";
@@ -221,35 +221,6 @@ export default function ExampleTradingPage() {
         builderCode={platformData?.config?.builderCode || "LIQUIDLAB2025"}
         verificationCode={verificationCode || undefined}
       />
-
-      {/* Verification Code Display */}
-      {verificationCode && (
-        <div className="bg-blue-900/20 border border-blue-800 mx-4 mt-2 mb-2 rounded-lg p-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-blue-600 p-2 rounded">
-              <Shield className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-blue-100">Platform Verification Code</p>
-              <p className="text-lg font-mono font-bold text-white">{verificationCode}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <p className="text-xs text-blue-200">Verify at liquidlab.trade/verify</p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                navigator.clipboard.writeText(verificationCode);
-              }}
-              className="border-blue-600 text-blue-200 hover:bg-blue-900/50"
-            >
-              <Copy className="w-4 h-4 mr-1" />
-              Copy
-            </Button>
-          </div>
-        </div>
-      )}
 
       {/* Main Trading Area */}
       <div className="flex-1 overflow-hidden">
