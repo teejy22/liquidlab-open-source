@@ -172,7 +172,11 @@ export default function Builder() {
 
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      console.error("No file selected");
+      return;
+    }
+    console.log("Uploading file:", file.name, file.size, file.type);
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
@@ -345,7 +349,7 @@ export default function Builder() {
                           <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
                             <label 
                               htmlFor="logo-upload" 
-                              className="flex flex-col items-center cursor-pointer"
+                              className={`flex flex-col items-center ${uploadingLogo ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                             >
                               <Upload className="w-8 h-8 text-gray-400 mb-2" />
                               <span className="text-sm font-medium text-gray-700">
@@ -360,7 +364,6 @@ export default function Builder() {
                                 accept="image/*"
                                 onChange={handleLogoUpload}
                                 className="hidden"
-                                disabled={uploadingLogo}
                               />
                             </label>
                           </div>
