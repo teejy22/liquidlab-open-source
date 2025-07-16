@@ -175,6 +175,42 @@ export function PolymarketInterface() {
           { id: 'yes', name: 'Yes', price: 0.45, probability: 45 },
           { id: 'no', name: 'No', price: 0.55, probability: 55 }
         ]
+      },
+      {
+        id: '4',
+        question: 'Will SOL reach $250 before ETH reaches $5000?',
+        category: 'Crypto',
+        volume: 1200000,
+        liquidity: 300000,
+        endDate: '2025-06-30',
+        outcomes: [
+          { id: 'yes', name: 'Yes', price: 0.62, probability: 62 },
+          { id: 'no', name: 'No', price: 0.38, probability: 38 }
+        ]
+      },
+      {
+        id: '5',
+        question: 'Will Trump launch a crypto token in 2025?',
+        category: 'Politics',
+        volume: 3200000,
+        liquidity: 800000,
+        endDate: '2025-12-31',
+        outcomes: [
+          { id: 'yes', name: 'Yes', price: 0.41, probability: 41 },
+          { id: 'no', name: 'No', price: 0.59, probability: 59 }
+        ]
+      },
+      {
+        id: '6',
+        question: 'Will CPI be below 2.5% by April 2025?',
+        category: 'Economics',
+        volume: 875000,
+        liquidity: 150000,
+        endDate: '2025-04-30',
+        outcomes: [
+          { id: 'yes', name: 'Yes', price: 0.28, probability: 28 },
+          { id: 'no', name: 'No', price: 0.72, probability: 72 }
+        ]
       }
     ];
     
@@ -222,46 +258,52 @@ export function PolymarketInterface() {
 
   return (
     <div className="flex flex-col h-full bg-[#0a0a0a] text-white">
-      <div className="p-4 border-b border-gray-800">
+      <div className="px-4 py-3 border-b border-gray-800">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold">Prediction Markets</h2>
-          <Badge variant="secondary" className="bg-purple-600/20 text-purple-400">
-            Premium Feature
+          <h2 className="text-lg font-semibold">Prediction Markets</h2>
+          <Badge variant="secondary" className="bg-purple-600/20 text-purple-400 text-[10px] px-2 py-0.5">
+            Premium
           </Badge>
         </div>
       </div>
 
       <div className="flex-1 overflow-hidden flex">
         {/* Markets List */}
-        <div className="w-1/2 border-r border-gray-800 overflow-y-auto">
-          <div className="p-4 space-y-3">
+        <div className="w-2/3 border-r border-gray-800 overflow-y-auto custom-scrollbar">
+          <div className="p-3 space-y-2">
             {markets.map((market) => (
               <Card 
                 key={market.id}
-                className={`p-4 cursor-pointer transition-colors ${
+                className={`p-3 cursor-pointer transition-all ${
                   selectedMarket?.id === market.id 
-                    ? 'bg-purple-900/30 border-purple-600' 
-                    : 'bg-[#1a1a1a] border-gray-800 hover:bg-[#222]'
+                    ? 'bg-purple-900/20 border-purple-600/50 ring-1 ring-purple-600/50' 
+                    : 'bg-[#0d0d0d] border-gray-800 hover:bg-[#1a1a1a] hover:border-gray-700'
                 }`}
                 onClick={() => setSelectedMarket(market)}
               >
                 <div className="space-y-2">
-                  <p className="font-medium">{market.question}</p>
-                  <div className="flex items-center space-x-2 text-sm text-gray-400">
-                    <Badge variant="outline" className="text-xs">
+                  <p className="text-sm font-medium leading-tight">{market.question}</p>
+                  <div className="flex items-center space-x-3 text-xs text-gray-500">
+                    <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-gray-700">
                       {market.category}
                     </Badge>
                     <span>Vol: ${(market.volume / 1000000).toFixed(1)}M</span>
-                    <span>Ends: {new Date(market.endDate).toLocaleDateString()}</span>
+                    <span>Ends: {new Date(market.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                   </div>
-                  <div className="flex space-x-2 mt-2">
+                  <div className="grid grid-cols-2 gap-2">
                     {market.outcomes.map((outcome) => (
-                      <div key={outcome.id} className="flex-1">
-                        <div className="bg-[#0d0d0d] rounded p-2 text-center">
-                          <p className="text-xs text-gray-400">{outcome.name}</p>
-                          <p className="font-bold">{outcome.probability}%</p>
-                          <p className="text-xs text-gray-500">${outcome.price}</p>
-                        </div>
+                      <div key={outcome.id} className={`
+                        rounded px-3 py-1.5 text-center
+                        ${outcome.name === 'Yes' 
+                          ? 'bg-green-950/50 border border-green-900/50' 
+                          : 'bg-red-950/50 border border-red-900/50'
+                        }
+                      `}>
+                        <p className="text-[10px] text-gray-400">{outcome.name}</p>
+                        <p className="text-sm font-semibold">
+                          {outcome.probability}%
+                        </p>
+                        <p className="text-[10px] text-gray-500">${outcome.price}</p>
                       </div>
                     ))}
                   </div>
@@ -272,77 +314,99 @@ export function PolymarketInterface() {
         </div>
 
         {/* Betting Interface */}
-        <div className="w-1/2 p-4">
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
           {selectedMarket ? (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">{selectedMarket.question}</h3>
-              
-              <div className="space-y-3">
-                <div>
-                  <label className="text-sm text-gray-400">Select Outcome</label>
-                  <div className="grid grid-cols-2 gap-2 mt-1">
+            <div className="p-4 space-y-4">
+              <Card className="bg-[#0d0d0d] border-gray-800 p-4">
+                <h3 className="text-sm font-semibold mb-3">{selectedMarket.question}</h3>
+                
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-2">
                     {selectedMarket.outcomes.map((outcome) => (
                       <Button
                         key={outcome.id}
                         variant={selectedOutcome === outcome.id ? "default" : "outline"}
-                        className={selectedOutcome === outcome.id ? "bg-purple-600" : ""}
+                        className={`h-14 ${
+                          selectedOutcome === outcome.id 
+                            ? outcome.name === 'Yes'
+                              ? 'bg-green-600 hover:bg-green-700 border-green-600' 
+                              : 'bg-red-600 hover:bg-red-700 border-red-600'
+                            : 'bg-[#1a1a1a] border-gray-700 hover:border-gray-600'
+                        }`}
                         onClick={() => setSelectedOutcome(outcome.id)}
                       >
-                        {outcome.name} ({outcome.probability}%)
+                        <div>
+                          <p className="text-xs">{outcome.name}</p>
+                          <p className="text-lg font-bold">${outcome.price.toFixed(2)}</p>
+                          <p className="text-[10px] text-gray-400">{outcome.probability}%</p>
+                        </div>
                       </Button>
                     ))}
                   </div>
-                </div>
 
-                <div>
-                  <label className="text-sm text-gray-400">Bet Amount (USDC)</label>
-                  <div className="relative mt-1">
-                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <input
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-gray-400">Amount (USDC)</Label>
+                    <Input
                       type="number"
+                      placeholder="0.00"
                       value={betAmount}
                       onChange={(e) => setBetAmount(e.target.value)}
-                      className="w-full pl-10 pr-3 py-2 bg-[#1a1a1a] border border-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                      placeholder="0.00"
+                      className="bg-black border-gray-700 h-9 text-sm"
                     />
                   </div>
-                  {betAmount && (
-                    <p className="text-xs text-gray-400 mt-1">
-                      Platform fee (0.5%): ${(parseFloat(betAmount) * 0.005).toFixed(2)}
-                    </p>
+
+                  {betAmount && selectedOutcome && (
+                    <div className="bg-[#1a1a1a] rounded p-3 space-y-1.5 text-xs border border-gray-800">
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Shares</span>
+                        <span className="font-mono">
+                          {(parseFloat(betAmount) / 
+                            (selectedMarket.outcomes.find(o => o.id === selectedOutcome)?.price || 1)
+                          ).toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">Platform Fee (0.5%)</span>
+                        <span className="font-mono">${(parseFloat(betAmount) * 0.005).toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between font-semibold text-sm pt-1 border-t border-gray-800">
+                        <span>Total</span>
+                        <span className="font-mono">${(parseFloat(betAmount) * 1.005).toFixed(2)}</span>
+                      </div>
+                    </div>
                   )}
-                </div>
 
-                <Button 
-                  onClick={placeBet}
-                  className="w-full bg-purple-600 hover:bg-purple-700"
-                  disabled={!selectedOutcome || !betAmount}
-                >
-                  Place Prediction
-                </Button>
-              </div>
+                  <Button 
+                    className="w-full bg-purple-600 hover:bg-purple-700 h-9 text-sm font-semibold"
+                    onClick={placeBet}
+                    disabled={!selectedOutcome || !betAmount}
+                  >
+                    Place Prediction
+                  </Button>
+                </div>
+              </Card>
 
-              <div className="mt-6 p-4 bg-[#1a1a1a] rounded-lg">
-                <h4 className="font-medium mb-2">Market Stats</h4>
-                <div className="space-y-1 text-sm">
+              <Card className="bg-[#0d0d0d] border-gray-800 p-3">
+                <h4 className="text-xs font-semibold mb-2 text-gray-400">MARKET INFO</h4>
+                <div className="space-y-1 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Volume:</span>
-                    <span>${(selectedMarket.volume / 1000000).toFixed(2)}M</span>
+                    <span className="text-gray-500">Volume</span>
+                    <span className="font-mono">${(selectedMarket.volume / 1000000).toFixed(2)}M</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Liquidity:</span>
-                    <span>${(selectedMarket.liquidity / 1000000).toFixed(2)}M</span>
+                    <span className="text-gray-500">Liquidity</span>
+                    <span className="font-mono">${(selectedMarket.liquidity / 1000000).toFixed(2)}M</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Ends:</span>
-                    <span>{new Date(selectedMarket.endDate).toLocaleDateString()}</span>
+                    <span className="text-gray-500">Ends</span>
+                    <span>{new Date(selectedMarket.endDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                   </div>
                 </div>
-              </div>
+              </Card>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-full text-gray-400">
-              Select a market to place a prediction
+            <div className="flex items-center justify-center h-full text-gray-500 text-sm">
+              <p>Select a market to place a prediction</p>
             </div>
           )}
         </div>
