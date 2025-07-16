@@ -115,31 +115,26 @@ export default function Templates() {
     };
 
     return (
-      <div className={`${colors[template.category as keyof typeof colors]} p-6 h-48 relative`}>
+      <div className={`${colors[template.category as keyof typeof colors]} p-4 h-36 relative overflow-hidden`}>
         {template.isPopular && !template.isPremium && (
-          <div className="absolute top-4 right-4 bg-liquid-green text-white px-2 py-1 rounded text-xs font-semibold">
+          <div className="absolute top-2 right-2 bg-liquid-green text-white px-2 py-0.5 rounded text-[10px] font-semibold">
             Popular
           </div>
         )}
         {template.isPremium && (
-          <div className="absolute top-4 right-4 bg-purple-600 text-white px-2 py-1 rounded text-xs font-semibold">
+          <div className="absolute top-2 right-2 bg-purple-600 text-white px-2 py-0.5 rounded text-[10px] font-semibold">
             Premium
           </div>
         )}
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold">{template.name}</h3>
-          {template.isPremium ? (
-            <div className="text-purple-400 font-mono text-sm">{template.premiumPrice}</div>
-          ) : (
-            <div className="text-green-400 font-mono text-sm">$67,845</div>
-          )}
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-semibold text-sm">{template.name}</h3>
         </div>
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          <div className="bg-gray-800 h-8 rounded opacity-50"></div>
-          <div className="bg-gray-800 h-8 rounded opacity-50"></div>
-          <div className="bg-gray-800 h-8 rounded opacity-50"></div>
+        <div className="grid grid-cols-3 gap-1.5 mb-2">
+          <div className="bg-gray-800 h-6 rounded opacity-50"></div>
+          <div className="bg-gray-800 h-6 rounded opacity-50"></div>
+          <div className="bg-gray-800 h-6 rounded opacity-50"></div>
         </div>
-        <div className={`h-16 ${template.isPremium ? 'bg-gradient-to-r from-purple-400 to-pink-400' : 'bg-gradient-to-r from-green-400 to-blue-400'} rounded opacity-30`}></div>
+        <div className={`h-12 ${template.isPremium ? 'bg-gradient-to-r from-purple-400 to-pink-400' : 'bg-gradient-to-r from-green-400 to-blue-400'} rounded opacity-30`}></div>
       </div>
     );
   };
@@ -205,48 +200,50 @@ export default function Templates() {
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {templates?.map((template: any) => (
-            <Card key={template.id} className="overflow-hidden card-hover">
+            <Card key={template.id} className="overflow-hidden card-hover flex flex-col">
               {getTemplatePreview(template)}
-              <CardContent className="p-6">
+              <CardContent className="p-4 flex-1 flex flex-col">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-lg">{template.name}</h3>
+                  <h3 className="font-semibold text-base">{template.name}</h3>
                   <div className="flex items-center text-liquid-green">
                     {getCategoryIcon(template.category)}
                   </div>
                 </div>
-                <p className="text-gray-600 mb-4">{template.description}</p>
+                <p className="text-gray-600 text-sm mb-3 line-clamp-2 flex-grow">{template.description}</p>
                 
                 <div className="flex flex-wrap gap-1 mb-4">
-                  {template.features.slice(0, 3).map((feature: string, index: number) => (
-                    <Badge key={index} variant="secondary" className="text-xs">
+                  {template.features.slice(0, 2).map((feature: string, index: number) => (
+                    <Badge key={index} variant="secondary" className="text-[10px] px-1.5 py-0.5">
                       {feature}
                     </Badge>
                   ))}
-                  {template.features.length > 3 && (
-                    <Badge variant="secondary" className="text-xs">
-                      +{template.features.length - 3} more
+                  {template.features.length > 2 && (
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5">
+                      +{template.features.length - 2} more
                     </Badge>
                   )}
                 </div>
                 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    {template.isPremium ? (
-                      <span className="text-purple-600 font-bold">{template.premiumPrice}</span>
-                    ) : (
-                      <span className="text-liquid-green font-semibold">Free</span>
-                    )}
-                    <Badge variant="outline">{template.category}</Badge>
+                <div className="mt-auto space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {template.isPremium ? (
+                        <span className="text-purple-600 font-bold">{template.premiumPrice}</span>
+                      ) : (
+                        <span className="text-liquid-green font-semibold text-sm">Free</span>
+                      )}
+                      <Badge variant="outline" className="text-[10px] px-2 py-0.5">{template.category}</Badge>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex gap-2">
                     <TemplatePreview template={template}>
-                      <Button variant="outline" size="sm">
-                        <Eye className="w-4 h-4 mr-1" />
+                      <Button variant="outline" size="sm" className="text-xs py-1.5">
+                        <Eye className="w-3 h-3 mr-1" />
                         Preview
                       </Button>
                     </TemplatePreview>
-                    <Link href={`/builder/${template.id}`}>
-                      <Button className={template.isPremium ? "bg-purple-600 text-white hover:bg-purple-700" : "bg-liquid-green text-white hover:bg-liquid-accent"}>
+                    <Link href={`/builder/${template.id}`} className="flex-1">
+                      <Button className={`w-full text-xs py-1.5 ${template.isPremium ? "bg-purple-600 text-white hover:bg-purple-700" : "bg-liquid-green text-white hover:bg-liquid-accent"}`} size="sm">
                         Use Template
                       </Button>
                     </Link>
