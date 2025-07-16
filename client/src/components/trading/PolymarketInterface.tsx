@@ -282,7 +282,7 @@ export function PolymarketInterface() {
 
 
   return (
-    <div className="flex flex-col h-full bg-[#0a0a0a] text-white min-h-0">
+    <div className="flex flex-col h-full bg-[#0a0a0a] text-white">
       <div className="px-4 py-3 border-b border-gray-800 flex-shrink-0">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Prediction Markets</h2>
@@ -292,9 +292,9 @@ export function PolymarketInterface() {
         </div>
       </div>
 
-      <div className="flex-1 flex overflow-hidden min-h-0">
+      <div className="flex-1 flex overflow-hidden">
         {/* Markets List */}
-        <div className={`${selectedMarket ? 'w-2/3 border-r' : 'w-full'} border-gray-800 flex flex-col min-h-0`}>
+        <div className={`${selectedMarket ? 'w-2/3 border-r' : 'w-full'} border-gray-800 flex flex-col`}>
           {/* Category Filter */}
           <div className="p-3 border-b border-gray-800 overflow-x-auto custom-scrollbar-horizontal flex-shrink-0">
             <div className="flex gap-2 min-w-max">
@@ -316,7 +316,7 @@ export function PolymarketInterface() {
             </div>
           </div>
           
-          <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2 min-h-0">
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
             {markets
               .filter(market => selectedCategory === 'All' || market.category === selectedCategory)
               .map((market) => (
