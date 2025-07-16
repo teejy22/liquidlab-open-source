@@ -1896,20 +1896,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Logo upload endpoint
-  app.post("/api/upload-logo", upload.single('logo'), async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ error: "No file uploaded" });
-      }
+  // Logo upload endpoint with enhanced error handling
+  app.post("/api/upload-logo", (req, res) => {
+    upload.single('logo')(req, res, async (err) => {
+      try {
+        console.log("Upload request received");
+        
+        // Handle multer errors
+        if (err) {
+          console.error("Multer error:", err);
+          if (err instanceof multer.MulterError) {
+            if (err.code === 'LIMIT_FILE_SIZE') {
+              return res.status(400).json({ error: 'File too large. Max size is 5MB.' });
+            }
+            return res.status(400).json({ error: `Upload error: ${err.message}` });
+          } else if (err) {
+            return res.status(400).json({ error: err.message || 'File upload failed' });
+          }
+        }
+        
+        console.log("File:", req.file);
+        
+        if (!req.file) {
+          console.error("No file in request");
+          return res.status(400).json({ error: "No file uploaded" });
+        }
 
-      // Return the URL path to the uploaded file
-      const logoUrl = `/uploads/${req.file.filename}`;
-      res.json({ url: logoUrl });
-    } catch (error) {
-      console.error("Error uploading logo:", error);
-      res.status(500).json({ error: handleError(error) });
-    }
+        // Return the URL path to the uploaded file
+        const logoUrl = `/uploads/${req.file.filename}`;
+        console.log("Returning logo URL:", logoUrl);
+        res.json({ url: logoUrl });
+      } catch (error) {
+        console.error("Error uploading logo:", error);
+        res.status(500).json({ error: handleError(error) });
+      }
+    });
   });
 
   // CoinGecko price proxy endpoint
