@@ -145,7 +145,7 @@ export default function Builder() {
       config: {
         logo: logoUrl || null,
         template: "hyperliquid", // We only have one template now
-        builderCode: LIQUIDLAB_BUILDER_CODE,
+        builderCode: BUILDER_WALLET_ADDRESS,
       },
       isPublished: false, // Save as draft initially
     };
