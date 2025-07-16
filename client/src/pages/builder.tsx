@@ -95,6 +95,14 @@ export default function Builder() {
   // Don't auto-load any platform - start with blank form
   // Users can explicitly choose to load an existing platform if they want
 
+  // Ensure the page starts fresh when mounted
+  useEffect(() => {
+    // Only reset if we're creating a new platform (no specific platform ID in URL)
+    if (!window.location.search.includes('platformId=')) {
+      resetFormForNewPlatform();
+    }
+  }, []); // Run only on mount
+
   // Fetch verification code for saved platform
   const { data: platformVerificationCode } = useQuery({
     queryKey: [`/api/platforms/${savedPlatformId}/verification-code`],
