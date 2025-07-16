@@ -1,5 +1,6 @@
 import { tradeBatchProcessor } from './tradeBatchProcessor';
 import { createAuditLog } from '../security/audit';
+import { VerificationService } from './verification';
 
 export class Scheduler {
   private intervals: Map<string, NodeJS.Timeout> = new Map();
@@ -45,10 +46,22 @@ export class Scheduler {
       await tradeBatchProcessor.processTradeBatch();
     });
 
+    // Rotate verification codes every 24 hours
+    this.scheduleJob('verification-code-rotation', 24 * 60 * 60 * 1000, async () => {
+      console.log('Running scheduled verification code rotation...');
+      await VerificationService.rotateAllCodes();
+    });
+
     // Run immediately on startup
     setTimeout(() => {
       tradeBatchProcessor.processTradeBatch().catch(console.error);
     }, 5000); // Wait 5 seconds for server to fully start
+
+    // Rotate verification codes on startup if any are expired
+    setTimeout(async () => {
+      console.log('Checking for expired verification codes...');
+      await VerificationService.rotateExpiredCodes();
+    }, 10000); // Wait 10 seconds for server to fully start
 
     await createAuditLog({
       action: 'scheduler_started',

@@ -271,4 +271,84 @@ export class VerificationService {
         lt(platformVerificationTokens.expiresAt, new Date())
       ));
   }
+
+  /**
+   * Rotate verification codes for all platforms
+   * Used by scheduler to automatically refresh codes every 24 hours
+   */
+  static async rotateAllCodes(): Promise<void> {
+    try {
+      console.log('Starting verification code rotation for all platforms...');
+      
+      // Get all approved platforms
+      const platforms = await db
+        .select()
+        .from(tradingPlatforms)
+        .where(eq(tradingPlatforms.approvalStatus, 'approved'));
+      
+      let rotatedCount = 0;
+      
+      for (const platform of platforms) {
+        try {
+          await this.generateToken(platform.id);
+          rotatedCount++;
+          console.log(`Rotated verification code for platform ${platform.id} (${platform.name})`);
+        } catch (error) {
+          console.error(`Failed to rotate code for platform ${platform.id}:`, error);
+        }
+      }
+      
+      console.log(`Verification code rotation complete. Rotated ${rotatedCount} of ${platforms.length} platforms.`);
+      
+      // Clean up any expired tokens
+      await this.cleanupExpiredTokens();
+      
+    } catch (error) {
+      console.error('Error in rotateAllCodes:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Rotate expired verification codes
+   * Used on startup to ensure all platforms have valid codes
+   */
+  static async rotateExpiredCodes(): Promise<void> {
+    try {
+      console.log('Checking for expired verification codes...');
+      
+      // Get all platforms
+      const platforms = await db.select().from(tradingPlatforms);
+      
+      let rotatedCount = 0;
+      
+      for (const platform of platforms) {
+        // Check if platform has an active, non-expired code
+        const activeCode = await this.getActiveCode(platform.id);
+        
+        if (!activeCode) {
+          // No active code found, generate a new one
+          try {
+            await this.generateToken(platform.id);
+            rotatedCount++;
+            console.log(`Generated new verification code for platform ${platform.id} (${platform.name})`);
+          } catch (error) {
+            console.error(`Failed to generate code for platform ${platform.id}:`, error);
+          }
+        }
+      }
+      
+      if (rotatedCount > 0) {
+        console.log(`Generated ${rotatedCount} new verification codes for platforms with expired codes.`);
+      } else {
+        console.log('All platforms have valid verification codes.');
+      }
+      
+      // Clean up any expired tokens
+      await this.cleanupExpiredTokens();
+      
+    } catch (error) {
+      console.error('Error in rotateExpiredCodes:', error);
+    }
+  }
 }
