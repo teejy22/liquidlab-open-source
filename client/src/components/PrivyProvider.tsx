@@ -46,9 +46,7 @@ export function PrivyProvider({ children }: PrivyProviderProps) {
         embeddedWallets: {
           createOnLogin: 'all-users',
         },
-        // Add Polygon chain support
-        defaultChain: 'polygon',
-        supportedChains: ['ethereum', 'polygon', 'arbitrum'],
+
       }}
     >
       {children}
