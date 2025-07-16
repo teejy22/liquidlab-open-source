@@ -282,8 +282,8 @@ export function PolymarketInterface() {
 
 
   return (
-    <div className="flex flex-col h-full bg-[#0a0a0a] text-white">
-      <div className="px-4 py-3 border-b border-gray-800">
+    <div className="flex flex-col h-full bg-[#0a0a0a] text-white overflow-hidden">
+      <div className="px-4 py-3 border-b border-gray-800 flex-shrink-0">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Prediction Markets</h2>
           <Badge variant="secondary" className="bg-purple-600/20 text-purple-400 text-[10px] px-2 py-0.5">
@@ -292,9 +292,9 @@ export function PolymarketInterface() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-hidden flex">
+      <div className="flex-1 overflow-hidden flex"  style={{ height: 'calc(100% - 60px)' }}>
         {/* Markets List */}
-        <div className={`${selectedMarket ? 'w-2/3 border-r' : 'w-full'} border-gray-800 overflow-y-auto custom-scrollbar`}>
+        <div className={`${selectedMarket ? 'w-2/3 border-r' : 'w-full'} border-gray-800 overflow-y-auto custom-scrollbar h-full`}>
           {/* Category Filter */}
           <div className="p-3 border-b border-gray-800 overflow-x-auto custom-scrollbar-horizontal">
             <div className="flex gap-2 min-w-max">
