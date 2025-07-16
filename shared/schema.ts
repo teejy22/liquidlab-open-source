@@ -161,7 +161,9 @@ export const feeTransactions = pgTable("fee_transactions", {
   totalFee: decimal("total_fee", { precision: 20, scale: 8 }).notNull(),
   platformShare: decimal("platform_share", { precision: 20, scale: 8 }).notNull(), // 70% of total fee
   liquidlabShare: decimal("liquidlab_share", { precision: 20, scale: 8 }).notNull(), // 30% of total fee
-  status: text("status").notNull().default("pending"), // pending, distributed, failed
+  status: text("status").notNull().default("pending"), // pending, claimed, distributed, failed
+  claimedAt: timestamp("claimed_at"), // When fees were claimed from Hyperliquid
+  claimTxHash: varchar("claim_tx_hash", { length: 66 }), // Hyperliquid claim transaction hash
   distributedAt: timestamp("distributed_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => [

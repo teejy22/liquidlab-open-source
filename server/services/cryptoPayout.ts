@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import { db } from '../db';
 import { tradingPlatforms, platformRevenueSummary, payoutRecords, moonpayTransactions } from '@shared/schema';
 import { eq, and, gte, lte, desc, sql } from 'drizzle-orm';
+import { builderFeeManager } from './builderFeeManager';
 
 // Payout configuration
 const PAYOUT_CONFIG = {
@@ -41,6 +42,22 @@ export class CryptoPayoutService {
   async processPayouts(period: 'weekly' | 'monthly' = 'weekly'): Promise<void> {
     if (!this.payoutWallet || !this.usdcContract) {
       console.error('Payout wallet not configured');
+      return;
+    }
+
+    // Check payout readiness first
+    const readiness = await builderFeeManager.checkPayoutReadiness(period);
+    
+    if (!readiness.readyToPayout) {
+      console.error('Payouts not ready:', {
+        unclaimedFees: `$${readiness.unclaimedFees}`,
+        availableUSDC: `$${readiness.availableForPayout}`,
+        requiredUSDC: `$${readiness.requiredForPayouts}`,
+        message: 'Please claim builder fees and ensure sufficient USDC balance'
+      });
+      
+      // Could trigger an alert or notification here
+      await this.notifyPayoutIssue(readiness);
       return;
     }
 
@@ -268,6 +285,23 @@ export class CryptoPayoutService {
       console.error('Error fetching wallet balance:', error);
       return '0.00';
     }
+  }
+
+  /**
+   * Notify admin about payout issues
+   */
+  async notifyPayoutIssue(readiness: any): Promise<void> {
+    // Log the issue for now - in production, this could send an email or webhook
+    console.error('PAYOUT ISSUE ALERT:', {
+      unclaimedFees: readiness.unclaimedFees,
+      claimedNotConverted: readiness.claimedNotConverted,
+      availableForPayout: readiness.availableForPayout,
+      requiredForPayouts: readiness.requiredForPayouts,
+      details: readiness.details
+    });
+    
+    // TODO: Implement email notification via SendGrid or similar
+    // This would send alerts to admin when payouts can't be processed
   }
 }
 

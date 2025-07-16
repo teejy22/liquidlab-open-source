@@ -1650,6 +1650,108 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin-only: Check payout readiness
+  app.get("/api/admin/payout-readiness", requireAdmin, async (req, res) => {
+    try {
+      const { period = 'weekly' } = req.query;
+      const { builderFeeManager } = await import('./services/builderFeeManager');
+      const readiness = await builderFeeManager.checkPayoutReadiness(period as 'weekly' | 'monthly');
+      
+      res.json(readiness);
+    } catch (error) {
+      console.error('Error checking payout readiness:', error);
+      res.status(500).json({ error: 'Failed to check payout readiness' });
+    }
+  });
+
+  // Admin-only: Get unclaimed fees
+  app.get("/api/admin/unclaimed-fees", requireAdmin, async (req, res) => {
+    try {
+      const { builderFeeManager } = await import('./services/builderFeeManager');
+      const unclaimed = await builderFeeManager.getUnclaimedFees();
+      
+      res.json({
+        total: unclaimed.total,
+        byPlatform: Array.from(unclaimed.byPlatform.entries()).map(([platformId, amount]) => ({
+          platformId,
+          amount
+        }))
+      });
+    } catch (error) {
+      console.error('Error fetching unclaimed fees:', error);
+      res.status(500).json({ error: 'Failed to fetch unclaimed fees' });
+    }
+  });
+
+  // Admin-only: Mark fees as claimed
+  app.post("/api/admin/claim-fees", requireAdmin, async (req, res) => {
+    try {
+      const { startDate, endDate, claimTxHash } = req.body;
+      
+      if (!startDate || !endDate || !claimTxHash) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+      
+      const { builderFeeManager } = await import('./services/builderFeeManager');
+      const result = await builderFeeManager.markFeesAsClaimed(
+        new Date(startDate),
+        new Date(endDate),
+        claimTxHash
+      );
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Error marking fees as claimed:', error);
+      res.status(500).json({ error: 'Failed to mark fees as claimed' });
+    }
+  });
+
+  // Admin-only: Transfer USDC to payout wallet
+  app.post("/api/admin/transfer-to-payout", requireAdmin, async (req, res) => {
+    try {
+      const { amount } = req.body;
+      
+      if (!amount || parseFloat(amount) <= 0) {
+        return res.status(400).json({ error: 'Invalid amount' });
+      }
+      
+      const { builderFeeManager } = await import('./services/builderFeeManager');
+      const result = await builderFeeManager.transferToPayoutWallet(amount);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Error transferring to payout wallet:', error);
+      res.status(500).json({ error: 'Failed to transfer funds' });
+    }
+  });
+
+  // Admin-only: Get wallet balances
+  app.get("/api/admin/wallet-balances", requireAdmin, async (req, res) => {
+    try {
+      const { builderFeeManager } = await import('./services/builderFeeManager');
+      const { cryptoPayout } = await import('./services/cryptoPayout');
+      
+      const [payoutBalance, hyperliquidBalance] = await Promise.all([
+        builderFeeManager.getAvailableUSDC(),
+        builderFeeManager.getHyperliquidBalance()
+      ]);
+      
+      res.json({
+        payoutWallet: {
+          usdc: payoutBalance,
+          address: process.env.PAYOUT_WALLET_ADDRESS || 'Not configured'
+        },
+        builderWallet: {
+          hyperliquid: hyperliquidBalance,
+          address: process.env.VITE_BUILDER_WALLET_ADDRESS || 'Not configured'
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching wallet balances:', error);
+      res.status(500).json({ error: 'Failed to fetch balances' });
+    }
+  });
+
   // Admin-only: Get pending platforms
   app.get("/api/admin/platforms/pending", requireAdmin, async (req, res) => {
     try {

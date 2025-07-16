@@ -23,11 +23,13 @@ import {
   User,
   Wallet,
   Send,
-  FileText
+  FileText,
+  CreditCard
 } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
+import { PayoutManagement } from "@/components/admin/PayoutManagement";
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
@@ -386,13 +388,14 @@ export default function AdminDashboard() {
 
         {/* Detailed Data Tabs */}
         <Tabs defaultValue="pending" className="w-full">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="pending">Pending Approvals</TabsTrigger>
             <TabsTrigger value="platforms">All Platforms</TabsTrigger>
             <TabsTrigger value="transactions">Recent Transactions</TabsTrigger>
             <TabsTrigger value="revenue">Revenue Breakdown</TabsTrigger>
             <TabsTrigger value="users">User Management</TabsTrigger>
             <TabsTrigger value="wallets">Wallet Management</TabsTrigger>
+            <TabsTrigger value="payouts">Payouts</TabsTrigger>
             <TabsTrigger value="security">Security Monitor</TabsTrigger>
           </TabsList>
 
@@ -1099,6 +1102,10 @@ export default function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="payouts" className="space-y-4">
+            <PayoutManagement />
           </TabsContent>
         </Tabs>
 

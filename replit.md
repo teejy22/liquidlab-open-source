@@ -935,6 +935,39 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - SOC 2 Type II compliance badge for trust building
   - Emphasizes that every LiquidLab platform is deployed with bank-level security
 
+### Payout Management System Implementation (January 17, 2025)
+- **Critical Issue Resolved**: Fixed automated payout failures caused by Hyperliquid's manual claiming requirement
+  - Hyperliquid requires admins to manually claim builder fees - funds don't automatically transfer
+  - Implemented semi-automated solution with comprehensive management interface
+- **BuilderFeeManager Service**: Created new service to handle the fee claiming workflow
+  - Tracks unclaimed fees from database (fees recorded but not claimed from Hyperliquid)
+  - Monitors claimed but not converted fees (claimed from Hyperliquid but still in native tokens)
+  - Checks USDC balance in payout wallet before processing distributions
+  - Provides payout readiness status with detailed breakdown by platform
+- **Database Schema Updates**: Added tracking fields to fee transactions
+  - `claimed_at` timestamp field to track when fees were claimed from Hyperliquid
+  - `claimTxHash` field to store the transaction hash of the claim operation
+  - Enables differentiation between unclaimed and claimed fees
+- **Admin Dashboard Enhancements**: New Payouts tab with comprehensive management tools
+  - Payout Readiness Status: Shows if system is ready to process payouts
+  - Unclaimed Fees Card: Displays total fees waiting to be claimed on Hyperliquid
+  - Wallet Balances: Shows builder wallet (Hyperliquid) and payout wallet (Arbitrum) balances
+  - Claim Management: Interface to mark fees as claimed with transaction hash
+  - Transfer Management: Tool to transfer USDC from builder to payout wallet
+  - Process Payouts Button: Only enabled when system has sufficient USDC balance
+- **Workflow Process**: Semi-automated claiming and distribution
+  1. Trade batch processor records fees to database (automated)
+  2. Admin manually claims fees on Hyperliquid (manual)
+  3. Admin marks fees as claimed in dashboard with tx hash
+  4. Admin converts claimed tokens to USDC and transfers to payout wallet
+  5. System processes weekly payouts automatically when balance is sufficient
+- **API Endpoints**: New admin endpoints for payout management
+  - GET `/api/admin/payout-readiness` - Check if system is ready for payouts
+  - GET `/api/admin/unclaimed-fees` - Get unclaimed fee totals
+  - POST `/api/admin/claim-fees` - Mark fees as claimed with transaction details
+  - POST `/api/admin/transfer-to-payout` - Transfer USDC to payout wallet
+  - GET `/api/admin/wallet-balances` - Get current wallet balances
+
 ### AI-Powered Chat Assistant Integration (January 16, 2025)
 - **Perplexity API Integration**: Created AI market assistant for real-time trading insights
   - Built `/api/ai/market-chat` endpoint using Perplexity's llama-3.1-sonar model
