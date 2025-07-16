@@ -513,7 +513,7 @@ export default function Builder() {
                         variant="ghost"
                         size="sm"
                         className="gap-2"
-                        onClick={() => window.open('/example', '_blank')}
+                        onClick={() => window.open(`/example?preview=true&name=${encodeURIComponent(platformName || '')}&logo=${encodeURIComponent(logoUrl || '')}`, '_blank')}
                       >
                         <ExternalLink className="w-4 h-4" />
                         View Full Demo
@@ -522,26 +522,22 @@ export default function Builder() {
                   </div>
                   
                   <div className={`p-8 ${previewMode === 'mobile' ? 'max-w-sm mx-auto' : ''}`}>
-                    {/* Custom Platform Header Preview */}
-                    {(platformName || logoUrl) && (
-                      <div className="bg-white rounded-t-lg border border-b-0 p-4 mb-0">
-                        <div className="flex items-center gap-3">
-                          {logoUrl && (
-                            <img 
-                              src={logoUrl} 
-                              alt="Platform logo" 
-                              className="w-10 h-10 object-cover rounded"
-                            />
-                          )}
-                          <h3 className="font-semibold text-lg">
-                            {platformName || "Your Platform Name"}
-                          </h3>
-                        </div>
+                    {/* Show uploaded logo as main preview if available */}
+                    {logoUrl ? (
+                      <div className="bg-gray-900 rounded-lg p-12 mb-6 text-center">
+                        <img 
+                          src={logoUrl} 
+                          alt="Platform logo preview" 
+                          className="max-h-48 mx-auto object-contain"
+                        />
+                        <h3 className="text-white text-xl font-semibold mt-6">
+                          {platformName || "Your Platform Name"}
+                        </h3>
                       </div>
-                    )}
+                    ) : null}
                     
                     <iframe
-                      src="/example"
+                      src={`/example?preview=true&name=${encodeURIComponent(platformName || '')}&logo=${encodeURIComponent(logoUrl || '')}`}
                       title="Trading Platform Preview"
                       className={`w-full shadow-xl ${(platformName || logoUrl) ? 'rounded-b-lg' : 'rounded-lg'}`}
                       style={{ 

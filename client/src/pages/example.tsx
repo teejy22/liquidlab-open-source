@@ -45,10 +45,25 @@ export default function ExampleTradingPage() {
   const [verificationCode, setVerificationCode] = useState<string>("");
   const [hyperliquidPrices, setHyperliquidPrices] = useState<{[key: string]: string}>({});
 
+  // Check for preview mode parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const isPreview = urlParams.get('preview') === 'true';
+  const previewName = urlParams.get('name');
+  const previewLogo = urlParams.get('logo');
+
   // Fetch platform data and verification code
   useEffect(() => {
     const fetchPlatformData = async () => {
       try {
+        // If in preview mode, use preview data
+        if (isPreview && (previewName || previewLogo)) {
+          setPlatformData({
+            name: previewName || 'Preview Platform',
+            logoUrl: previewLogo || null
+          });
+          return;
+        }
+
         const response = await fetch('/api/platforms');
         if (response.ok) {
           const platforms = await response.json();
