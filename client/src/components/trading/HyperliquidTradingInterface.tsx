@@ -199,7 +199,7 @@ export function HyperliquidTradingInterface() {
             <TabsContent value="funds" className="flex-1 overflow-y-auto border-b border-gray-800 custom-scrollbar m-0 p-4">
               <HyperliquidDeposit />
             </TabsContent>
-            <TabsContent value="predictions" className="flex-1 overflow-y-auto border-b border-gray-800 custom-scrollbar m-0">
+            <TabsContent value="predictions" className="flex-1 flex flex-col border-b border-gray-800 m-0">
               <PolymarketInterface />
             </TabsContent>
           </Tabs>
