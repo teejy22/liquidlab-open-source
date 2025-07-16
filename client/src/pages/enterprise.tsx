@@ -23,7 +23,7 @@ export default function Enterprise() {
                 </Button>
               </Link>
               <Link href="/pricing">
-                <Button size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-gray-900 transition-colors text-lg px-8">
+                <Button size="lg" variant="outline" className="bg-gray-800 text-white border-white hover:bg-white hover:text-gray-900 transition-colors text-lg px-8">
                   View Enterprise Pricing
                 </Button>
               </Link>
@@ -353,7 +353,7 @@ export default function Enterprise() {
             <Button 
               size="lg" 
               variant="outline" 
-              className="text-white border-white hover:bg-white hover:text-gray-900 transition-colors text-lg px-8"
+              className="bg-gray-800 text-white border-white hover:bg-white hover:text-gray-900 transition-colors text-lg px-8"
               onClick={() => window.location.href = 'mailto:enterprise@liquidlab.trade'}
             >
               Contact Sales Team
