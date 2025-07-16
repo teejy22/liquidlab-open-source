@@ -31,6 +31,7 @@ export function PolymarketInterface() {
   const [selectedMarket, setSelectedMarket] = useState<Market | null>(null);
   const [betAmount, setBetAmount] = useState('');
   const [selectedOutcome, setSelectedOutcome] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const { toast } = useToast();
 
   // Check current network only if authenticated
@@ -211,6 +212,30 @@ export function PolymarketInterface() {
           { id: 'yes', name: 'Yes', price: 0.28, probability: 28 },
           { id: 'no', name: 'No', price: 0.72, probability: 72 }
         ]
+      },
+      {
+        id: '7',
+        question: 'Will Chiefs win Super Bowl LIX?',
+        category: 'Sports',
+        volume: 4500000,
+        liquidity: 1200000,
+        endDate: '2025-02-09',
+        outcomes: [
+          { id: 'yes', name: 'Yes', price: 0.38, probability: 38 },
+          { id: 'no', name: 'No', price: 0.62, probability: 62 }
+        ]
+      },
+      {
+        id: '8',
+        question: 'Will Lakers make NBA playoffs 2025?',
+        category: 'Sports',
+        volume: 2300000,
+        liquidity: 600000,
+        endDate: '2025-04-15',
+        outcomes: [
+          { id: 'yes', name: 'Yes', price: 0.67, probability: 67 },
+          { id: 'no', name: 'No', price: 0.33, probability: 33 }
+        ]
       }
     ];
     
@@ -270,8 +295,31 @@ export function PolymarketInterface() {
       <div className="flex-1 overflow-hidden flex">
         {/* Markets List */}
         <div className="w-2/3 border-r border-gray-800 overflow-y-auto custom-scrollbar">
+          {/* Category Filter */}
+          <div className="p-3 border-b border-gray-800">
+            <div className="flex gap-2">
+              {['All', 'Crypto', 'Politics', 'Economics', 'Sports'].map((category) => (
+                <Button
+                  key={category}
+                  variant={selectedCategory === category ? "default" : "outline"}
+                  size="sm"
+                  className={`h-7 text-xs ${
+                    selectedCategory === category 
+                      ? 'bg-purple-600 hover:bg-purple-700 border-purple-600' 
+                      : 'bg-[#0d0d0d] border-gray-700 hover:border-purple-600 text-gray-300'
+                  }`}
+                  onClick={() => setSelectedCategory(category)}
+                >
+                  {category}
+                </Button>
+              ))}
+            </div>
+          </div>
+          
           <div className="p-3 space-y-2">
-            {markets.map((market) => (
+            {markets
+              .filter(market => selectedCategory === 'All' || market.category === selectedCategory)
+              .map((market) => (
               <Card 
                 key={market.id}
                 className={`p-3 cursor-pointer transition-all ${
@@ -282,7 +330,7 @@ export function PolymarketInterface() {
                 onClick={() => setSelectedMarket(market)}
               >
                 <div className="space-y-2">
-                  <p className="text-sm font-medium leading-tight">{market.question}</p>
+                  <p className="text-sm font-medium leading-tight text-white">{market.question}</p>
                   <div className="flex items-center space-x-3 text-xs text-gray-500">
                     <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-gray-700">
                       {market.category}
