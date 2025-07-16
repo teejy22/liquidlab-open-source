@@ -61,7 +61,10 @@ export default function ExampleTradingPage() {
             const verifyResponse = await fetch(`/api/platforms/${latestPlatform.id}/verification-code`);
             if (verifyResponse.ok) {
               const verifyData = await verifyResponse.json();
+              console.log('Verification code fetched:', verifyData.code);
               setVerificationCode(verifyData.code);
+            } else {
+              console.error('Failed to fetch verification code:', verifyResponse.status);
             }
           }
         }
@@ -166,7 +169,6 @@ export default function ExampleTradingPage() {
               isVerified={true}
               compactMode={true}
               verificationCode={verificationCode}
-              className="hidden lg:block"
             />
             <WalletConnect />
             <MoonPayButton 

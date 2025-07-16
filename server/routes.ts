@@ -123,6 +123,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     next();
   };
   
+  // Temporary endpoint to generate verification codes for existing platforms
+  app.post("/api/admin/generate-verification-codes", requireAdmin, async (req, res) => {
+    try {
+      const { VerificationService } = await import("./services/verification");
+      const platforms = await storage.getTradingPlatforms();
+      const results = [];
+      
+      for (const platform of platforms) {
+        const { code } = await VerificationService.generateToken(platform.id);
+        results.push({ platformId: platform.id, name: platform.name, code });
+      }
+      
+      res.json({ message: 'Verification codes generated', results });
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+  
   // Admin dashboard data
   app.get("/api/admin/dashboard", requireAdmin, async (req, res) => {
     console.log("Admin dashboard request - session:", req.session);
@@ -374,6 +392,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Initialize security monitoring for the platform
       await SecurityService.initializePlatformSecurity(platform.id);
+      
+      // Import VerificationService and generate verification code
+      const { VerificationService } = await import("./services/verification");
+      await VerificationService.generateToken(platform.id);
       
       // Scan platform content for suspicious elements
       const isClean = await SecurityService.scanPlatformContent(platform.id, {
