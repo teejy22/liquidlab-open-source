@@ -263,6 +263,10 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Previous limit was too restrictive for development and testing
   - Users were frequently hitting 429 errors during normal testing workflows
   - Still maintains security while allowing reasonable testing patterns
+- **General API Rate Limit**: Increased from 100 to 500 requests per 15 minutes
+  - Trading interface makes many API calls for real-time market data
+  - Previous limit caused "too many requests" errors when viewing platforms
+  - New limit accommodates the high-frequency nature of trading applications
 
 ### EIP-712 Wallet Signing Infrastructure Implementation (January 16, 2025)
 - **Complete Hyperliquid Trading Integration**: Implemented full EIP-712 signing infrastructure for real trading
