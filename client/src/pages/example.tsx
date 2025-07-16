@@ -194,7 +194,7 @@ export default function ExampleTradingPage() {
             <WalletConnect />
             <MoonPayButton 
               platformId={platformData?.id}
-              className="h-8 lg:h-9 hidden lg:block"
+              className="h-8 lg:h-9"
             />
           </div>
         </div>
