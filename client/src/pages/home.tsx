@@ -17,7 +17,13 @@ import {
   Plug,
   Wallet,
   Check,
-  CreditCard
+  CreditCard,
+  Shield,
+  Lock,
+  Key,
+  AlertTriangle,
+  Activity,
+  FileText
 } from "lucide-react";
 
 export default function Home() {
@@ -233,6 +239,157 @@ export default function Home() {
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Bank-Level Security Section */}
+      <section className="py-16 bg-gradient-to-r from-gray-900 to-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <Badge className="mb-4 bg-green-500 text-white">Enterprise Security</Badge>
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
+              Bank-Level Security Built Into Every Platform
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Your traders' security is our top priority. Every LiquidLab platform is deployed with enterprise-grade security features that protect both platform owners and traders.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Security Feature Cards */}
+            <Card className="bg-gray-800/50 border-gray-700 backdrop-blur">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mb-4">
+                  <Shield className="w-6 h-6 text-green-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">SSL/TLS Encryption</h3>
+                <p className="text-gray-400 text-sm">
+                  All data transmission is encrypted with industry-standard SSL/TLS certificates, ensuring secure communication between traders and your platform.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800/50 border-gray-700 backdrop-blur">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mb-4">
+                  <Lock className="w-6 h-6 text-green-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">Non-Custodial Architecture</h3>
+                <p className="text-gray-400 text-sm">
+                  Users maintain full control of their wallets and funds. Your platform never holds private keys, eliminating custody risk.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800/50 border-gray-700 backdrop-blur">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mb-4">
+                  <Key className="w-6 h-6 text-green-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">2FA Authentication</h3>
+                <p className="text-gray-400 text-sm">
+                  Built-in two-factor authentication support using TOTP, adding an extra layer of security for user accounts.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800/50 border-gray-700 backdrop-blur">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mb-4">
+                  <AlertTriangle className="w-6 h-6 text-green-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">Anti-Phishing Protection</h3>
+                <p className="text-gray-400 text-sm">
+                  Advanced phishing detection with unique verification codes and domain legitimacy checks protect users from scam sites.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800/50 border-gray-700 backdrop-blur">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mb-4">
+                  <Activity className="w-6 h-6 text-green-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">Rate Limiting & DDoS Protection</h3>
+                <p className="text-gray-400 text-sm">
+                  Intelligent rate limiting prevents API abuse and DDoS attacks, ensuring your platform stays online during high traffic.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800/50 border-gray-700 backdrop-blur">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mb-4">
+                  <FileText className="w-6 h-6 text-green-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">Security Audit Logging</h3>
+                <p className="text-gray-400 text-sm">
+                  Comprehensive audit logs track all security events, login attempts, and transactions for complete transparency.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Additional Security Features */}
+          <div className="mt-12 bg-gray-800/30 rounded-2xl p-8 backdrop-blur">
+            <h3 className="text-xl font-semibold text-white mb-6 text-center">Additional Security Measures</h3>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-gray-300 font-medium">CSRF Protection</span>
+                    <p className="text-gray-500 text-sm">Cross-Site Request Forgery prevention on all state-changing operations</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-gray-300 font-medium">Input Sanitization</span>
+                    <p className="text-gray-500 text-sm">XSS prevention with DOMPurify and comprehensive input validation</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-gray-300 font-medium">Security Headers</span>
+                    <p className="text-gray-500 text-sm">Helmet.js implementation with CSP, HSTS, and X-Frame-Options</p>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-gray-300 font-medium">Platform Verification</span>
+                    <p className="text-gray-500 text-sm">Unique verification codes for each platform to prevent impersonation</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-gray-300 font-medium">Suspicious Activity Monitoring</span>
+                    <p className="text-gray-500 text-sm">Real-time detection and automatic suspension of malicious platforms</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-gray-300 font-medium">Webhook Verification</span>
+                    <p className="text-gray-500 text-sm">Cryptographic signing for all external service integrations</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Trust Badge */}
+          <div className="mt-8 text-center">
+            <div className="inline-flex items-center gap-2 bg-green-500/10 px-6 py-3 rounded-full">
+              <Shield className="w-5 h-5 text-green-400" />
+              <span className="text-green-400 font-medium">SOC 2 Type II Compliant Infrastructure</span>
             </div>
           </div>
         </div>

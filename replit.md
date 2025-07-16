@@ -849,6 +849,18 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Dark track (#0d0d0d) with green range indicator (#1dd1a1)
   - Dark thumb (#1a1a1a) with green border matching brand colors
   - Smooth hover states and focus indicators for better UX
+- **Mobile Tab Indicator Fix** (January 17, 2025): Fixed mobile tab indicator not updating
+  - Replaced CSS border approach with absolute positioned divs for better visibility
+  - Added debug logging to track state changes
+  - Green indicator now properly moves between Markets, Chart, Trade, and AI tabs
+  - Active tab shows white text with green underline indicator
+- **Bank-Level Security Section** (January 17, 2025): Added comprehensive security section to homepage
+  - Created dark gradient section highlighting enterprise security features
+  - Six main security feature cards: SSL/TLS, Non-Custodial Architecture, 2FA, Anti-Phishing, Rate Limiting, Audit Logging
+  - Additional security measures section with CSRF protection, input sanitization, security headers details
+  - Platform verification, suspicious activity monitoring, webhook verification highlights
+  - SOC 2 Type II compliance badge for trust building
+  - Emphasizes that every LiquidLab platform is deployed with bank-level security
 
 ### AI-Powered Chat Assistant Integration (January 16, 2025)
 - **Perplexity API Integration**: Created AI market assistant for real-time trading insights

@@ -256,46 +256,70 @@ export function HyperliquidTradingInterface() {
           </div>
 
           {/* Mobile Navigation Tabs */}
-          <div className="flex border-t border-gray-800">
+          <div className="flex border-t border-gray-800 relative">
             <button
-              onClick={() => setMobileView('markets')}
-              className={`flex-1 py-2 text-xs font-medium bg-[#000000] ${
+              onClick={() => {
+                console.log('Setting mobile view to markets');
+                setMobileView('markets');
+              }}
+              className={`flex-1 py-2 text-xs font-medium bg-[#000000] relative ${
                 mobileView === 'markets' 
-                  ? 'text-white border-b-2 border-[#1dd1a1]' 
+                  ? 'text-white' 
                   : 'text-gray-400 hover:text-white'
               }`}
             >
               Markets
+              {mobileView === 'markets' && (
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#1dd1a1]" />
+              )}
             </button>
             <button
-              onClick={() => setMobileView('chart')}
-              className={`flex-1 py-2 text-xs font-medium bg-[#000000] ${
+              onClick={() => {
+                console.log('Setting mobile view to chart');
+                setMobileView('chart');
+              }}
+              className={`flex-1 py-2 text-xs font-medium bg-[#000000] relative ${
                 mobileView === 'chart' 
-                  ? 'text-white border-b-2 border-[#1dd1a1]' 
+                  ? 'text-white' 
                   : 'text-gray-400 hover:text-white'
               }`}
             >
               Chart
+              {mobileView === 'chart' && (
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#1dd1a1]" />
+              )}
             </button>
             <button
-              onClick={() => setMobileView('trade')}
-              className={`flex-1 py-2 text-xs font-medium bg-[#000000] ${
+              onClick={() => {
+                console.log('Setting mobile view to trade');
+                setMobileView('trade');
+              }}
+              className={`flex-1 py-2 text-xs font-medium bg-[#000000] relative ${
                 mobileView === 'trade' 
-                  ? 'text-white border-b-2 border-[#1dd1a1]' 
+                  ? 'text-white' 
                   : 'text-gray-400 hover:text-white'
               }`}
             >
               Trade
+              {mobileView === 'trade' && (
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#1dd1a1]" />
+              )}
             </button>
             <button
-              onClick={() => setMobileView('ai')}
-              className={`flex-1 py-2 text-xs font-medium bg-[#000000] ${
+              onClick={() => {
+                console.log('Setting mobile view to ai');
+                setMobileView('ai');
+              }}
+              className={`flex-1 py-2 text-xs font-medium bg-[#000000] relative ${
                 mobileView === 'ai' 
-                  ? 'text-white border-b-2 border-[#1dd1a1]' 
+                  ? 'text-white' 
                   : 'text-gray-400 hover:text-white'
               }`}
             >
               AI Assistant
+              {mobileView === 'ai' && (
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#1dd1a1]" />
+              )}
             </button>
           </div>
         </div>
