@@ -259,25 +259,41 @@ export function HyperliquidTradingInterface() {
           <div className="flex border-t border-gray-800">
             <button
               onClick={() => setMobileView('markets')}
-              className="flex-1 py-2 text-xs font-medium text-gray-400 hover:text-white bg-[#000000]"
+              className={`flex-1 py-2 text-xs font-medium bg-[#000000] ${
+                mobileView === 'markets' 
+                  ? 'text-white border-b-2 border-[#1dd1a1]' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
             >
               Markets
             </button>
             <button
               onClick={() => setMobileView('chart')}
-              className="flex-1 py-2 text-xs font-medium text-white border-b-2 border-[#1dd1a1] bg-[#000000]"
+              className={`flex-1 py-2 text-xs font-medium bg-[#000000] ${
+                mobileView === 'chart' 
+                  ? 'text-white border-b-2 border-[#1dd1a1]' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
             >
               Chart
             </button>
             <button
               onClick={() => setMobileView('trade')}
-              className="flex-1 py-2 text-xs font-medium text-gray-400 hover:text-white bg-[#000000]"
+              className={`flex-1 py-2 text-xs font-medium bg-[#000000] ${
+                mobileView === 'trade' 
+                  ? 'text-white border-b-2 border-[#1dd1a1]' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
             >
               Trade
             </button>
             <button
               onClick={() => setMobileView('ai')}
-              className="flex-1 py-2 text-xs font-medium text-gray-400 hover:text-white bg-[#000000]"
+              className={`flex-1 py-2 text-xs font-medium bg-[#000000] ${
+                mobileView === 'ai' 
+                  ? 'text-white border-b-2 border-[#1dd1a1]' 
+                  : 'text-gray-400 hover:text-white'
+              }`}
             >
               AI Assistant
             </button>
