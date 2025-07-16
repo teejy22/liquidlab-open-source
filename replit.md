@@ -250,6 +250,14 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Eliminates CORS errors by routing through backend
   - Existing backend endpoint handles all CoinGecko API requests
 
+### Platform Verification System Auto-Approval (January 17, 2025)
+- **Development Mode Auto-Approval**: Fixed verification failing for new platforms
+  - New platforms now automatically get approval_status='approved' in development mode
+  - Previously all new platforms started as 'pending', preventing verification
+  - Updated all existing pending platforms to approved status (6 platforms)
+  - Created security records for all platforms missing them
+  - Verification now works immediately after platform creation for easier testing
+
 ### Rate Limiting Adjustment (January 17, 2025)
 - **Authentication Rate Limit**: Increased from 5 to 20 attempts per 15 minutes
   - Previous limit was too restrictive for development and testing

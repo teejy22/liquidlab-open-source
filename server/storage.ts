@@ -199,7 +199,8 @@ export class DatabaseStorage implements IStorage {
       .values({
         ...platform,
         slug,
-        approvalStatus: 'pending' // All new platforms start as pending
+        // Auto-approve in development for easier testing
+        approvalStatus: process.env.NODE_ENV === 'development' ? 'approved' : 'pending'
       })
       .returning();
     return created;
