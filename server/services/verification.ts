@@ -188,11 +188,15 @@ export class VerificationService {
         platformId: platform.id,
       });
       
-      // Return updated platform info
+      // Return updated platform info with builder wallet address
       const updatedPlatform = {
         ...platform,
         isVerified: true,
-        verificationDate: new Date()
+        verificationDate: new Date(),
+        config: {
+          ...platform.config,
+          builderWalletAddress: process.env.BUILDER_WALLET_ADDRESS || '0x70997970C51812dc3A010C7d01b50e0d17dc79C8'
+        }
       };
       
       return { 

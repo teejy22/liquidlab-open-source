@@ -162,8 +162,8 @@ export default function Verify() {
                         </div>
                       )}
                       <div>
-                        <p className="text-sm text-gray-500 mb-1">Builder Code</p>
-                        <p className="font-mono text-[#ffffff]">LIQUIDLAB2025</p>
+                        <p className="text-sm text-gray-500 mb-1">Builder Wallet Address</p>
+                        <p className="font-mono text-[#ffffff] text-xs break-all">{verificationResult.platform.config?.builderWalletAddress || '0x70997970C51812dc3A010C7d01b50e0d17dc79C8'}</p>
                       </div>
                     </div>
 
