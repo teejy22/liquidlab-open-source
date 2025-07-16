@@ -814,6 +814,35 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Trade batch runs every 10 minutes to check for new trades
   - Real-time revenue tracking and distribution enabled
 
+### Integrated USDC Deposit/Withdrawal System (January 17, 2025)
+- **Critical User Retention Feature**: Implemented integrated deposit system to prevent users from leaving to Hyperliquid main site
+  - Users can now deposit USDC from Arbitrum directly within our trading interface
+  - No need to leave LiquidLab platforms to add funds - crucial for retention
+- **HyperliquidDeposit Component**: Created comprehensive fund management interface
+  - Real-time balance display showing both Arbitrum USDC and Hyperliquid balances
+  - Deposit tab: Send USDC from Arbitrum to Hyperliquid (minimum 5 USDC, ~1 minute processing)
+  - Withdraw tab: Placeholder for withdrawals (requires wallet signature, users directed to Hyperliquid)
+  - Automatic balance refresh every 5 seconds
+  - Clear error handling and user feedback via toast notifications
+- **Backend Integration**: Added API endpoints for balance checking and fund management
+  - GET `/api/hyperliquid/balances/:address` - Fetches user's Hyperliquid balance and account info
+  - POST `/api/hyperliquid/withdraw` - Placeholder endpoint for future withdrawal implementation
+  - Integrates with existing Hyperliquid service for real-time balance data
+- **UI Integration**: Seamlessly integrated into trading interface
+  - Desktop: Added "Funds" tab in right sidebar alongside "Trade" tab
+  - Mobile: Added "Funds" tab in mobile navigation between "Trade" and "AI"
+  - Users can manage funds without leaving the trading screen
+- **Technical Implementation**:
+  - Uses Hyperliquid bridge contract: 0x2df1c51e09aecf9cacb7bc98cb1742757f163df7
+  - Arbitrum USDC contract: 0xaf88d065e77c8cc2239327c5edb3a432268e5831
+  - Ethers.js integration for blockchain interactions through Privy provider
+  - Minimum deposit enforced at 5 USDC (amounts below are lost forever)
+- **User Experience Benefits**:
+  - Eliminates friction of leaving platform to deposit funds
+  - Integrated experience keeps users engaged with our platform
+  - Real-time balance updates provide confidence
+  - Clear UI with deposit/withdrawal separation
+
 ### Trade Execution Architecture Decision (January 17, 2025)
 - **Current Implementation**: Each trade requires individual wallet signature (EIP-712)
   - Trade execution speed: ~200-400ms after signing (~1 second total with signing)

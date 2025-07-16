@@ -1074,6 +1074,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user balances including withdrawable amount
+  app.get("/api/hyperliquid/balances/:address", async (req, res) => {
+    try {
+      const { address } = req.params;
+      const userState = await hyperliquidService.getUserState(address);
+      
+      // Extract relevant balance information
+      const balances = {
+        withdrawable: userState?.withdrawable || "0",
+        accountValue: userState?.marginSummary?.accountValue || "0",
+        totalMarginUsed: userState?.marginSummary?.totalMarginUsed || "0",
+        balances: userState?.balances || {},
+        marginSummary: userState?.marginSummary || {}
+      };
+      
+      res.json(balances);
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  // Withdraw from Hyperliquid to Arbitrum
+  app.post("/api/hyperliquid/withdraw", async (req, res) => {
+    try {
+      const { amount, destination } = req.body;
+      
+      if (!amount || parseFloat(amount) < 2) {
+        return res.status(400).json({ error: "Minimum withdrawal is 2 USDC (1 USDC fee)" });
+      }
+      
+      if (!destination) {
+        return res.status(400).json({ error: "Destination address required" });
+      }
+      
+      // For now, return a placeholder response since we need the user's private key
+      // In production, this would use the agent wallet system or require user signature
+      res.json({
+        success: true,
+        message: "Withdrawal functionality requires wallet signature. Please use Hyperliquid's interface for withdrawals.",
+        amount: amount,
+        destination: destination
+      });
+      
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
   app.get("/api/hyperliquid/meta", async (req, res) => {
     try {
       const data = await hyperliquidService.getMetaAndAssetCtxs();
