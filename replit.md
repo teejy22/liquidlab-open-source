@@ -953,10 +953,12 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Active tab shows white text with green underline indicator
 - **Bank-Level Security Section** (January 17, 2025): Added comprehensive security section to homepage
   - Created dark gradient section highlighting enterprise security features
-  - Six main security feature cards: SSL/TLS, Non-Custodial Architecture, 2FA, Anti-Phishing, Rate Limiting, Audit Logging
+  - **Immutable Trading Code card** (highlighted with green border): Platform owners cannot modify trading logic
+  - Security feature cards: SSL/TLS, Non-Custodial Architecture, 2FA, Anti-Phishing, Rate Limiting, Audit Logging
   - Additional security measures section with CSRF protection, input sanitization, security headers details
   - Platform verification, suspicious activity monitoring, webhook verification highlights
   - SOC 2 Type II compliance badge for trust building
+  - Green notification banner emphasizing verified codebase shared by all platforms
   - Emphasizes that every LiquidLab platform is deployed with bank-level security
 
 ### Polymarket Integration Feature (January 17, 2025)

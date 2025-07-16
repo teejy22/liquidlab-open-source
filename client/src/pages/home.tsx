@@ -24,7 +24,8 @@ import {
   AlertTriangle,
   Activity,
   FileText,
-  Eye
+  Eye,
+  Code
 } from "lucide-react";
 
 export default function Home() {
@@ -260,10 +261,27 @@ export default function Home() {
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Your traders' security is our top priority. Every LiquidLab platform is deployed with enterprise-grade security features that protect both platform owners and traders.
             </p>
+            <div className="mt-6 bg-green-500/10 border border-green-500 rounded-lg p-4 max-w-2xl mx-auto">
+              <p className="text-green-300 font-semibold">
+                🔒 Platform owners cannot modify or alter the trading code - all platforms run the same verified LiquidLab codebase
+              </p>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Security Feature Cards */}
+            <Card className="bg-gray-800/50 border-gray-700 backdrop-blur border-2 border-green-500/50">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mb-4">
+                  <Code className="w-6 h-6 text-green-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">Immutable Trading Code</h3>
+                <p className="text-gray-400 text-sm">
+                  Platform owners cannot modify core trading logic, order execution, or wallet interactions. All platforms share the same secure, verified codebase.
+                </p>
+              </CardContent>
+            </Card>
+            
             <Card className="bg-gray-800/50 border-gray-700 backdrop-blur">
               <CardContent className="p-6">
                 <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mb-4">
