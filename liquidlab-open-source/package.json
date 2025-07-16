@@ -1,0 +1,38 @@
+{
+  "name": "liquidlab-open-source",
+  "version": "1.0.0",
+  "description": "Open source security components from LiquidLab trading platform",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liquidlab/liquidlab-open-source.git"
+  },
+  "keywords": [
+    "trading",
+    "security",
+    "hyperliquid",
+    "dex",
+    "non-custodial",
+    "eip-712"
+  ],
+  "author": "LiquidLab",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/liquidlab/liquidlab-open-source/issues"
+  },
+  "homepage": "https://github.com/liquidlab/liquidlab-open-source#readme",
+  "dependencies": {
+    "ethers": "^6.11.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
+    "isomorphic-dompurify": "^2.0.0",
+    "speakeasy": "^2.0.0",
+    "validator": "^13.11.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3"
+  }
+}
