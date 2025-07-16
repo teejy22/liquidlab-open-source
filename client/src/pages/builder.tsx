@@ -134,6 +134,11 @@ export default function Builder() {
       setCustomDomain(platform.customDomain || '');
       setSavedChanges(true);
       setIsCreatingNew(false);
+      setVerificationCode(''); // Clear the old code
+      
+      // Immediately invalidate and refetch the verification code
+      queryClient.invalidateQueries({ queryKey: [`/api/platforms/${platform.id}/verification-code`] });
+      
       toast({
         title: "Platform Loaded",
         description: `Loaded "${platform.name}" for editing.`,
@@ -533,6 +538,38 @@ export default function Builder() {
                         </p>
                       </div>
                     </div>
+                    
+                    {savedPlatformId && (
+                      <div>
+                        <Label>Platform Verification Code</Label>
+                        <div className="flex gap-2 mt-1">
+                          <Input
+                            value={verificationCode || 'Loading...'}
+                            readOnly
+                            className="font-mono text-xs"
+                          />
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => {
+                              if (verificationCode) {
+                                navigator.clipboard.writeText(verificationCode);
+                                toast({
+                                  title: "Copied!",
+                                  description: "Verification code copied to clipboard.",
+                                });
+                              }
+                            }}
+                            disabled={!verificationCode}
+                          >
+                            <Copy className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          This code verifies your platform's authenticity
+                        </p>
+                      </div>
+                    )}
 
                     <div>
                       <Label>Platform Verification Code</Label>
