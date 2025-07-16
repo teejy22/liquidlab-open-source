@@ -68,14 +68,14 @@ export default function ExampleTradingPage() {
         const response = await fetch('/api/platforms');
         if (response.ok) {
           const platforms = await response.json();
-          // Get the most recent platform
-          if (platforms.length > 0) {
-            const latestPlatform = platforms[platforms.length - 1];
-            setPlatformData(latestPlatform);
+          // Find the LiquidL platform
+          const liquidLPlatform = platforms.find((p: any) => p.name === 'LiquidL');
+          if (liquidLPlatform) {
+            setPlatformData(liquidLPlatform);
             
             // Fetch verification code for this platform
-            console.log('Fetching verification code for platform:', latestPlatform.id);
-            const verifyResponse = await fetch(`/api/platforms/${latestPlatform.id}/verification-code`);
+            console.log('Fetching verification code for platform:', liquidLPlatform.id);
+            const verifyResponse = await fetch(`/api/platforms/${liquidLPlatform.id}/verification-code`);
             if (verifyResponse.ok) {
               const verifyData = await verifyResponse.json();
               console.log('Verification response:', verifyData);
@@ -87,6 +87,19 @@ export default function ExampleTradingPage() {
               }
             } else {
               console.error('Failed to fetch verification code:', verifyResponse.status);
+            }
+          } else if (platforms.length > 0) {
+            // Fallback to most recent platform if LiquidL not found
+            const latestPlatform = platforms[platforms.length - 1];
+            setPlatformData(latestPlatform);
+            
+            // Fetch verification code for this platform
+            const verifyResponse = await fetch(`/api/platforms/${latestPlatform.id}/verification-code`);
+            if (verifyResponse.ok) {
+              const verifyData = await verifyResponse.json();
+              if (verifyData.code) {
+                setVerificationCode(verifyData.code);
+              }
             }
           }
         }
