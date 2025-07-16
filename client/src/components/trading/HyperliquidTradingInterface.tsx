@@ -184,9 +184,9 @@ export function HyperliquidTradingInterface() {
         {/* Right Sidebar - Trading Panel & AI Assistant */}
         <div className="w-80 border-l border-gray-800 flex flex-col">
           <Tabs defaultValue="trade" className="flex-1 flex flex-col">
-            <TabsList className="w-full rounded-none bg-[#0d0d0d] border-b border-gray-800">
-              <TabsTrigger value="trade" className="flex-1 rounded-none data-[state=active]:bg-[#1a1a1a]">Trade</TabsTrigger>
-              <TabsTrigger value="funds" className="flex-1 rounded-none data-[state=active]:bg-[#1a1a1a]">Funds</TabsTrigger>
+            <TabsList className="w-full rounded-none bg-[#000000] border-b border-gray-800 p-0">
+              <TabsTrigger value="trade" className="flex-1 rounded-none data-[state=active]:bg-[#1a1a1a] data-[state=active]:text-white data-[state=inactive]:bg-[#0a0a0a] data-[state=inactive]:text-gray-500 h-10 font-medium transition-all">Trade</TabsTrigger>
+              <TabsTrigger value="funds" className="flex-1 rounded-none data-[state=active]:bg-[#1a1a1a] data-[state=active]:text-white data-[state=inactive]:bg-[#0a0a0a] data-[state=inactive]:text-gray-500 h-10 font-medium transition-all">Funds</TabsTrigger>
             </TabsList>
             <TabsContent value="trade" className="flex-1 overflow-y-auto border-b border-gray-800 custom-scrollbar m-0">
               <HyperliquidTradeForm

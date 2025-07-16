@@ -92,7 +92,7 @@ export function MoonPayButton({ platformId, className }: MoonPayButtonProps) {
         disabled={!moonpayConfig?.apiKey}
         className={`h-8 px-4 text-sm font-medium text-[#1dd1a1] bg-[#0a0a0a] border border-[#1dd1a1]/20 rounded hover:bg-[#1dd1a1]/10 hover:border-[#1dd1a1]/40 transition-all duration-200 disabled:opacity-50 ${className}`}
       >
-        Deposit
+        Buy Crypto
       </button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
