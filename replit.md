@@ -814,6 +814,22 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Trade batch runs every 10 minutes to check for new trades
   - Real-time revenue tracking and distribution enabled
 
+### Trade Execution Architecture Decision (January 17, 2025)
+- **Current Implementation**: Each trade requires individual wallet signature (EIP-712)
+  - Trade execution speed: ~200-400ms after signing (~1 second total with signing)
+  - Maximum security with users maintaining full control of every trade
+  - No persistent keys or delegated signing risks
+- **Agent Wallet Research**: Investigated Hyperliquid's agent wallet system
+  - Would enable instant trades without per-trade signing (like official Hyperliquid site)
+  - Implementation complexity: 5-7 days of development
+  - Requires secure storage of agent wallet private keys
+  - Most competitors (Bullpen.fi, etc.) use standard wallet signing like us
+- **Decision**: Keep current per-trade signing system
+  - Already fast enough for professional trading
+  - Provides superior security for platform owners
+  - Aligns with industry standard practices
+  - Agent wallet system can be added later if needed
+
 ### Leverage UI Improvements (January 16, 2025)
 - **Leverage Slider Implementation**: Replaced dropdown selector with visual slider interface
   - Smooth sliding experience for selecting leverage from 1x to token's maximum
