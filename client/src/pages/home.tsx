@@ -97,6 +97,10 @@ export default function Home() {
                   <CheckCircle className="w-4 h-4 mr-2" />
                   <span>Revenue sharing</span>
                 </div>
+                <div className="flex items-center">
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  <span className="font-semibold">NEW: Polymarket Premium</span>
+                </div>
               </div>
             </div>
             <div className="lg:block hidden">
@@ -403,6 +407,89 @@ export default function Home() {
             <div className="inline-flex items-center gap-2 bg-green-500/10 px-6 py-3 rounded-full">
               <Shield className="w-5 h-5 text-green-400" />
               <span className="text-green-400 font-medium">Enterprise-Grade Security</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* NEW: Polymarket Premium Feature */}
+      <section className="py-16 bg-gradient-to-r from-purple-50 to-pink-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <Badge className="bg-purple-600 text-white mb-4 px-3 py-1">NEW PREMIUM FEATURE</Badge>
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+              <span className="text-purple-600">Polymarket</span> Prediction Markets
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Expand beyond trading with prediction markets. Earn additional 0.5% platform fees on every prediction.
+            </p>
+          </div>
+          
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="bg-white rounded-lg shadow-lg p-8">
+                <h3 className="text-2xl font-bold mb-4 text-purple-600">Why Add Polymarket?</h3>
+                <ul className="space-y-4">
+                  <li className="flex items-start">
+                    <TrendingUp className="w-6 h-6 text-purple-600 mr-3 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold">Additional Revenue Stream</span>
+                      <p className="text-gray-600 text-sm mt-1">Earn 0.5% on all prediction trades, on top of your trading fees</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start">
+                    <Users className="w-6 h-6 text-purple-600 mr-3 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold">Attract New Users</span>
+                      <p className="text-gray-600 text-sm mt-1">Appeal to prediction market enthusiasts and event traders</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start">
+                    <Zap className="w-6 h-6 text-purple-600 mr-3 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold">Multi-Chain Support</span>
+                      <p className="text-gray-600 text-sm mt-1">Seamlessly switch between Hyperliquid and Polygon networks</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            
+            <div>
+              <Card className="border-purple-500 bg-gradient-to-br from-purple-100 to-pink-100">
+                <CardHeader>
+                  <CardTitle className="text-2xl text-purple-700">Premium Pricing</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center mb-6">
+                    <div className="text-5xl font-bold text-purple-600">$50</div>
+                    <div className="text-purple-500">/month</div>
+                  </div>
+                  <div className="space-y-3 mb-6">
+                    <div className="flex items-center">
+                      <CheckCircle className="w-5 h-5 text-purple-600 mr-2" />
+                      <span>Integrated prediction markets</span>
+                    </div>
+                    <div className="flex items-center">
+                      <CheckCircle className="w-5 h-5 text-purple-600 mr-2" />
+                      <span>0.5% platform fee on predictions</span>
+                    </div>
+                    <div className="flex items-center">
+                      <CheckCircle className="w-5 h-5 text-purple-600 mr-2" />
+                      <span>Purple-themed professional UI</span>
+                    </div>
+                    <div className="flex items-center">
+                      <CheckCircle className="w-5 h-5 text-purple-600 mr-2" />
+                      <span>Social login options</span>
+                    </div>
+                  </div>
+                  <Link href="/templates">
+                    <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                      View Polymarket Templates
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>

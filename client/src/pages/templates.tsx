@@ -20,15 +20,38 @@ const templateCategories = [
 const mockTemplates = [
   {
     id: 1,
-    name: "Professional Trader",
-    description: "Advanced charts, order book, and portfolio management for serious traders.",
+    name: "Hyperliquid Trading",
+    description: "Professional perpetual trading interface with advanced charts and order management.",
     category: "Professional",
     previewImage: "/api/placeholder/400/300",
-    features: ["TradingView Charts", "Order Book", "Portfolio Management", "Risk Tools"],
-    isPopular: true
+    features: ["TradingView Charts", "Order Book", "Portfolio Management", "0.1% Builder Fee"],
+    isPopular: true,
+    isPremium: false
   },
   {
     id: 2,
+    name: "Hyperliquid + Polymarket",
+    description: "Combined trading and prediction markets platform. Trade perps and predict outcomes.",
+    category: "Professional",
+    previewImage: "/api/placeholder/400/300",
+    features: ["Perp Trading", "Prediction Markets", "Multi-Chain", "0.5% Extra Revenue"],
+    isPopular: true,
+    isPremium: true,
+    premiumPrice: "$50/month"
+  },
+  {
+    id: 3,
+    name: "Polymarket Only",
+    description: "Dedicated prediction markets platform for event-based trading and forecasting.",
+    category: "DeFi",
+    previewImage: "/api/placeholder/400/300",
+    features: ["Event Trading", "Polygon Network", "Social Login", "0.5% Platform Fee"],
+    isPopular: false,
+    isPremium: true,
+    premiumPrice: "$50/month"
+  },
+  {
+    id: 4,
     name: "Mobile Trader",
     description: "Optimized for mobile trading with touch-friendly interfaces.",
     category: "Mobile First",
@@ -37,28 +60,10 @@ const mockTemplates = [
     isPopular: false
   },
   {
-    id: 3,
-    name: "Clean Interface",
-    description: "Minimalist design focused on essential trading functions.",
-    category: "Minimal",
-    previewImage: "/api/placeholder/400/300",
-    features: ["Clean Design", "Essential Tools", "Fast Loading", "Distraction Free"],
-    isPopular: false
-  },
-  {
-    id: 4,
+    id: 5,
     name: "Analytics Dashboard",
     description: "Data-driven trading with advanced analytics and insights.",
     category: "Analytics",
-    previewImage: "/api/placeholder/400/300",
-    features: ["Advanced Analytics", "Performance Tracking", "Custom Metrics", "Reporting"],
-    isPopular: true
-  },
-  {
-    id: 5,
-    name: "DeFi Integration",
-    description: "Comprehensive DeFi trading with multiple protocol support.",
-    category: "DeFi",
     previewImage: "/api/placeholder/400/300",
     features: ["Multi-Protocol", "Yield Farming", "Liquidity Pools", "Governance"],
     isPopular: false
@@ -106,26 +111,35 @@ export default function Templates() {
       'Mobile First': 'bg-indigo-900 text-white',
       'Minimal': 'bg-gray-100 text-gray-900 border-2 border-gray-200',
       'Analytics': 'bg-blue-900 text-white',
-      'DeFi': 'bg-green-900 text-white'
+      'DeFi': 'bg-purple-900 text-white'
     };
 
     return (
       <div className={`${colors[template.category as keyof typeof colors]} p-6 h-48 relative`}>
-        {template.isPopular && (
+        {template.isPopular && !template.isPremium && (
           <div className="absolute top-4 right-4 bg-liquid-green text-white px-2 py-1 rounded text-xs font-semibold">
             Popular
           </div>
         )}
+        {template.isPremium && (
+          <div className="absolute top-4 right-4 bg-purple-600 text-white px-2 py-1 rounded text-xs font-semibold">
+            Premium
+          </div>
+        )}
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold">{template.name}</h3>
-          <div className="text-green-400 font-mono text-sm">$67,845</div>
+          {template.isPremium ? (
+            <div className="text-purple-400 font-mono text-sm">{template.premiumPrice}</div>
+          ) : (
+            <div className="text-green-400 font-mono text-sm">$67,845</div>
+          )}
         </div>
         <div className="grid grid-cols-3 gap-2 mb-4">
           <div className="bg-gray-800 h-8 rounded opacity-50"></div>
           <div className="bg-gray-800 h-8 rounded opacity-50"></div>
           <div className="bg-gray-800 h-8 rounded opacity-50"></div>
         </div>
-        <div className="h-16 bg-gradient-to-r from-green-400 to-blue-400 rounded opacity-30"></div>
+        <div className={`h-16 ${template.isPremium ? 'bg-gradient-to-r from-purple-400 to-pink-400' : 'bg-gradient-to-r from-green-400 to-blue-400'} rounded opacity-30`}></div>
       </div>
     );
   };
@@ -217,7 +231,11 @@ export default function Templates() {
                 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <span className="text-liquid-green font-semibold">Free</span>
+                    {template.isPremium ? (
+                      <span className="text-purple-600 font-bold">{template.premiumPrice}</span>
+                    ) : (
+                      <span className="text-liquid-green font-semibold">Free</span>
+                    )}
                     <Badge variant="outline">{template.category}</Badge>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -228,7 +246,7 @@ export default function Templates() {
                       </Button>
                     </TemplatePreview>
                     <Link href={`/builder/${template.id}`}>
-                      <Button className="bg-liquid-green text-white hover:bg-liquid-accent">
+                      <Button className={template.isPremium ? "bg-purple-600 text-white hover:bg-purple-700" : "bg-liquid-green text-white hover:bg-liquid-accent"}>
                         Use Template
                       </Button>
                     </Link>

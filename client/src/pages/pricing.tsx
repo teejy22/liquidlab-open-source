@@ -212,6 +212,73 @@ export default function Pricing() {
           </div>
         </div>
 
+        {/* Premium Add-Ons Section */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-center mb-8">Premium Add-Ons</h2>
+          <Card className="max-w-4xl mx-auto border-purple-500 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-2xl flex items-center gap-2">
+                  <span className="text-purple-600">🔮</span>
+                  Polymarket Prediction Markets
+                  <Badge className="bg-purple-600 text-white">NEW</Badge>
+                </CardTitle>
+                <Badge className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 px-4 py-1 text-lg font-bold">
+                  $50/month
+                </Badge>
+              </div>
+              <CardDescription className="text-base mt-2">
+                Add prediction markets to your trading platform and earn additional revenue
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-semibold mb-3 text-purple-700 dark:text-purple-400">What You Get:</h4>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-purple-600 mt-0.5" />
+                      <span>Integrated prediction markets alongside trading</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-purple-600 mt-0.5" />
+                      <span>Multi-chain support (Polygon network)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-purple-600 mt-0.5" />
+                      <span>Social login options for easier onboarding</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="w-4 h-4 text-purple-600 mt-0.5" />
+                      <span>Professional purple-themed UI</span>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-3 text-purple-700 dark:text-purple-400">Extra Revenue:</h4>
+                  <div className="bg-purple-100 dark:bg-purple-900 p-4 rounded-lg">
+                    <div className="text-2xl font-bold text-purple-700 dark:text-purple-300">+0.5%</div>
+                    <div className="text-sm text-purple-600 dark:text-purple-400">Platform Fee on All Predictions</div>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-3">
+                    Example: $100,000 in monthly predictions = <span className="font-semibold text-purple-600">$500 extra revenue</span>
+                  </p>
+                  <div className="mt-3 text-xs text-muted-foreground">
+                    * In addition to your trading fee revenue
+                  </div>
+                </div>
+              </div>
+              <div className="pt-4 flex justify-center">
+                <Link href="/templates">
+                  <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                    View Polymarket Templates
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* CTA Section */}
         <div className="text-center mb-16">
           <Card className="max-w-2xl mx-auto bg-primary text-primary-foreground">

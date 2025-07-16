@@ -991,6 +991,12 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Smaller font sizes and tighter spacing for information density
   - Custom dark scrollbars matching Hyperliquid aesthetic
   - Added diverse sample markets covering crypto, politics, and economics
+- **Site-Wide Polymarket Promotion**: Highlighted premium feature throughout platform
+  - Added "NEW: Polymarket Premium" to home page hero section
+  - Created dedicated Polymarket section on home page with purple gradient background
+  - Updated templates page with 3 options: Hyperliquid only (free), Hyperliquid + Polymarket ($50/month), Polymarket only ($50/month)
+  - Added Premium Add-Ons section to pricing page showcasing Polymarket benefits
+  - Consistent purple theme and pricing ($50/month + 0.5% platform fee) across all mentions
 
 ### Payout Management System Implementation (January 17, 2025)
 - **Critical Issue Resolved**: Fixed automated payout failures caused by Hyperliquid's manual claiming requirement
