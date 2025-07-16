@@ -68,14 +68,25 @@ export default function ExampleTradingPage() {
         const response = await fetch('/api/platforms');
         if (response.ok) {
           const platforms = await response.json();
-          // Find the LiquidL platform
-          const liquidLPlatform = platforms.find((p: any) => p.name === 'LiquidL');
-          if (liquidLPlatform) {
-            setPlatformData(liquidLPlatform);
+          
+          // Check for platformId parameter first
+          const platformId = urlParams.get('platformId');
+          let selectedPlatform = null;
+          
+          if (platformId) {
+            // If platformId is in URL, use that specific platform
+            selectedPlatform = platforms.find((p: any) => p.id === parseInt(platformId));
+          } else if (platforms.length > 0) {
+            // Otherwise, use the most recently created platform
+            selectedPlatform = platforms[platforms.length - 1];
+          }
+          
+          if (selectedPlatform) {
+            setPlatformData(selectedPlatform);
             
             // Fetch verification code for this platform
-            console.log('Fetching verification code for platform:', liquidLPlatform.id);
-            const verifyResponse = await fetch(`/api/platforms/${liquidLPlatform.id}/verification-code`);
+            console.log('Fetching verification code for platform:', selectedPlatform.id);
+            const verifyResponse = await fetch(`/api/platforms/${selectedPlatform.id}/verification-code`);
             if (verifyResponse.ok) {
               const verifyData = await verifyResponse.json();
               console.log('Verification response:', verifyData);
@@ -87,19 +98,6 @@ export default function ExampleTradingPage() {
               }
             } else {
               console.error('Failed to fetch verification code:', verifyResponse.status);
-            }
-          } else if (platforms.length > 0) {
-            // Fallback to most recent platform if LiquidL not found
-            const latestPlatform = platforms[platforms.length - 1];
-            setPlatformData(latestPlatform);
-            
-            // Fetch verification code for this platform
-            const verifyResponse = await fetch(`/api/platforms/${latestPlatform.id}/verification-code`);
-            if (verifyResponse.ok) {
-              const verifyData = await verifyResponse.json();
-              if (verifyData.code) {
-                setVerificationCode(verifyData.code);
-              }
             }
           }
         }
