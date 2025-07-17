@@ -87,7 +87,7 @@ export function TrustIndicators({
                     <img 
                       src="/powered-by-hyperliquid.png" 
                       alt="Connected to Hyperliquid" 
-                      className="h-20 -my-6"
+                      className="h-28 -my-10"
                     />
                   </div>
                 </TooltipTrigger>
