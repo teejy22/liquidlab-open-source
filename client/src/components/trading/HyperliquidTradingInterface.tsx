@@ -86,7 +86,7 @@ export function HyperliquidTradingInterface() {
       {/* Desktop Layout */}
       <div className="hidden lg:flex flex-1 overflow-hidden">
         {/* Markets Sidebar */}
-        <div className="w-44 border-r border-gray-800 overflow-y-auto custom-scrollbar">
+        <div className="w-44 border-r border-gray-800 h-full overflow-y-auto custom-scrollbar">
           <HyperliquidMarkets
             onSelectMarket={setSelectedMarket}
           />
