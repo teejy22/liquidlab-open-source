@@ -110,7 +110,8 @@ export function SimpleSpotTrading({ walletAddress }: { walletAddress?: string })
           symbol: selectedPair,
           side: orderSide,
           amount: amount,
-          walletAddress: walletAddress
+          // IMPORTANT: Lowercase the wallet address to avoid signature recovery issues
+          walletAddress: walletAddress.toLowerCase()
         })
       });
 

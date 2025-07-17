@@ -229,8 +229,9 @@ export async function signOrder(
     },
     // Builder code format: {"b": builder_address, "f": fee_in_tenths_of_bps}
     // 100 = 10 basis points = 0.1% fee (maximum allowed for perps)
+    // IMPORTANT: Lowercase the builder address to avoid signature recovery issues
     c: {
-      b: process.env.VITE_BUILDER_WALLET_ADDRESS || '0x0000000000000000000000000000000000000000',
+      b: (process.env.VITE_BUILDER_WALLET_ADDRESS || '0x0000000000000000000000000000000000000000').toLowerCase(),
       f: 100 // 10 basis points = 0.1% fee
     }
   };
@@ -341,8 +342,9 @@ async function signTriggerOrder(
       }
     },
     // Builder code format: {"b": builder_address, "f": fee_in_tenths_of_bps}
+    // IMPORTANT: Lowercase the builder address to avoid signature recovery issues
     c: {
-      b: process.env.VITE_BUILDER_WALLET_ADDRESS || '0x0000000000000000000000000000000000000000',
+      b: (process.env.VITE_BUILDER_WALLET_ADDRESS || '0x0000000000000000000000000000000000000000').toLowerCase(),
       f: 10 // 1 basis point = 0.01% fee
     }
   };

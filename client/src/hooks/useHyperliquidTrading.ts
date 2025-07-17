@@ -102,7 +102,8 @@ export function useHyperliquidTrading() {
       }
       
       // Format the request for Hyperliquid API
-      const orderRequest = formatOrderRequest(userAddress, signedOrders);
+      // IMPORTANT: Lowercase the user address to avoid signature recovery issues
+      const orderRequest = formatOrderRequest(userAddress.toLowerCase(), signedOrders);
       
       // Submit the order
       await placeOrderMutation.mutateAsync(orderRequest);

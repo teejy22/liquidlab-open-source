@@ -567,6 +567,19 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - No complex widget loading or "invalid signal" errors
   - Maintains dark theme and professional appearance
 
+### Critical Hyperliquid Signing Fix (January 17, 2025)
+- **Address Lowercasing Implementation**: Fixed critical signing issue where wallet addresses must be lowercased
+  - All wallet addresses are now lowercased before signing to prevent "User or API Wallet does not exist" errors
+  - Updated signOrder() to lowercase builder wallet address
+  - Updated signTriggerOrder() to lowercase builder wallet address
+  - Updated useHyperliquidTrading hook to lowercase user address before formatting order request
+  - Updated SimpleSpotTrading component to lowercase wallet address before API calls
+- **Technical Details**: Based on Hyperliquid documentation requirements
+  - Addresses must be lowercased for proper signature recovery
+  - Applies to both user addresses and builder wallet addresses
+  - Critical for both perpetual and spot trading orders
+- **Impact**: Resolves signature verification failures that prevented order placement
+
 ### Automatic Verification Code Rotation (January 16, 2025)
 - **Enhanced Security Implementation**: Added automatic 24-hour verification code rotation for all trading platforms
   - New scheduler job runs every 24 hours to automatically regenerate all verification codes
