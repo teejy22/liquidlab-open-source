@@ -928,7 +928,18 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - SECURITY_CHANGELOG.md documents all security fixes
   - SECURITY_BEST_PRACTICES.md provides secure development guidelines
   - Updated open source repository README with security references
-- **Progress**: Fixed 4 of 14 security vulnerabilities identified by GitHub security scan
+- **Progress**: Fixed 5 of 14 security vulnerabilities identified by GitHub security scan
+
+### Helmet Security Configuration Fix (January 17, 2025)
+- **Fixed Critical Clickjacking Vulnerability**: Resolved insecure Helmet configuration that disabled frameguard
+  - Previously: `frameguard: false` exposed application to clickjacking attacks
+  - Fixed: `frameguard: { action: 'deny' }` now protects against clickjacking
+  - Maintains CSP frameAncestors for granular iframe control
+  - Applied fix to both server/security/headers.ts and liquidlab-open-source version
+- **Security Benefits**: 
+  - X-Frame-Options header now set to DENY
+  - Prevents malicious sites from embedding the application in iframes
+  - Works alongside Content Security Policy for defense in depth
 
 ### Deposit Security Infrastructure Implementation (January 17, 2025)
 - **Database Schema**: Added depositTransactions table to track all deposit operations

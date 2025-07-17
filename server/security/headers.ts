@@ -57,7 +57,9 @@ export function configureSecurityHeaders(app: Express) {
       }
     },
     crossOriginEmbedderPolicy: false, // Required for TradingView
-    frameguard: false, // Completely disable frameguard to allow iframe embedding
+    frameguard: {
+      action: 'deny' // Protect against clickjacking - CSP frameAncestors will handle embedding rules
+    },
     hsts: {
       maxAge: 31536000,
       includeSubDomains: true,
