@@ -13,10 +13,10 @@ export const TradingViewChart = memo(({ symbol = 'BTCUSDT', theme = 'dark' }: Tr
   // Ensure we have a valid symbol
   const validSymbol = symbol && symbol.length > 0 ? symbol : 'BTCUSDT';
   
-  // Use TradingView's advanced real-time chart widget URL
+  // Try simplified URL first for better desktop compatibility
   const embedUrl = useMemo(() => {
-    // Use the advanced chart widget that includes all tools
-    return `https://www.tradingview.com/widgetembed/?symbol=BINANCE%3A${validSymbol}&interval=15&theme=${theme}&style=1&locale=en&toolbar_bg=${theme === 'dark' ? '%23131313' : '%23f1f3f6'}&enable_publishing=false&hide_legend=false&allow_symbol_change=true&save_image=true&studies=true&hide_side_toolbar=false&show_popup_button=true&popup_width=1000&popup_height=650`;
+    // Simplified URL that works better with strict browser security
+    return `https://www.tradingview.com/widgetembed/?symbol=BINANCE:${validSymbol}&interval=D&theme=${theme}&style=1&locale=en&enable_publishing=false&allow_symbol_change=false&container_id=tradingview_${Date.now()}`;
   }, [validSymbol, theme]);
 
   // Reset loading state when symbol changes
@@ -67,17 +67,30 @@ export const TradingViewChart = memo(({ symbol = 'BTCUSDT', theme = 'dark' }: Tr
                 </div>
                 <p className="text-gray-300 text-sm font-semibold mb-2">TradingView Chart Loading Slowly</p>
                 <p className="text-gray-500 text-xs text-center mb-4">
-                  TradingView servers may be experiencing high load.
+                  TradingView may be blocked by browser extensions or security settings.
                 </p>
-                <button 
-                  onClick={handleRetry}
-                  className="px-4 py-2 bg-liquid-green text-black rounded hover:bg-liquid-accent transition-colors text-sm font-medium"
-                >
-                  Retry Loading
-                </button>
-                <p className="text-gray-600 text-xs mt-4 text-center">
-                  Tip: Charts typically load faster during off-peak hours
-                </p>
+                <div className="flex flex-col items-center space-y-3">
+                  <button 
+                    onClick={handleRetry}
+                    className="px-4 py-2 bg-liquid-green text-black rounded hover:bg-liquid-accent transition-colors text-sm font-medium"
+                  >
+                    Retry Loading
+                  </button>
+                  <a 
+                    href={`https://www.tradingview.com/chart/?symbol=BINANCE:${validSymbol}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-liquid-green text-xs hover:underline"
+                  >
+                    Open TradingView in new tab →
+                  </a>
+                </div>
+                <div className="text-gray-600 text-xs mt-4 text-center space-y-1">
+                  <p>If charts aren't loading on desktop:</p>
+                  <p>• Disable ad blockers temporarily</p>
+                  <p>• Try a different browser</p>
+                  <p>• Check firewall settings</p>
+                </div>
               </>
             ) : (
               <>
@@ -92,15 +105,23 @@ export const TradingViewChart = memo(({ symbol = 'BTCUSDT', theme = 'dark' }: Tr
       <iframe
         key={`${validSymbol}-${theme}-${hasError ? 'retry' : 'normal'}`}
         src={embedUrl}
-        style={{ width: '100%', height: '100%', border: 'none', display: isLoading && !hasError ? 'none' : 'block' }}
+        style={{ 
+          width: '100%', 
+          height: '100%', 
+          border: 'none', 
+          display: isLoading && !hasError ? 'none' : 'block',
+          position: 'absolute',
+          top: 0,
+          left: 0
+        }}
         frameBorder={0}
         scrolling="no"
         allowFullScreen
-        allow="clipboard-write"
+        allow="clipboard-write; fullscreen"
         onLoad={handleLoad}
         onError={handleError}
         loading="eager"
-        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+        referrerPolicy="no-referrer"
         title={`TradingView Chart - ${validSymbol}`}
       />
     </div>

@@ -167,11 +167,13 @@ export function HyperliquidTradingInterface() {
           </div>
 
           {/* Chart */}
-          <div className="flex-1">
-            <TradingViewChart 
-              symbol={tradingViewSymbol}
-              theme="dark"
-            />
+          <div className="flex-1 min-h-0 relative">
+            <div className="absolute inset-0">
+              <TradingViewChart 
+                symbol={tradingViewSymbol}
+                theme="dark"
+              />
+            </div>
           </div>
 
           {/* Positions */}
