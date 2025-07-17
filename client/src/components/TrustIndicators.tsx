@@ -79,15 +79,15 @@ export function TrustIndicators({
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-2 dark:bg-green-900/30 px-3 py-1 rounded-full bg-[#0b0d0c]">
+                  <div className="flex items-center gap-2 dark:bg-green-900/30 px-2 py-0.5 rounded-full bg-[#0b0d0c] relative">
                     <div className="relative">
-                      <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
-                      <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <CheckCircle className="w-3 h-3 text-green-600 dark:text-green-400" />
+                      <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
                     </div>
                     <img 
                       src="/powered-by-hyperliquid.png" 
                       alt="Connected to Hyperliquid" 
-                      className="h-10"
+                      className="h-16 -my-2"
                     />
                   </div>
                 </TooltipTrigger>
