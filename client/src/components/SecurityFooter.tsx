@@ -134,6 +134,15 @@ export function SecurityFooter({ platformName, platformId, builderCode, verifica
               Privy
             </a>
           </p>
+          
+          {/* Powered by Hyperliquid logo */}
+          <div className="mt-4">
+            <img 
+              src="/powered-by-hyperliquid.png" 
+              alt="Powered by Hyperliquid" 
+              className="h-8 mx-auto opacity-60 hover:opacity-100 transition-opacity"
+            />
+          </div>
         </div>
       </div>
     </footer>

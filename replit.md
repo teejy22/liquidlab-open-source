@@ -1028,6 +1028,13 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Automatic integration with every new platform created
   - Supports 170+ countries with credit card and bank transfers
 
+### "Powered by Hyperliquid" Logo Integration (January 17, 2025)
+- **Logo Placement**: Added "Powered by Hyperliquid" logo in strategic locations
+  - SecurityFooter component: Displayed at bottom center with opacity transition on hover
+  - TrustIndicators component: Small icon next to "Connected to Hyperliquid" status
+  - Logo file stored at `/public/powered-by-hyperliquid.png`
+  - Subtle integration maintains professional appearance while acknowledging Hyperliquid DEX
+
 ### UI Improvements (January 16, 2025)
 - **Removed Redundant Elements**: Cleaned up the trading interface
   - Removed "Verified" stamp from security bar (already shown in header verification badge)

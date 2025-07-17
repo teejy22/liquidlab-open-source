@@ -85,6 +85,11 @@ export function TrustIndicators({
                       <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
                     </div>
                     <span className="text-[10px] text-green-800 dark:text-green-200 font-medium">Connected to Hyperliquid</span>
+                    <img 
+                      src="/powered-by-hyperliquid.png" 
+                      alt="Hyperliquid" 
+                      className="h-3 ml-1"
+                    />
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
