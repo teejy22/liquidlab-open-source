@@ -138,7 +138,7 @@ export function TrustIndicators({
             
             <ol className="space-y-0.5 text-xs text-gray-600 dark:text-gray-400 list-decimal list-inside">
               <li>Visit <a href="https://liquidlab.trade/verify" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">liquidlab.trade/verify</a></li>
-              <li>Enter Platform ID: <strong>#{platformId}</strong></li>
+              <li>Enter Verification Code: <strong>{verificationCode || `#${platformId}`}</strong></li>
               <li>Confirm the URL matches: <strong>{customDomain || window.location.hostname}</strong></li>
             </ol>
             
