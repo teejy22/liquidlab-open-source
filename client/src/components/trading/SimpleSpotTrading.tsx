@@ -162,71 +162,72 @@ export function SimpleSpotTrading({ walletAddress }: { walletAddress?: string })
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <Card className="bg-gray-900 border-gray-800">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-semibold text-white">Spot Trading</CardTitle>
+        <CardHeader className="py-2 px-3">
+          <CardTitle className="text-sm font-semibold text-white">Spot Trading</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Market Cards */}
-          <div className="grid grid-cols-3 gap-2">
+        <CardContent className="p-3 space-y-3">
+          {/* Market List - Compact single column */}
+          <div className="space-y-1.5 max-h-[300px] overflow-y-auto custom-scrollbar">
             {tokenInfo.map((token) => {
               const priceData = prices[token.symbol];
               const isSelected = selectedPair === token.symbol;
               const isAvailable = token.available && priceData;
               
               return (
-                <Card
+                <div
                   key={token.symbol}
                   onClick={() => isAvailable && setSelectedPair(token.symbol)}
-                  className={`transition-all bg-gray-800 ${
+                  className={`flex items-center justify-between p-2 rounded transition-all ${
                     isAvailable 
-                      ? `cursor-pointer ${isSelected ? 'border-green-500 border-2' : 'border-gray-700 hover:border-gray-600'}`
-                      : 'border-gray-700 opacity-50 cursor-not-allowed'
+                      ? `cursor-pointer ${isSelected ? 'bg-gray-700 border border-green-500' : 'bg-gray-800 hover:bg-gray-750'}`
+                      : 'bg-gray-800 opacity-50 cursor-not-allowed'
                   }`}
                 >
-                  <CardContent className="p-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <div className="font-semibold text-sm text-white">{token.symbol}/USDC</div>
+                  <div className="flex items-center gap-3">
+                    <div>
+                      <div className="font-medium text-xs text-white flex items-center gap-1">
+                        {token.symbol}/USDC
                         {!isAvailable && (
-                          <div className="text-[10px] text-yellow-400 bg-yellow-900/30 px-1 py-0.5 rounded">
-                            Coming Soon
-                          </div>
+                          <span className="text-[9px] text-yellow-400 bg-yellow-900/30 px-1 rounded">
+                            Soon
+                          </span>
                         )}
                       </div>
-                      {isAvailable ? (
-                        <>
-                          <div className="text-xs text-gray-400">
-                            Vol: {priceData?.volume24h > 0 ? `$${(priceData.volume24h / 1000000).toFixed(1)}M` : '$0'}
-                          </div>
-                          <div className="text-lg font-medium text-white">
-                            ${priceData?.price ? (
-                              token.symbol === "BTC" 
-                                ? (priceData.price * 119000).toFixed(0)  // Convert UBTC price to BTC price
-                                : token.symbol === "ETH"
-                                ? (priceData.price * 3300).toFixed(0)    // Convert UETH price to ETH price
-                                : token.symbol === "SOL"
-                                ? priceData.price.toFixed(0)             // SOL price is already correct
-                                : priceData.price.toFixed(4)             // PUMP and HYPE show 4 decimals
-                            ) : '0.00'}
-                          </div>
-                          <div className={`text-xs ${
-                            (priceData?.change24h || 0) >= 0 ? 'text-green-400' : 'text-red-400'
-                          }`}>
-                            {(priceData?.change24h || 0) >= 0 ? '+' : ''}{(priceData?.change24h || 0).toFixed(2)}%
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="text-xs text-gray-500">Vol: --</div>
-                          <div className="text-lg font-medium text-gray-500">--</div>
-                          <div className="text-xs text-gray-500">--</div>
-                        </>
-                      )}
+                      <div className="text-[10px] text-gray-400">
+                        {isAvailable && priceData?.volume24h > 0 
+                          ? `Vol: $${priceData.volume24h < 1000 
+                            ? priceData.volume24h.toFixed(0)
+                            : (priceData.volume24h / 1000000).toFixed(1) + 'M'}`
+                          : 'Vol: --'}
+                      </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm font-medium text-white">
+                      {isAvailable && priceData?.price ? (
+                        // Display prices directly from API without conversion
+                        `$${priceData.price >= 1000 
+                          ? priceData.price.toFixed(0) 
+                          : priceData.price >= 1 
+                          ? priceData.price.toFixed(2)
+                          : priceData.price >= 0.01
+                          ? priceData.price.toFixed(4)
+                          : priceData.price.toFixed(6)}`
+                      ) : '--'}
+                    </div>
+                    <div className={`text-[10px] ${
+                      isAvailable 
+                        ? (priceData?.change24h || 0) >= 0 ? 'text-green-400' : 'text-red-400'
+                        : 'text-gray-500'
+                    }`}>
+                      {isAvailable && priceData?.change24h !== undefined
+                        ? `${priceData.change24h >= 0 ? '+' : ''}${priceData.change24h.toFixed(2)}%`
+                        : '--'}
+                    </div>
+                  </div>
+                </div>
               );
             })}
           </div>

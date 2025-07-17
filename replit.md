@@ -539,9 +539,13 @@ The application uses a monorepo structure with shared types and schemas, enablin
 - **Simple Spot Trading Added**: Created a simplified spot trading interface for available Hyperliquid spot tokens
   - Built new SimpleSpotTrading component with clean card-based design
   - **Discovery**: Hyperliquid uses "Universal" tokens for major assets:
-    * BTC is available as UBTC/USDC (Universal BTC)
-    * ETH is available as UETH/USDC (Universal ETH)
-    * SOL is available as USOL/USDC (Universal SOL)
+    * BTC is available as UBTC/USDC (Universal BTC) - 1 UBTC = 1 BTC
+    * ETH is available as UETH/USDC (Universal ETH) - 1 UETH = 1 ETH
+    * SOL is available as USOL/USDC (Universal SOL) - 1 USOL = 1 SOL
+  - **Pricing**: Universal tokens show fractional prices in the API that need conversion:
+    * UBTC price (~$0.004) × current BTC price (~$119,800) = actual USD value
+    * UETH price (~$0.007) × current ETH price (~$3,350) = actual USD value
+    * USOL price (~$3,435) is already in correct USD format
   - **Available Tokens**: BTC (UBTC), ETH (UETH), SOL (USOL), PUMP, HYPE
   - **Not Available**: FARTCOIN (shows "Coming Soon" in UI)
   - Removed charts to prevent past integration issues - uses price cards instead
