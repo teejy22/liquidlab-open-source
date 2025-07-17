@@ -2106,6 +2106,185 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Trader analytics endpoints
+  app.get("/api/platforms/:platformId/traders", async (req, res) => {
+    try {
+      const { platformId } = req.params;
+      const { minVolume, sortBy } = req.query;
+      
+      // Verify platform ownership
+      const platform = await storage.getTradingPlatform(parseInt(platformId));
+      if (!platform) {
+        return res.status(404).json({ error: "Platform not found" });
+      }
+      
+      if (!req.session.userId || platform.userId !== req.session.userId) {
+        return res.status(403).json({ error: "Unauthorized access to platform data" });
+      }
+      
+      const options: any = {};
+      if (minVolume) options.minVolume = parseFloat(minVolume as string);
+      if (sortBy) options.sortBy = sortBy as 'volume' | 'fees' | 'trades';
+      
+      const traders = await storage.getTradersByPlatform(parseInt(platformId), options);
+      res.json(traders);
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  app.get("/api/platforms/:platformId/traders/top", async (req, res) => {
+    try {
+      const { platformId } = req.params;
+      const { limit } = req.query;
+      
+      // Verify platform ownership
+      const platform = await storage.getTradingPlatform(parseInt(platformId));
+      if (!platform) {
+        return res.status(404).json({ error: "Platform not found" });
+      }
+      
+      if (!req.session.userId || platform.userId !== req.session.userId) {
+        return res.status(403).json({ error: "Unauthorized access to platform data" });
+      }
+      
+      const topTraders = await storage.getTopTraders(
+        parseInt(platformId),
+        limit ? parseInt(limit as string) : 10
+      );
+      res.json(topTraders);
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  app.get("/api/platforms/:platformId/traders/:walletAddress", async (req, res) => {
+    try {
+      const { platformId, walletAddress } = req.params;
+      
+      // Verify platform ownership
+      const platform = await storage.getTradingPlatform(parseInt(platformId));
+      if (!platform) {
+        return res.status(404).json({ error: "Platform not found" });
+      }
+      
+      if (!req.session.userId || platform.userId !== req.session.userId) {
+        return res.status(403).json({ error: "Unauthorized access to platform data" });
+      }
+      
+      const trader = await storage.getTraderActivity(parseInt(platformId), walletAddress);
+      if (!trader) {
+        return res.status(404).json({ error: "Trader not found" });
+      }
+      
+      // Get trader's current tier if incentive tiers are configured
+      const tier = await storage.getTraderTier(parseInt(platformId), walletAddress);
+      
+      res.json({
+        ...trader,
+        currentTier: tier || null
+      });
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  // Incentive tier management endpoints
+  app.get("/api/platforms/:platformId/incentive-tiers", async (req, res) => {
+    try {
+      const { platformId } = req.params;
+      
+      // Verify platform ownership
+      const platform = await storage.getTradingPlatform(parseInt(platformId));
+      if (!platform) {
+        return res.status(404).json({ error: "Platform not found" });
+      }
+      
+      if (!req.session.userId || platform.userId !== req.session.userId) {
+        return res.status(403).json({ error: "Unauthorized access to platform data" });
+      }
+      
+      const tiers = await storage.getIncentiveTiers(parseInt(platformId));
+      res.json(tiers);
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  app.post("/api/platforms/:platformId/incentive-tiers", async (req, res) => {
+    try {
+      const { platformId } = req.params;
+      const { name, minVolume, rewardType, rewardValue, description } = req.body;
+      
+      // Verify platform ownership
+      const platform = await storage.getTradingPlatform(parseInt(platformId));
+      if (!platform) {
+        return res.status(404).json({ error: "Platform not found" });
+      }
+      
+      if (!req.session.userId || platform.userId !== req.session.userId) {
+        return res.status(403).json({ error: "Unauthorized access to platform data" });
+      }
+      
+      const tier = await storage.createIncentiveTier({
+        platformId: parseInt(platformId),
+        name,
+        minVolume,
+        rewardType,
+        rewardValue,
+        description,
+        isActive: true
+      });
+      
+      res.json(tier);
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  app.put("/api/platforms/:platformId/incentive-tiers/:tierId", async (req, res) => {
+    try {
+      const { platformId, tierId } = req.params;
+      const updates = req.body;
+      
+      // Verify platform ownership
+      const platform = await storage.getTradingPlatform(parseInt(platformId));
+      if (!platform) {
+        return res.status(404).json({ error: "Platform not found" });
+      }
+      
+      if (!req.session.userId || platform.userId !== req.session.userId) {
+        return res.status(403).json({ error: "Unauthorized access to platform data" });
+      }
+      
+      const tier = await storage.updateIncentiveTier(parseInt(tierId), updates);
+      res.json(tier);
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
+  app.delete("/api/platforms/:platformId/incentive-tiers/:tierId", async (req, res) => {
+    try {
+      const { platformId, tierId } = req.params;
+      
+      // Verify platform ownership
+      const platform = await storage.getTradingPlatform(parseInt(platformId));
+      if (!platform) {
+        return res.status(404).json({ error: "Platform not found" });
+      }
+      
+      if (!req.session.userId || platform.userId !== req.session.userId) {
+        return res.status(403).json({ error: "Unauthorized access to platform data" });
+      }
+      
+      await storage.deleteIncentiveTier(parseInt(tierId));
+      res.json({ message: "Incentive tier deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
   // Import rate limiter for file upload
   const { createRateLimiter } = await import("./security/customRateLimiter");
   

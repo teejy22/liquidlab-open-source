@@ -8,6 +8,8 @@ import {
   platformRevenueSummary,
   moonpayTransactions,
   payoutRecords,
+  traderActivity,
+  incentiveTiers,
   type User, 
   type InsertUser,
   type TradingPlatform,
@@ -24,7 +26,11 @@ import {
   type MoonpayTransaction,
   type InsertMoonpayTransaction,
   type PayoutRecord,
-  type InsertPayoutRecord
+  type InsertPayoutRecord,
+  type TraderActivity,
+  type InsertTraderActivity,
+  type IncentiveTier,
+  type InsertIncentiveTier
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
@@ -103,6 +109,19 @@ export interface IStorage {
   getPayouts(platformId: number, options?: { status?: string; startDate?: Date; endDate?: Date }): Promise<PayoutRecord[]>;
   updatePayoutStatus(payoutId: number, status: string, txHash?: string): Promise<void>;
   getPendingPayouts(platformId: number): Promise<{ amount: string; period: string }[]>;
+  
+  // Trader activity tracking
+  updateTraderActivity(platformId: number, walletAddress: string, tradeVolume: number, tradeFee: number): Promise<void>;
+  getTraderActivity(platformId: number, walletAddress: string): Promise<TraderActivity | undefined>;
+  getTopTraders(platformId: number, limit?: number): Promise<TraderActivity[]>;
+  getTradersByPlatform(platformId: number, options?: { minVolume?: number; sortBy?: 'volume' | 'fees' | 'trades' }): Promise<TraderActivity[]>;
+  
+  // Incentive tiers
+  createIncentiveTier(tier: InsertIncentiveTier): Promise<IncentiveTier>;
+  updateIncentiveTier(tierId: number, updates: Partial<IncentiveTier>): Promise<IncentiveTier>;
+  deleteIncentiveTier(tierId: number): Promise<void>;
+  getIncentiveTiers(platformId: number): Promise<IncentiveTier[]>;
+  getTraderTier(platformId: number, walletAddress: string): Promise<IncentiveTier | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -787,6 +806,165 @@ export class DatabaseStorage implements IStorage {
     }
     
     return false;
+  }
+
+  // Trader activity tracking methods
+  async updateTraderActivity(platformId: number, walletAddress: string, tradeVolume: number, tradeFee: number): Promise<void> {
+    const lowerWallet = walletAddress.toLowerCase();
+    
+    // Check if trader activity exists
+    const [existing] = await db
+      .select()
+      .from(traderActivity)
+      .where(and(
+        eq(traderActivity.platformId, platformId),
+        eq(traderActivity.walletAddress, lowerWallet)
+      ));
+
+    if (existing) {
+      // Update existing trader activity
+      const newTotalVolume = parseFloat(existing.totalVolume) + tradeVolume;
+      const newTotalFees = parseFloat(existing.totalFees) + tradeFee;
+      const newTradeCount = existing.tradeCount + 1;
+      const newAverageTradeSize = newTotalVolume / newTradeCount;
+
+      await db
+        .update(traderActivity)
+        .set({
+          totalVolume: newTotalVolume.toString(),
+          totalFees: newTotalFees.toString(),
+          tradeCount: newTradeCount,
+          averageTradeSize: newAverageTradeSize.toString(),
+          lastTradeAt: new Date(),
+          updatedAt: new Date()
+        })
+        .where(and(
+          eq(traderActivity.platformId, platformId),
+          eq(traderActivity.walletAddress, lowerWallet)
+        ));
+    } else {
+      // Create new trader activity
+      await db
+        .insert(traderActivity)
+        .values({
+          platformId,
+          walletAddress: lowerWallet,
+          totalVolume: tradeVolume.toString(),
+          totalFees: tradeFee.toString(),
+          tradeCount: 1,
+          averageTradeSize: tradeVolume.toString(),
+          firstTradeAt: new Date(),
+          lastTradeAt: new Date()
+        });
+    }
+  }
+
+  async getTraderActivity(platformId: number, walletAddress: string): Promise<TraderActivity | undefined> {
+    const [activity] = await db
+      .select()
+      .from(traderActivity)
+      .where(and(
+        eq(traderActivity.platformId, platformId),
+        eq(traderActivity.walletAddress, walletAddress.toLowerCase())
+      ));
+    return activity;
+  }
+
+  async getTopTraders(platformId: number, limit: number = 10): Promise<TraderActivity[]> {
+    return await db
+      .select()
+      .from(traderActivity)
+      .where(eq(traderActivity.platformId, platformId))
+      .orderBy(desc(traderActivity.totalVolume))
+      .limit(limit);
+  }
+
+  async getTradersByPlatform(
+    platformId: number, 
+    options?: { minVolume?: number; sortBy?: 'volume' | 'fees' | 'trades' }
+  ): Promise<TraderActivity[]> {
+    let query = db
+      .select()
+      .from(traderActivity)
+      .where(eq(traderActivity.platformId, platformId));
+
+    if (options?.minVolume) {
+      query = query.where(
+        and(
+          eq(traderActivity.platformId, platformId),
+          gte(traderActivity.totalVolume, options.minVolume.toString())
+        )
+      );
+    }
+
+    if (options?.sortBy === 'fees') {
+      query = query.orderBy(desc(traderActivity.totalFees));
+    } else if (options?.sortBy === 'trades') {
+      query = query.orderBy(desc(traderActivity.tradeCount));
+    } else {
+      query = query.orderBy(desc(traderActivity.totalVolume));
+    }
+
+    return await query;
+  }
+
+  // Incentive tier methods
+  async createIncentiveTier(tier: InsertIncentiveTier): Promise<IncentiveTier> {
+    const [created] = await db
+      .insert(incentiveTiers)
+      .values(tier)
+      .returning();
+    return created;
+  }
+
+  async updateIncentiveTier(tierId: number, updates: Partial<IncentiveTier>): Promise<IncentiveTier> {
+    const [updated] = await db
+      .update(incentiveTiers)
+      .set(updates)
+      .where(eq(incentiveTiers.id, tierId))
+      .returning();
+    return updated;
+  }
+
+  async deleteIncentiveTier(tierId: number): Promise<void> {
+    await db
+      .delete(incentiveTiers)
+      .where(eq(incentiveTiers.id, tierId));
+  }
+
+  async getIncentiveTiers(platformId: number): Promise<IncentiveTier[]> {
+    return await db
+      .select()
+      .from(incentiveTiers)
+      .where(and(
+        eq(incentiveTiers.platformId, platformId),
+        eq(incentiveTiers.isActive, true)
+      ))
+      .orderBy(incentiveTiers.minVolume);
+  }
+
+  async getTraderTier(platformId: number, walletAddress: string): Promise<IncentiveTier | undefined> {
+    // Get trader's current volume
+    const trader = await this.getTraderActivity(platformId, walletAddress);
+    if (!trader) return undefined;
+
+    // Get all active tiers for the platform
+    const tiers = await this.getIncentiveTiers(platformId);
+    if (tiers.length === 0) return undefined;
+
+    // Find the highest tier the trader qualifies for
+    const traderVolume = parseFloat(trader.totalVolume);
+    let qualifiedTier: IncentiveTier | undefined;
+
+    for (const tier of tiers) {
+      if (traderVolume >= parseFloat(tier.minVolume)) {
+        qualifiedTier = tier;
+      } else {
+        break; // Tiers are sorted by minVolume, so we can stop here
+      }
+    }
+
+    return qualifiedTier;
   }
 }
 

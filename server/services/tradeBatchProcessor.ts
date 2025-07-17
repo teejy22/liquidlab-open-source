@@ -6,6 +6,7 @@ interface TradeData {
   platformId: number;
   tradeId: string;
   userId: string;
+  walletAddress: string;
   market: string;
   side: 'buy' | 'sell';
   size: string;
@@ -147,6 +148,16 @@ export class TradeBatchProcessor {
       status: 'completed'
     });
 
+    // Update trader activity tracking
+    if (trade.walletAddress) {
+      await storage.updateTraderActivity(
+        trade.platformId,
+        trade.walletAddress,
+        tradeVolume,
+        totalFee
+      );
+    }
+
     // Update platform revenue summaries for all periods
     await storage.updateRevenueSummary(trade.platformId, 'daily');
     await storage.updateRevenueSummary(trade.platformId, 'weekly');
@@ -196,6 +207,7 @@ export class TradeBatchProcessor {
             platformId: platforms[0]?.id || 1,
             tradeId: `demo_${currentTime}_1`,
             userId: '0xdemo_wallet_address',
+            walletAddress: '0xdemo_wallet_address_1',
             market: 'BTC',
             side: 'buy',
             size: '0.1',
@@ -208,6 +220,7 @@ export class TradeBatchProcessor {
             platformId: platforms[0]?.id || 1,
             tradeId: `demo_${currentTime}_2`,
             userId: '0xdemo_wallet_address',
+            walletAddress: '0xdemo_wallet_address_2',
             market: 'ETH',
             side: 'sell',
             size: '1.5',
@@ -264,6 +277,7 @@ export class TradeBatchProcessor {
                 platformId: platform.id,
                 tradeId: fill.tid,
                 userId: user.walletAddress,
+                walletAddress: user.walletAddress,
                 market: fill.coin,
                 side: fill.side === 'B' ? 'buy' : 'sell',
                 size: fill.sz,

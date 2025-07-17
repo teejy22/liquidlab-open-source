@@ -258,6 +258,41 @@ export const verificationAttempts = pgTable("verification_attempts", {
   index("idx_attempt_code").on(table.attemptedCode),
 ]);
 
+// Trader analytics - tracks individual trader activity per platform
+export const traderActivity = pgTable("trader_activity", {
+  id: serial("id").primaryKey(),
+  platformId: integer("platform_id").notNull().references(() => tradingPlatforms.id, { onDelete: "cascade" }),
+  walletAddress: varchar("wallet_address", { length: 42 }).notNull(), // Trader's wallet address
+  totalVolume: decimal("total_volume", { precision: 20, scale: 8 }).notNull().default('0'),
+  totalFees: decimal("total_fees", { precision: 20, scale: 8 }).notNull().default('0'),
+  tradeCount: integer("trade_count").notNull().default(0),
+  lastTradeAt: timestamp("last_trade_at"),
+  firstTradeAt: timestamp("first_trade_at"),
+  averageTradeSize: decimal("average_trade_size", { precision: 20, scale: 8 }).notNull().default('0'),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_trader_platform_wallet").on(table.platformId, table.walletAddress),
+  index("idx_trader_volume").on(table.platformId, table.totalVolume),
+  unique("idx_trader_unique").on(table.platformId, table.walletAddress),
+]);
+
+// Trader incentive tiers - configurable by platform owners
+export const incentiveTiers = pgTable("incentive_tiers", {
+  id: serial("id").primaryKey(),
+  platformId: integer("platform_id").notNull().references(() => tradingPlatforms.id, { onDelete: "cascade" }),
+  tierName: varchar("tier_name", { length: 50 }).notNull(),
+  minVolume: decimal("min_volume", { precision: 20, scale: 2 }).notNull(), // Minimum USD volume
+  feeDiscount: decimal("fee_discount", { precision: 5, scale: 2 }).notNull().default('0'), // Percentage discount
+  rewards: jsonb("rewards"), // Custom rewards like bonuses, badges, etc.
+  color: varchar("color", { length: 7 }).default('#1dd1a1'), // Hex color for UI
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_tier_platform").on(table.platformId),
+  index("idx_tier_volume").on(table.platformId, table.minVolume),
+]);
+
 // Platform security monitoring
 export const platformSecurity = pgTable("platform_security", {
   id: serial("id").primaryKey(),
@@ -467,6 +502,20 @@ export const depositTransactionsRelations = relations(depositTransactions, ({ on
   }),
 }));
 
+export const traderActivityRelations = relations(traderActivity, ({ one }) => ({
+  platform: one(tradingPlatforms, {
+    fields: [traderActivity.platformId],
+    references: [tradingPlatforms.id],
+  }),
+}));
+
+export const incentiveTiersRelations = relations(incentiveTiers, ({ one }) => ({
+  platform: one(tradingPlatforms, {
+    fields: [incentiveTiers.platformId],
+    references: [tradingPlatforms.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -564,6 +613,17 @@ export const insertDepositTransactionSchema = createInsertSchema(depositTransact
   confirmedAt: true,
 });
 
+export const insertTraderActivitySchema = createInsertSchema(traderActivity).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertIncentiveTierSchema = createInsertSchema(incentiveTiers).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -599,3 +659,7 @@ export type VerificationAttempt = typeof verificationAttempts.$inferSelect;
 export type InsertVerificationAttempt = z.infer<typeof insertVerificationAttemptSchema>;
 export type DepositTransaction = typeof depositTransactions.$inferSelect;
 export type InsertDepositTransaction = z.infer<typeof insertDepositTransactionSchema>;
+export type TraderActivity = typeof traderActivity.$inferSelect;
+export type InsertTraderActivity = z.infer<typeof insertTraderActivitySchema>;
+export type IncentiveTier = typeof incentiveTiers.$inferSelect;
+export type InsertIncentiveTier = z.infer<typeof insertIncentiveTierSchema>;

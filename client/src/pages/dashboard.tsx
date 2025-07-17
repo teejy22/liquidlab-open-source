@@ -21,6 +21,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import TwoFactorSetup from "@/components/TwoFactorSetup";
+import { TraderAnalytics } from "@/components/TraderAnalytics";
 import { queryClient } from "@/lib/queryClient";
 
 export default function Dashboard() {
@@ -311,10 +312,11 @@ export default function Dashboard() {
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Fee Tracking & Revenue</h2>
         
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="transactions">Recent Transactions</TabsTrigger>
             <TabsTrigger value="platforms">Platform Revenues</TabsTrigger>
+            <TabsTrigger value="analytics">Trader Analytics</TabsTrigger>
             <TabsTrigger value="payouts">Payouts</TabsTrigger>
             <TabsTrigger value="account">Account</TabsTrigger>
           </TabsList>
@@ -495,6 +497,22 @@ export default function Dashboard() {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="analytics" className="space-y-4">
+            {platforms && platforms.length > 0 ? (
+              <TraderAnalytics platformId={platforms[0].id} />
+            ) : (
+              <Card>
+                <CardContent className="text-center py-8">
+                  <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No platforms found</h3>
+                  <p className="text-gray-600">
+                    Create a platform first to view trader analytics
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="payouts" className="space-y-4">
