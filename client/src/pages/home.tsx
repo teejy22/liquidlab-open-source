@@ -688,6 +688,12 @@ export default function Home() {
                 title: "Trader Support Included",
                 description: "Basic trader support provided by LiquidLab for all platforms, ensuring your users get help when needed.",
                 color: "bg-indigo-500/10 text-indigo-500"
+              },
+              {
+                icon: Activity,
+                title: "Trader Analytics & Incentives",
+                description: "Track trader volumes and run incentive programs. Monitor individual performance and reward your top traders automatically.",
+                color: "bg-cyan-500/10 text-cyan-500"
               }
             ].map((feature, index) => (
               <div key={index} className="text-center">
