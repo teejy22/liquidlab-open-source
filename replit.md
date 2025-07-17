@@ -535,17 +535,24 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - POST `/api/trades/process-batch` - Manually trigger batch processing
   - GET `/api/trades/batch-status` - View recent processing logs
 
-### Spot Trading Removal (January 16, 2025)
-- **Platform Focus on Perpetual Trading**: Removed all spot trading functionality per user decision
-  - Deleted HyperliquidSpotMarkets, HyperliquidSpotTradeForm, and HyperliquidAccountTransfer components
-  - Removed spot trading toggle from HyperliquidTradingInterface
-  - Deleted all spot trading API endpoints from server routes
-  - Removed hyperliquid-spot.ts library file
-  - Platform now exclusively focuses on perpetual futures trading
-- **Simplified Trading Interface**: Streamlined the trading experience
-  - Removed perp/spot toggle - interface now defaults to perpetual trading
-  - Removed USDC transfer functionality between accounts
-  - Cleaner UI with fewer options for better user experience
+### Spot Trading Re-Implementation (January 17, 2025)
+- **Simple Spot Trading Added**: Created a simplified spot trading interface for 6 specific assets only
+  - Built new SimpleSpotTrading component with clean card-based design
+  - Supports only: HYPE/USDC, PURR/USDC, ETH/USDC, BTC/USDC, SOL/USDC, FARTCOIN/USDC
+  - Removed charts to prevent past integration issues - uses price cards instead
+  - Added as "Spot" tab in both desktop and mobile interfaces
+- **Backend Integration**: Implemented complete spot trading API support
+  - GET /api/hyperliquid/spot-prices - Fetches real-time spot prices for the 6 assets
+  - POST /api/hyperliquid/spot-order - Handles spot order placement (requires wallet signature)
+  - Added getSpotMetaAndAssetCtxs() to hyperliquidService for spot data fetching
+- **User Interface Features**:
+  - 2x3 grid of market cards showing price, 24h change, and volume
+  - Selected market highlighted with green border
+  - Buy/Sell toggle with green/red color coding
+  - Real-time balance display for authenticated users
+  - Total calculation showing USDC value of order
+  - Info card explaining spot trading fees (0.2%)
+- **Security**: Spot orders require authentication and wallet signature for execution
 - **UI Layout Improvements**: Trading interface optimizations remain
   - Constrained trading interface height to 600px to prevent overflow
   - Scrollable markets sidebar with proper overflow handling

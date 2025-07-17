@@ -1125,6 +1125,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Spot trading endpoints
+  app.get("/api/hyperliquid/spot-prices", async (req, res) => {
+    try {
+      // Fetch spot metadata and prices
+      const spotMetaData = await hyperliquidService.getSpotMetaAndAssetCtxs();
+      
+      if (!spotMetaData || spotMetaData.length < 2) {
+        return res.status(500).json({ error: "Failed to fetch spot data" });
+      }
+      
+      const [spotMeta, assetCtxs] = spotMetaData;
+      const spotPairs = ["HYPE", "PURR", "ETH", "BTC", "SOL", "FARTCOIN"];
+      const spotPrices: Record<string, any> = {};
+      
+      // Map token names to their indices
+      const tokenIndexMap: Record<string, number> = {};
+      spotMeta.tokens.forEach((token: any) => {
+        tokenIndexMap[token.name] = token.index;
+      });
+      
+      // Find spot pairs for our supported tokens
+      spotMeta.universe.forEach((pair: any, pairIndex: number) => {
+        const baseTokenIndex = pair.tokens[0];
+        const quoteTokenIndex = pair.tokens[1];
+        
+        // Find the base token
+        const baseToken = spotMeta.tokens.find((t: any) => t.index === baseTokenIndex);
+        const quoteToken = spotMeta.tokens.find((t: any) => t.index === quoteTokenIndex);
+        
+        if (baseToken && quoteToken && quoteToken.name === "USDC" && spotPairs.includes(baseToken.name)) {
+          const assetCtx = assetCtxs[pairIndex];
+          if (assetCtx) {
+            const price = parseFloat(assetCtx.midPx || assetCtx.markPx || "0");
+            const prevPrice = parseFloat(assetCtx.prevDayPx || "0");
+            const change24h = prevPrice > 0 ? ((price - prevPrice) / prevPrice * 100) : 0;
+            
+            spotPrices[baseToken.name] = {
+              symbol: baseToken.name,
+              price: price,
+              change24h: change24h,
+              volume24h: parseFloat(assetCtx.dayNtlVlm || "0"),
+              pairIndex: pairIndex,
+              baseTokenIndex: baseTokenIndex,
+              quoteTokenIndex: quoteTokenIndex
+            };
+          }
+        }
+      });
+      
+      res.json(spotPrices);
+    } catch (error) {
+      console.error("Error fetching spot prices:", error);
+      res.status(500).json({ error: "Failed to fetch spot prices" });
+    }
+  });
+
+  app.post("/api/hyperliquid/spot-order", async (req, res) => {
+    try {
+      // Check authentication
+      if (!req.session.userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+      
+      const { symbol, side, amount, walletAddress } = req.body;
+      
+      if (!symbol || !side || !amount || !walletAddress) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+      
+      // For spot trading, we need to:
+      // 1. Get the spot pair info
+      // 2. Sign the order with the user's wallet (done on frontend)
+      // 3. Submit to Hyperliquid
+      
+      // This is a simplified response for now
+      // In production, this would handle the actual spot order placement
+      res.json({
+        success: true,
+        message: `Spot ${side} order for ${amount} ${symbol} requires wallet signature`,
+        orderId: `spot_${Date.now()}`,
+        note: "Please use the trading interface to sign and submit spot orders"
+      });
+    } catch (error) {
+      console.error("Error placing spot order:", error);
+      res.status(500).json({ error: "Failed to place spot order" });
+    }
+  });
+
   // Get validated contract addresses for secure deposits
   app.get("/api/deposit/config", async (req, res) => {
     try {

@@ -301,4 +301,51 @@ export class HyperliquidService {
       throw error;
     }
   }
+
+  async getSpotMetaAndAssetCtxs() {
+    try {
+      const response = await fetch(`${this.baseUrl}/info`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "spotMetaAndAssetCtxs",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching spot meta and asset contexts:", error);
+      throw error;
+    }
+  }
+
+  async getSpotClearinghouseState(userAddress: string) {
+    try {
+      const response = await fetch(`${this.baseUrl}/info`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "spotClearinghouseState",
+          user: userAddress,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching spot clearinghouse state:", error);
+      throw error;
+    }
+  }
 }
