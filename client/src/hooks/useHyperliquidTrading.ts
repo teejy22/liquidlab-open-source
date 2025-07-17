@@ -17,14 +17,14 @@ export function useHyperliquidTrading() {
   const { data: positions, isLoading: positionsLoading } = useQuery({
     queryKey: [`/api/hyperliquid/user-positions/${userAddress}`],
     enabled: !!userAddress && authenticated,
-    refetchInterval: 2000, // Refresh every 2 seconds
+    refetchInterval: 5000, // Refresh every 5 seconds to avoid rate limiting
   });
 
   // Fetch open orders
   const { data: openOrders, isLoading: ordersLoading } = useQuery({
     queryKey: [`/api/hyperliquid/open-orders/${userAddress}`],
     enabled: !!userAddress && authenticated,
-    refetchInterval: 2000,
+    refetchInterval: 5000, // Refresh every 5 seconds to avoid rate limiting
   });
 
   // Place order mutation

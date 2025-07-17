@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, BarChart3, Volume2, Activity, X } from "lucide-react";
+import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, BarChart3, Volume2, Activity, X, AlertCircle } from "lucide-react";
 import liquidLabLogo from "@assets/Trade (6)_1752434284086.png";
 import { TrustIndicators } from "@/components/TrustIndicators";
 import { PlatformVerificationBadge } from "@/components/PlatformVerificationBadge";
@@ -45,6 +45,9 @@ export default function ExampleTradingPage() {
   const [platformData, setPlatformData] = useState<any>(null);
   const [verificationCode, setVerificationCode] = useState<string>("");
   const [hyperliquidPrices, setHyperliquidPrices] = useState<{[key: string]: string}>({});
+  const [platformError, setPlatformError] = useState<string | null>(null);
+  const [marketError, setMarketError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   // Check for preview mode parameters
   const urlParams = new URLSearchParams(window.location.search);
@@ -52,10 +55,37 @@ export default function ExampleTradingPage() {
   const previewName = urlParams.get('name');
   const previewLogo = urlParams.get('logo');
 
+  // Helper function for exponential backoff
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  
+  // Retry function with exponential backoff
+  const retryFetch = async (fn: () => Promise<Response>, maxRetries = 3, retryDelay = 1000) => {
+    for (let i = 0; i <= maxRetries; i++) {
+      try {
+        const response = await fn();
+        if (response.ok || response.status < 500) {
+          return response; // Success or client error (don't retry client errors)
+        }
+        if (i < maxRetries) {
+          console.log(`Retry ${i + 1}/${maxRetries} after ${retryDelay}ms`);
+          await delay(retryDelay);
+          retryDelay *= 2; // Exponential backoff
+        }
+      } catch (error) {
+        if (i === maxRetries) throw error;
+        await delay(retryDelay);
+        retryDelay *= 2;
+      }
+    }
+    throw new Error('Max retries exceeded');
+  };
+
   // Fetch platform data and verification code
   useEffect(() => {
     const fetchPlatformData = async () => {
       try {
+        setPlatformError(null);
+        
         // If in preview mode, use preview data
         if (isPreview && (previewName || previewLogo)) {
           setPlatformData({
@@ -65,7 +95,7 @@ export default function ExampleTradingPage() {
           return;
         }
 
-        const response = await fetch('/api/platforms');
+        const response = await retryFetch(() => fetch('/api/platforms'));
         if (response.ok) {
           const platforms = await response.json();
           
@@ -84,9 +114,11 @@ export default function ExampleTradingPage() {
           if (selectedPlatform) {
             setPlatformData(selectedPlatform);
             
-            // Fetch verification code for this platform
+            // Fetch verification code for this platform with retry
             console.log('Fetching verification code for platform:', selectedPlatform.id);
-            const verifyResponse = await fetch(`/api/platforms/${selectedPlatform.id}/verification-code`);
+            const verifyResponse = await retryFetch(() => 
+              fetch(`/api/platforms/${selectedPlatform.id}/verification-code`)
+            );
             if (verifyResponse.ok) {
               const verifyData = await verifyResponse.json();
               console.log('Verification response:', verifyData);
@@ -98,52 +130,99 @@ export default function ExampleTradingPage() {
               }
             } else {
               console.error('Failed to fetch verification code:', verifyResponse.status);
+              setPlatformError('Unable to fetch verification code');
             }
           }
+        } else {
+          setPlatformError('Unable to load platform data');
         }
       } catch (error) {
         console.error("Error fetching platform data:", error);
+        setPlatformError('Failed to connect to server. Please refresh the page.');
       }
     };
     
     fetchPlatformData();
+  }, [retryCount]);
+
+  // Cache for market data to reduce API calls
+  const marketDataCache = useMemo(() => {
+    const cache = new Map<string, { data: any; timestamp: number }>();
+    const CACHE_DURATION = 5000; // 5 seconds cache
+    
+    return {
+      get: (key: string) => {
+        const cached = cache.get(key);
+        if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+          return cached.data;
+        }
+        return null;
+      },
+      set: (key: string, data: any) => {
+        cache.set(key, { data, timestamp: Date.now() });
+      }
+    };
   }, []);
 
   // Fetch Hyperliquid market data
   useEffect(() => {
     const fetchHyperliquidData = async () => {
       try {
-        // Fetch current market prices
-        const priceResponse = await fetch('/api/hyperliquid/market-data');
+        setMarketError(null);
+        
+        // Check cache first
+        const cachedData = marketDataCache.get('market-data');
+        if (cachedData) {
+          setHyperliquidPrices(cachedData);
+          updateMarketStats(cachedData[selectedMarket]);
+          setIsLoading(false);
+          return;
+        }
+        
+        // Fetch current market prices with retry
+        const priceResponse = await retryFetch(() => fetch('/api/hyperliquid/market-data'), 2, 2000);
+        if (!priceResponse.ok) {
+          throw new Error(`HTTP error! status: ${priceResponse.status}`);
+        }
+        
         const priceData = await priceResponse.json();
+        marketDataCache.set('market-data', priceData);
         setHyperliquidPrices(priceData);
         
         // Update stats for selected market
-        const currentPrice = priceData[selectedMarket];
-        if (currentPrice) {
-          const price = parseFloat(currentPrice);
-          setMarketStats({
-            price: price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-            change24h: "+0.00%", // Hyperliquid doesn't provide 24h change in this endpoint
-            high24h: (price * 1.02).toFixed(2),
-            low24h: (price * 0.98).toFixed(2),
-            volume24h: "---"
-          });
-        }
-        
-
-        
+        updateMarketStats(priceData[selectedMarket]);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching Hyperliquid data:", error);
+        setMarketError('Unable to fetch market data. Will retry...');
         setIsLoading(false);
+        
+        // Retry after 5 seconds if there's an error
+        setTimeout(() => {
+          setRetryCount(prev => prev + 1);
+        }, 5000);
+      }
+    };
+
+    const updateMarketStats = (currentPrice: string | undefined) => {
+      if (currentPrice) {
+        const price = parseFloat(currentPrice);
+        setMarketStats({
+          price: price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+          change24h: "+0.00%", // Hyperliquid doesn't provide 24h change in this endpoint
+          high24h: (price * 1.02).toFixed(2),
+          low24h: (price * 0.98).toFixed(2),
+          volume24h: "---"
+        });
       }
     };
 
     fetchHyperliquidData();
-    const interval = setInterval(fetchHyperliquidData, 2000);
+    
+    // Reduce frequency to 5 seconds to avoid rate limiting
+    const interval = setInterval(fetchHyperliquidData, 5000);
     return () => clearInterval(interval);
-  }, [selectedMarket]);
+  }, [selectedMarket, retryCount]);
 
   // Format number with commas
   const formatPrice = (price: number) => {
@@ -219,6 +298,28 @@ export default function ExampleTradingPage() {
         builderCode={platformData?.config?.builderCode || "LIQUIDLAB2025"}
         verificationCode={verificationCode || undefined}
       />
+      
+      {/* Error Messages */}
+      {(platformError || marketError) && (
+        <div className="bg-red-900/20 border border-red-800 px-4 py-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-red-500" />
+              <span className="text-sm text-red-400">
+                {platformError || marketError}
+              </span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setRetryCount(prev => prev + 1)}
+              className="text-xs text-red-400 hover:text-red-300 hover:bg-red-900/20"
+            >
+              Retry
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Main Trading Area */}
       <div className="flex-1 overflow-hidden">

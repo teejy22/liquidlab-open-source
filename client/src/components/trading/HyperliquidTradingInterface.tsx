@@ -76,7 +76,7 @@ export function HyperliquidTradingInterface() {
     };
 
     fetchLiveData();
-    const interval = setInterval(fetchLiveData, 2000); // Update every 2 seconds
+    const interval = setInterval(fetchLiveData, 5000); // Update every 5 seconds to avoid rate limiting
 
     return () => clearInterval(interval);
   }, [selectedMarket]);
