@@ -1035,6 +1035,14 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Logo file stored at `/public/powered-by-hyperliquid.png`
   - Prominent display acknowledges Hyperliquid DEX as the trading engine
 
+### UI Improvements (January 17, 2025)
+- **Teal Security Theme**: Changed all security indicators from green to teal to match Hyperliquid branding
+  - Security bar icons (Shield, SSL, Privy, checkmarks) now use teal colors
+  - Platform verification badge uses teal instead of green
+  - All hover states updated to teal shades
+  - Consistent teal theme across all security-related UI elements
+  - Creates cohesive branding with the "Powered by Hyperliquid" logo
+
 ### UI Improvements (January 16, 2025)
 - **Removed Redundant Elements**: Cleaned up the trading interface
   - Removed "Verified" stamp from security bar (already shown in header verification badge)

@@ -46,13 +46,13 @@ export function PlatformVerificationBadge({
         <Button 
           variant="ghost" 
           size={compactMode ? "sm" : "default"}
-          className={`${compactMode ? 'gap-1 h-7 px-2 text-xs' : 'gap-2'} hover:bg-green-50 dark:hover:bg-green-950/20`}
+          className={`${compactMode ? 'gap-1 h-7 px-2 text-xs' : 'gap-2'} hover:bg-teal-50 dark:hover:bg-teal-950/20`}
         >
           {isVerified ? (
             <>
-              <Shield className={`${compactMode ? 'w-3 h-3' : 'w-4 h-4'} text-green-600 dark:text-green-400`} />
+              <Shield className={`${compactMode ? 'w-3 h-3' : 'w-4 h-4'} text-teal-600 dark:text-teal-400`} />
               {!compactMode && <span>LiquidLab Verified</span>}
-              <CheckCircle className={`${compactMode ? 'w-2.5 h-2.5' : 'w-3 h-3'} text-green-600 dark:text-green-400`} />
+              <CheckCircle className={`${compactMode ? 'w-2.5 h-2.5' : 'w-3 h-3'} text-teal-600 dark:text-teal-400`} />
             </>
           ) : (
             <>
@@ -65,7 +65,7 @@ export function PlatformVerificationBadge({
       <PopoverContent className="w-80">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Shield className="w-5 h-5 text-green-600 dark:text-green-400" />
+            <Shield className="w-5 h-5 text-teal-600 dark:text-teal-400" />
             <h4 className="font-semibold">Platform Verification</h4>
           </div>
           
@@ -87,7 +87,7 @@ export function PlatformVerificationBadge({
                     title="Copy verification code"
                   >
                     {copied ? (
-                      <Check className="h-3 w-3 text-green-600" />
+                      <Check className="h-3 w-3 text-teal-600" />
                     ) : (
                       <Copy className="h-3 w-3" />
                     )}
