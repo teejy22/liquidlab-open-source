@@ -84,11 +84,10 @@ export function TrustIndicators({
                       <CheckCircle className="w-3 h-3 text-green-600 dark:text-green-400" />
                       <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
                     </div>
-                    <span className="text-[10px] text-green-800 dark:text-green-200 font-medium">Connected to Hyperliquid</span>
                     <img 
                       src="/powered-by-hyperliquid.png" 
-                      alt="Hyperliquid" 
-                      className="h-3 ml-1"
+                      alt="Connected to Hyperliquid" 
+                      className="h-4"
                     />
                   </div>
                 </TooltipTrigger>
