@@ -928,7 +928,7 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - SECURITY_CHANGELOG.md documents all security fixes
   - SECURITY_BEST_PRACTICES.md provides secure development guidelines
   - Updated open source repository README with security references
-- **Progress**: Fixed 5 of 14 security vulnerabilities identified by GitHub security scan
+- **Progress**: Fixed 6 of 14 security vulnerabilities identified by GitHub security scan
 
 ### Helmet Security Configuration Fix (January 17, 2025)
 - **Fixed Critical Clickjacking Vulnerability**: Resolved insecure Helmet configuration that disabled frameguard
@@ -940,6 +940,17 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - X-Frame-Options header now set to DENY
   - Prevents malicious sites from embedding the application in iframes
   - Works alongside Content Security Policy for defense in depth
+
+### CORS Security Fix (January 17, 2025)
+- **Fixed CORS Credential Vulnerability**: Resolved security issue with dynamic origin validation when credentials are allowed
+  - Added protection against "null" origin attacks which could lead to credential theft
+  - Enforced HTTPS-only origins in production when using credentials
+  - Enhanced validation for custom domains from database
+- **Security Improvements**:
+  - Explicitly rejects "null" and "file://" origins to prevent local file attacks
+  - Only allows HTTPS origins in production when Access-Control-Allow-Credentials is true
+  - Maintains whitelist validation for all origins before allowing credentialed requests
+  - Prevents attackers from stealing user credentials through malicious origins
 
 ### Deposit Security Infrastructure Implementation (January 17, 2025)
 - **Database Schema**: Added depositTransactions table to track all deposit operations

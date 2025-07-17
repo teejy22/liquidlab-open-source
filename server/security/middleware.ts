@@ -85,9 +85,14 @@ export async function platformCors(
     return next();
   }
 
-  // In development, allow all origins
+  // Security: Reject "null" origin to prevent attacks
+  if (origin === 'null' || origin === 'file://') {
+    return next();
+  }
+
+  // In development, allow all origins except "null"
   if (process.env.NODE_ENV === 'development') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-API-Key, X-API-Secret');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -117,10 +122,17 @@ export async function platformCors(
   // If not in static list, check custom domains from database
   if (!isAllowed) {
     try {
-      const { domainManager } = await import('../services/domainManager');
-      const domain = new URL(origin).hostname;
-      const platformId = await domainManager.getPlatformByDomain(domain);
-      isAllowed = platformId !== null;
+      const parsedUrl = new URL(origin);
+      
+      // Security: Only allow HTTPS origins in production
+      if (parsedUrl.protocol !== 'https:') {
+        isAllowed = false;
+      } else {
+        const { domainManager } = await import('../services/domainManager');
+        const domain = parsedUrl.hostname;
+        const platformId = await domainManager.getPlatformByDomain(domain);
+        isAllowed = platformId !== null;
+      }
     } catch (error) {
       // If error parsing URL or checking domain, deny access
       isAllowed = false;
