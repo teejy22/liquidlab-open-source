@@ -27,7 +27,8 @@ export function SimpleSpotTrading({ walletAddress }: { walletAddress?: string })
   const [amount, setAmount] = useState("");
   
   // Supported spot pairs
-  const spotPairs = ["HYPE", "PUMP", "ETH", "BTC", "SOL", "FARTCOIN"];
+  // Only show tokens that are actually available on Hyperliquid spot
+  const spotPairs = ["HYPE", "PUMP"];
 
   useEffect(() => {
     fetchPrices();
@@ -154,7 +155,7 @@ export function SimpleSpotTrading({ walletAddress }: { walletAddress?: string })
     <div className="space-y-4">
       <Card className="bg-gray-900 border-gray-800">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-semibold">Spot Trading</CardTitle>
+          <CardTitle className="text-lg font-semibold text-white">Spot Trading</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Market Cards */}
@@ -175,15 +176,12 @@ export function SimpleSpotTrading({ walletAddress }: { walletAddress?: string })
                 >
                   <CardContent className="p-3">
                     <div className="space-y-1">
-                      <div className="font-semibold text-sm">{pair}/USDC</div>
+                      <div className="font-semibold text-sm text-white">{pair}/USDC</div>
                       <div className="text-xs text-gray-400">
                         Vol: {priceData?.volume24h > 0 ? `$${(priceData.volume24h / 1000000).toFixed(1)}M` : '$0'}
                       </div>
-                      <div className="text-lg font-medium">
-                        ${priceData?.price ? priceData.price.toLocaleString(undefined, {
-                          minimumFractionDigits: pair === "BTC" || pair === "ETH" ? 0 : 2,
-                          maximumFractionDigits: pair === "BTC" || pair === "ETH" ? 0 : 4
-                        }) : '0.00'}
+                      <div className="text-lg font-medium text-white">
+                        ${priceData?.price ? priceData.price.toFixed(pair === "BTC" || pair === "ETH" ? 0 : 4) : '0.00'}
                       </div>
                       <div className={`text-xs ${
                         (priceData?.change24h || 0) >= 0 ? 'text-green-400' : 'text-red-400'
@@ -250,7 +248,7 @@ export function SimpleSpotTrading({ walletAddress }: { walletAddress?: string })
               <div className="border-t border-gray-700 pt-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Total</span>
-                  <span className="font-medium">${calculateTotal()} USDC</span>
+                  <span className="font-medium text-white">${calculateTotal()} USDC</span>
                 </div>
               </div>
 

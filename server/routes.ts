@@ -1136,7 +1136,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const [spotMeta, assetCtxs] = spotMetaData;
-      const spotPairs = ["HYPE", "PUMP", "ETH", "BTC", "SOL", "FARTCOIN"];
+      // Only include tokens that are actually available on Hyperliquid spot
+      const spotPairs = ["HYPE", "PUMP"];
       const spotPrices: Record<string, any> = {};
       
       // Map token names to their indices
@@ -1173,6 +1174,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
       });
+      
+
       
       res.json(spotPrices);
     } catch (error) {

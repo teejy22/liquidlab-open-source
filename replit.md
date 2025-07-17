@@ -536,22 +536,26 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - GET `/api/trades/batch-status` - View recent processing logs
 
 ### Spot Trading Re-Implementation (January 17, 2025)
-- **Simple Spot Trading Added**: Created a simplified spot trading interface for 6 specific assets only
+- **Simple Spot Trading Added**: Created a simplified spot trading interface for available Hyperliquid spot tokens
   - Built new SimpleSpotTrading component with clean card-based design
-  - Supports only: HYPE/USDC, PUMP/USDC, ETH/USDC, BTC/USDC, SOL/USDC, FARTCOIN/USDC
+  - Supports only: HYPE/USDC and PUMP/USDC (the only major tokens available on Hyperliquid spot)
+  - Discovered that BTC, ETH, SOL are not available as spot pairs on Hyperliquid (perps only)
   - Removed charts to prevent past integration issues - uses price cards instead
   - Added as "Spot" tab in both desktop and mobile interfaces
 - **Backend Integration**: Implemented complete spot trading API support
-  - GET /api/hyperliquid/spot-prices - Fetches real-time spot prices for the 6 assets
+  - GET /api/hyperliquid/spot-prices - Fetches real-time spot prices for HYPE and PUMP
   - POST /api/hyperliquid/spot-order - Handles spot order placement (requires wallet signature)
   - Added getSpotMetaAndAssetCtxs() to hyperliquidService for spot data fetching
+  - Cleaned up debug logs for production-ready code
 - **User Interface Features**:
-  - 2x3 grid of market cards showing price, 24h change, and volume
+  - 2-card grid showing HYPE and PUMP with price, 24h change, and volume
   - Selected market highlighted with green border
   - Buy/Sell toggle with green/red color coding
   - Real-time balance display for authenticated users
   - Total calculation showing USDC value of order
   - Info card explaining spot trading fees (0.2%)
+  - White text styling for better readability on dark backgrounds
+  - Volume displayed in millions format (e.g., $123.4M)
 - **Security**: Spot orders require authentication and wallet signature for execution
 - **UI Layout Improvements**: Trading interface optimizations remain
   - Constrained trading interface height to 600px to prevent overflow
