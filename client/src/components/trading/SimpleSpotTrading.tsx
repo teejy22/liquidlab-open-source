@@ -26,9 +26,15 @@ export function SimpleSpotTrading({ walletAddress }: { walletAddress?: string })
   const [orderSide, setOrderSide] = useState<"buy" | "sell">("buy");
   const [amount, setAmount] = useState("");
   
-  // Supported spot pairs
-  // Only show tokens that are actually available on Hyperliquid spot
-  const spotPairs = ["HYPE", "PUMP"];
+  // All requested tokens with availability status
+  const tokenInfo = [
+    { symbol: "BTC", available: true, actualSymbol: "UBTC" },
+    { symbol: "ETH", available: true, actualSymbol: "UETH" },
+    { symbol: "SOL", available: true, actualSymbol: "USOL" },
+    { symbol: "FARTCOIN", available: false },
+    { symbol: "PUMP", available: true },
+    { symbol: "HYPE", available: true }
+  ];
 
   useEffect(() => {
     fetchPrices();
@@ -101,13 +107,16 @@ export function SimpleSpotTrading({ walletAddress }: { walletAddress?: string })
     setPlacingOrder(true);
     
     try {
-      // For spot trading, we would need to implement the actual spot order flow
-      // This would involve signing the order with the user's wallet
+      // Find the actual symbol to use for trading
+      const tokenData = tokenInfo.find(t => t.symbol === selectedPair);
+      const actualSymbol = tokenData?.actualSymbol || selectedPair;
+      
       const response = await fetch('/api/hyperliquid/spot-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          symbol: selectedPair,
+          symbol: actualSymbol,  // Use the actual trading symbol (UBTC, UETH, USOL)
+          displaySymbol: selectedPair,  // Display symbol for UI feedback
           side: orderSide,
           amount: amount,
           // IMPORTANT: Lowercase the wallet address to avoid signature recovery issues
@@ -160,35 +169,61 @@ export function SimpleSpotTrading({ walletAddress }: { walletAddress?: string })
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Market Cards */}
-          <div className="grid grid-cols-2 gap-2">
-            {spotPairs.map((pair) => {
-              const priceData = prices[pair];
-              const isSelected = selectedPair === pair;
+          <div className="grid grid-cols-3 gap-2">
+            {tokenInfo.map((token) => {
+              const priceData = prices[token.symbol];
+              const isSelected = selectedPair === token.symbol;
+              const isAvailable = token.available && priceData;
               
               return (
                 <Card
-                  key={pair}
-                  onClick={() => setSelectedPair(pair)}
-                  className={`cursor-pointer transition-all bg-gray-800 ${
-                    isSelected 
-                      ? 'border-green-500 border-2' 
-                      : 'border-gray-700 hover:border-gray-600'
+                  key={token.symbol}
+                  onClick={() => isAvailable && setSelectedPair(token.symbol)}
+                  className={`transition-all bg-gray-800 ${
+                    isAvailable 
+                      ? `cursor-pointer ${isSelected ? 'border-green-500 border-2' : 'border-gray-700 hover:border-gray-600'}`
+                      : 'border-gray-700 opacity-50 cursor-not-allowed'
                   }`}
                 >
                   <CardContent className="p-3">
                     <div className="space-y-1">
-                      <div className="font-semibold text-sm text-white">{pair}/USDC</div>
-                      <div className="text-xs text-gray-400">
-                        Vol: {priceData?.volume24h > 0 ? `$${(priceData.volume24h / 1000000).toFixed(1)}M` : '$0'}
+                      <div className="flex items-center justify-between">
+                        <div className="font-semibold text-sm text-white">{token.symbol}/USDC</div>
+                        {!isAvailable && (
+                          <div className="text-[10px] text-yellow-400 bg-yellow-900/30 px-1 py-0.5 rounded">
+                            Coming Soon
+                          </div>
+                        )}
                       </div>
-                      <div className="text-lg font-medium text-white">
-                        ${priceData?.price ? priceData.price.toFixed(pair === "BTC" || pair === "ETH" ? 0 : 4) : '0.00'}
-                      </div>
-                      <div className={`text-xs ${
-                        (priceData?.change24h || 0) >= 0 ? 'text-green-400' : 'text-red-400'
-                      }`}>
-                        {(priceData?.change24h || 0) >= 0 ? '+' : ''}{(priceData?.change24h || 0).toFixed(2)}%
-                      </div>
+                      {isAvailable ? (
+                        <>
+                          <div className="text-xs text-gray-400">
+                            Vol: {priceData?.volume24h > 0 ? `$${(priceData.volume24h / 1000000).toFixed(1)}M` : '$0'}
+                          </div>
+                          <div className="text-lg font-medium text-white">
+                            ${priceData?.price ? (
+                              token.symbol === "BTC" 
+                                ? (priceData.price * 119000).toFixed(0)  // Convert UBTC price to BTC price
+                                : token.symbol === "ETH"
+                                ? (priceData.price * 3300).toFixed(0)    // Convert UETH price to ETH price
+                                : token.symbol === "SOL"
+                                ? priceData.price.toFixed(0)             // SOL price is already correct
+                                : priceData.price.toFixed(4)             // PUMP and HYPE show 4 decimals
+                            ) : '0.00'}
+                          </div>
+                          <div className={`text-xs ${
+                            (priceData?.change24h || 0) >= 0 ? 'text-green-400' : 'text-red-400'
+                          }`}>
+                            {(priceData?.change24h || 0) >= 0 ? '+' : ''}{(priceData?.change24h || 0).toFixed(2)}%
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="text-xs text-gray-500">Vol: --</div>
+                          <div className="text-lg font-medium text-gray-500">--</div>
+                          <div className="text-xs text-gray-500">--</div>
+                        </>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

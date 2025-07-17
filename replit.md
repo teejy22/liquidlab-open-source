@@ -538,8 +538,12 @@ The application uses a monorepo structure with shared types and schemas, enablin
 ### Spot Trading Re-Implementation (January 17, 2025)
 - **Simple Spot Trading Added**: Created a simplified spot trading interface for available Hyperliquid spot tokens
   - Built new SimpleSpotTrading component with clean card-based design
-  - Supports only: HYPE/USDC and PUMP/USDC (the only major tokens available on Hyperliquid spot)
-  - Discovered that BTC, ETH, SOL are not available as spot pairs on Hyperliquid (perps only)
+  - **Discovery**: Hyperliquid uses "Universal" tokens for major assets:
+    * BTC is available as UBTC/USDC (Universal BTC)
+    * ETH is available as UETH/USDC (Universal ETH)
+    * SOL is available as USOL/USDC (Universal SOL)
+  - **Available Tokens**: BTC (UBTC), ETH (UETH), SOL (USOL), PUMP, HYPE
+  - **Not Available**: FARTCOIN (shows "Coming Soon" in UI)
   - Removed charts to prevent past integration issues - uses price cards instead
   - Added as "Spot" tab in both desktop and mobile interfaces
 - **Backend Integration**: Implemented complete spot trading API support

@@ -1125,6 +1125,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Debug endpoint to find all USDC pairs with proper token mapping
+  app.get("/api/hyperliquid/spot-pairs-debug", async (req, res) => {
+    try {
+      const spotMetaData = await hyperliquidService.getSpotMetaAndAssetCtxs();
+      
+      if (!spotMetaData || spotMetaData.length < 2) {
+        return res.status(500).json({ error: "Failed to fetch spot data" });
+      }
+      
+      const [spotMeta, assetCtxs] = spotMetaData;
+      
+      // Token name mappings (based on Hyperliquid documentation)
+      const tokenMappings: Record<string, string[]> = {
+        "BTC": ["BTC", "UBTC", "WBTC"],  // BTC might appear as UBTC on mainnet
+        "ETH": ["ETH", "WETH"],
+        "SOL": ["SOL", "WSOL"],
+        "FARTCOIN": ["FARTCOIN", "FART"],
+        "PUMP": ["PUMP"],
+        "HYPE": ["HYPE"]
+      };
+      
+      const usdcPairs: any[] = [];
+      const foundTokens: Record<string, any> = {};
+      
+      // Find all USDC pairs and check for our target tokens
+      spotMeta.universe.forEach((pair: any, pairIndex: number) => {
+        const baseTokenIndex = pair.tokens[0];
+        const quoteTokenIndex = pair.tokens[1];
+        
+        const baseToken = spotMeta.tokens.find((t: any) => t.index === baseTokenIndex);
+        const quoteToken = spotMeta.tokens.find((t: any) => t.index === quoteTokenIndex);
+        
+        if (quoteToken?.name === "USDC" && baseToken) {
+          const assetCtx = assetCtxs[pairIndex];
+          const pairInfo = {
+            pairName: pair.name,
+            baseToken: baseToken.name,
+            baseIndex: baseTokenIndex,
+            pairIndex: pairIndex,
+            price: assetCtx?.midPx || assetCtx?.markPx || "0",
+            volume: assetCtx?.dayNtlVlm || "0"
+          };
+          
+          usdcPairs.push(pairInfo);
+          
+          // Check if this matches any of our target tokens
+          for (const [targetName, possibleNames] of Object.entries(tokenMappings)) {
+            if (possibleNames.includes(baseToken.name)) {
+              foundTokens[targetName] = {
+                actualName: baseToken.name,
+                ...pairInfo
+              };
+              break;
+            }
+          }
+        }
+      });
+      
+      res.json({
+        allUsdcPairs: usdcPairs,
+        foundTargetTokens: foundTokens,
+        totalUsdcPairs: usdcPairs.length
+      });
+    } catch (error) {
+      console.error("Error in spot pairs debug:", error);
+      res.status(500).json({ error: "Failed to debug spot pairs" });
+    }
+  });
+
   // Spot trading endpoints
   app.get("/api/hyperliquid/spot-prices", async (req, res) => {
     try {
@@ -1136,8 +1205,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const [spotMeta, assetCtxs] = spotMetaData;
-      // Only include tokens that are actually available on Hyperliquid spot
-      const spotPairs = ["HYPE", "PUMP"];
       const spotPrices: Record<string, any> = {};
       
       // Map token names to their indices
@@ -1145,6 +1212,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       spotMeta.tokens.forEach((token: any) => {
         tokenIndexMap[token.name] = token.index;
       });
+      
+      // Define token mappings - Universal tokens on Hyperliquid spot
+      const tokenMappings: Record<string, string> = {
+        "UBTC": "BTC",  // Universal BTC shows as BTC in UI
+        "UETH": "ETH",  // Universal ETH shows as ETH in UI
+        "USOL": "SOL",  // Universal SOL shows as SOL in UI
+        "PUMP": "PUMP",
+        "HYPE": "HYPE"
+      };
       
       // Find spot pairs for our supported tokens
       spotMeta.universe.forEach((pair: any, pairIndex: number) => {
@@ -1155,21 +1231,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const baseToken = spotMeta.tokens.find((t: any) => t.index === baseTokenIndex);
         const quoteToken = spotMeta.tokens.find((t: any) => t.index === quoteTokenIndex);
         
-        if (baseToken && quoteToken && quoteToken.name === "USDC" && spotPairs.includes(baseToken.name)) {
+        // Include tokens that are in our mapping and paired with USDC
+        if (baseToken && quoteToken && quoteToken.name === "USDC" && tokenMappings.hasOwnProperty(baseToken.name)) {
           const assetCtx = assetCtxs[pairIndex];
           if (assetCtx) {
             const price = parseFloat(assetCtx.midPx || assetCtx.markPx || "0");
             const prevPrice = parseFloat(assetCtx.prevDayPx || "0");
             const change24h = prevPrice > 0 ? ((price - prevPrice) / prevPrice * 100) : 0;
             
-            spotPrices[baseToken.name] = {
-              symbol: baseToken.name,
+            // Use the mapped display name (e.g., UBTC -> BTC)
+            const displaySymbol = tokenMappings[baseToken.name];
+            
+            spotPrices[displaySymbol] = {
+              symbol: displaySymbol,
+              actualSymbol: baseToken.name,  // Keep the actual symbol for trading
               price: price,
               change24h: change24h,
               volume24h: parseFloat(assetCtx.dayNtlVlm || "0"),
               pairIndex: pairIndex,
               baseTokenIndex: baseTokenIndex,
-              quoteTokenIndex: quoteTokenIndex
+              quoteTokenIndex: quoteTokenIndex,
+              pairName: pair.name  // Include the pair name (e.g., @142)
             };
           }
         }
