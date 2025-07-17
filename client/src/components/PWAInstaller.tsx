@@ -35,11 +35,32 @@ export function PWAInstaller({ platformName = "LiquidLab" }: PWAInstallerProps) 
           setInterval(() => {
             registration.update();
           }, 60 * 60 * 1000); // Check every hour
+          
+          // SECURITY: Implement cache expiration check
+          setInterval(() => {
+            if (navigator.serviceWorker.controller) {
+              navigator.serviceWorker.controller.postMessage({
+                type: 'CACHE_EXPIRATION_CHECK'
+              });
+            }
+          }, 30 * 60 * 1000); // Check every 30 minutes
         })
         .catch((error) => {
           console.error('Service Worker registration failed:', error);
         });
     }
+    
+    // SECURITY: Clear service worker cache on logout
+    const handleLogout = () => {
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          type: 'CLEAR_CACHE'
+        });
+      }
+    };
+    
+    // Listen for logout events
+    window.addEventListener('user-logout', handleLogout);
 
     // Listen for install prompt
     const handleBeforeInstallPrompt = (e: Event) => {
@@ -66,8 +87,9 @@ export function PWAInstaller({ platformName = "LiquidLab" }: PWAInstallerProps) 
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('user-logout', handleLogout);
     };
-  }, [toast]);
+  }, [toast, platformName]);
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;

@@ -172,6 +172,13 @@ export default function AdminDashboard() {
 
   const handleLogout = async () => {
     try {
+      // SECURITY: Clear all PWA caches before logout to prevent data leakage
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          type: 'CLEAR_CACHE'
+        });
+      }
+      
       await apiRequest("POST", "/api/admin/logout");
       toast({
         title: "Logged Out",

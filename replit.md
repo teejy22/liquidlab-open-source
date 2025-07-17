@@ -815,6 +815,27 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Meta tags for iOS and Android compatibility
   - Icons in 192x192 and 512x512 sizes
 
+### PWA Security Hardening (January 17, 2025)
+- **Fixed Critical Security Vulnerabilities**: Comprehensive security audit and fixes for PWA infrastructure
+  - **Removed API Response Caching**: Service worker no longer caches sensitive endpoints like `/api/auth/`, `/api/trades/`, `/api/hyperliquid/`
+  - **Cache Clearing on Logout**: Integrated PWA cache clearing into logout process to prevent data leakage
+  - **Static-Only Caching**: Service worker now only caches static assets (JS, CSS, images), never user data
+  - **Authentication Checks**: Added proper session validation before serving any cached content
+  - **Cache Expiration**: Implemented 24-hour cache expiration with periodic checks every 30 minutes
+- **Security Utilities**: Created `pwa-security.ts` with comprehensive security functions
+  - `clearPWACachesOnLogout()`: Clears all caches, sessionStorage, and sensitive localStorage on logout
+  - Integrated into both regular user logout and admin logout flows
+  - Dispatches custom events for PWA components to handle cleanup
+- **Removed Insecure Features**: 
+  - Removed mentions of background sync for offline trades (could allow replay attacks)
+  - Removed push notification references (could leak trading positions)
+  - No longer caching API responses that could contain sensitive trading data
+- **Data Protection Measures**:
+  - Service worker message listener for 'CLEAR_CACHE' events
+  - Automatic cache purging on service worker activation
+  - Sensitive endpoint blocklist preventing accidental caching
+  - All API requests now use network-only strategy
+
 ### Wallet Address Storage for Real Trade Processing (January 16, 2025)
 - **Database Update**: Added walletAddress field to users table for storing Privy-connected wallet addresses
 - **API Endpoint**: Created `/api/privy/wallet` endpoint to save wallet addresses when users connect
