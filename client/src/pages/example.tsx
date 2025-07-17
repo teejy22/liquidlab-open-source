@@ -298,28 +298,6 @@ export default function ExampleTradingPage() {
         builderCode={platformData?.config?.builderCode || "LIQUIDLAB2025"}
         verificationCode={verificationCode || undefined}
       />
-      
-      {/* Error Messages */}
-      {(platformError || marketError) && (
-        <div className="bg-red-900/20 border border-red-800 px-4 py-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-red-500" />
-              <span className="text-sm text-red-400">
-                {platformError || marketError}
-              </span>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setRetryCount(prev => prev + 1)}
-              className="text-xs text-red-400 hover:text-red-300 hover:bg-red-900/20"
-            >
-              Retry
-            </Button>
-          </div>
-        </div>
-      )}
 
       {/* Main Trading Area */}
       <div className="flex-1 overflow-hidden">
