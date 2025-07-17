@@ -1327,9 +1327,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/hyperliquid/meta", async (req, res) => {
     try {
+      console.log("Fetching meta and asset contexts...");
       const data = await hyperliquidService.getMetaAndAssetCtxs();
+      console.log("Meta data received, length:", data?.length);
       res.json(data);
     } catch (error) {
+      console.error("Error in /api/hyperliquid/meta:", error);
       res.status(500).json({ error: handleError(error) });
     }
   });
