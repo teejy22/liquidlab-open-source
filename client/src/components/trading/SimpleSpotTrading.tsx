@@ -27,7 +27,7 @@ export function SimpleSpotTrading({ walletAddress }: { walletAddress?: string })
   const [amount, setAmount] = useState("");
   
   // Supported spot pairs
-  const spotPairs = ["HYPE", "PURR", "ETH", "BTC", "SOL", "FARTCOIN"];
+  const spotPairs = ["HYPE", "PUMP", "ETH", "BTC", "SOL", "FARTCOIN"];
 
   useEffect(() => {
     fetchPrices();
@@ -167,34 +167,28 @@ export function SimpleSpotTrading({ walletAddress }: { walletAddress?: string })
                 <Card
                   key={pair}
                   onClick={() => setSelectedPair(pair)}
-                  className={`cursor-pointer transition-all ${
+                  className={`cursor-pointer transition-all bg-gray-800 ${
                     isSelected 
-                      ? 'bg-gray-800 border-green-500' 
-                      : 'bg-gray-900 border-gray-700 hover:bg-gray-800'
+                      ? 'border-green-500 border-2' 
+                      : 'border-gray-700 hover:border-gray-600'
                   }`}
                 >
                   <CardContent className="p-3">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="font-semibold text-sm">{pair}/USDC</div>
-                        <div className="text-xs text-gray-400">
-                          Vol: ${(priceData?.volume24h || 0).toLocaleString()}
-                        </div>
+                    <div className="space-y-1">
+                      <div className="font-semibold text-sm">{pair}/USDC</div>
+                      <div className="text-xs text-gray-400">
+                        Vol: {priceData?.volume24h > 0 ? `$${(priceData.volume24h / 1000000).toFixed(1)}M` : '$0'}
                       </div>
-                      <div className="text-right">
-                        <div className="text-sm font-medium">
-                          ${priceData?.price?.toFixed(pair === "BTC" ? 0 : pair === "ETH" ? 1 : 4) || '0.00'}
-                        </div>
-                        <div className={`text-xs flex items-center justify-end ${
-                          (priceData?.change24h || 0) >= 0 ? 'text-green-400' : 'text-red-400'
-                        }`}>
-                          {(priceData?.change24h || 0) >= 0 ? (
-                            <TrendingUp className="w-3 h-3 mr-1" />
-                          ) : (
-                            <TrendingDown className="w-3 h-3 mr-1" />
-                          )}
-                          {Math.abs(priceData?.change24h || 0).toFixed(2)}%
-                        </div>
+                      <div className="text-lg font-medium">
+                        ${priceData?.price ? priceData.price.toLocaleString(undefined, {
+                          minimumFractionDigits: pair === "BTC" || pair === "ETH" ? 0 : 2,
+                          maximumFractionDigits: pair === "BTC" || pair === "ETH" ? 0 : 4
+                        }) : '0.00'}
+                      </div>
+                      <div className={`text-xs ${
+                        (priceData?.change24h || 0) >= 0 ? 'text-green-400' : 'text-red-400'
+                      }`}>
+                        {(priceData?.change24h || 0) >= 0 ? '+' : ''}{(priceData?.change24h || 0).toFixed(2)}%
                       </div>
                     </div>
                   </CardContent>

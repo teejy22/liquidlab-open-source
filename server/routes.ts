@@ -1136,7 +1136,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const [spotMeta, assetCtxs] = spotMetaData;
-      const spotPairs = ["HYPE", "PURR", "ETH", "BTC", "SOL", "FARTCOIN"];
+      const spotPairs = ["HYPE", "PUMP", "ETH", "BTC", "SOL", "FARTCOIN"];
       const spotPrices: Record<string, any> = {};
       
       // Map token names to their indices

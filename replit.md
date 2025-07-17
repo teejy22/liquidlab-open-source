@@ -538,7 +538,7 @@ The application uses a monorepo structure with shared types and schemas, enablin
 ### Spot Trading Re-Implementation (January 17, 2025)
 - **Simple Spot Trading Added**: Created a simplified spot trading interface for 6 specific assets only
   - Built new SimpleSpotTrading component with clean card-based design
-  - Supports only: HYPE/USDC, PURR/USDC, ETH/USDC, BTC/USDC, SOL/USDC, FARTCOIN/USDC
+  - Supports only: HYPE/USDC, PUMP/USDC, ETH/USDC, BTC/USDC, SOL/USDC, FARTCOIN/USDC
   - Removed charts to prevent past integration issues - uses price cards instead
   - Added as "Spot" tab in both desktop and mobile interfaces
 - **Backend Integration**: Implemented complete spot trading API support
