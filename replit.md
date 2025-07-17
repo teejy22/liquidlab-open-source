@@ -542,10 +542,12 @@ The application uses a monorepo structure with shared types and schemas, enablin
     * BTC is available as UBTC/USDC (Universal BTC) - 1 UBTC = 1 BTC
     * ETH is available as UETH/USDC (Universal ETH) - 1 UETH = 1 ETH
     * SOL is available as USOL/USDC (Universal SOL) - 1 USOL = 1 SOL
-  - **Pricing**: Universal tokens show fractional prices in the API that need conversion:
-    * UBTC price (~$0.004) × current BTC price (~$119,800) = actual USD value
-    * UETH price (~$0.007) × current ETH price (~$3,350) = actual USD value
-    * USOL price (~$3,435) is already in correct USD format
+  - **Pricing Fix (January 17, 2025)**: Fixed critical spot price display bug
+    * Hyperliquid API returns raw prices that must be multiplied by 10^szDecimals
+    * Each token has a specific szDecimals value (HYPE: 2, UBTC: 5, UETH: 4, USOL: 3)
+    * Implemented decimal adjustment: actualPrice = rawPrice * (10 ^ token.szDecimals)
+    * HYPE now correctly shows ~$44.77 instead of $0.44
+    * All spot prices now display accurate USD values
   - **Available Tokens**: BTC (UBTC), ETH (UETH), SOL (USOL), PUMP, HYPE
   - **Not Available**: FARTCOIN (shows "Coming Soon" in UI)
   - Removed charts to prevent past integration issues - uses price cards instead

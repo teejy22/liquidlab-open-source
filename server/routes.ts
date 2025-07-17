@@ -1235,9 +1235,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (baseToken && quoteToken && quoteToken.name === "USDC" && tokenMappings.hasOwnProperty(baseToken.name)) {
           const assetCtx = assetCtxs[pairIndex];
           if (assetCtx) {
-            const price = parseFloat(assetCtx.midPx || assetCtx.markPx || "0");
+            const rawPrice = parseFloat(assetCtx.midPx || assetCtx.markPx || "0");
             const prevPrice = parseFloat(assetCtx.prevDayPx || "0");
-            const change24h = prevPrice > 0 ? ((price - prevPrice) / prevPrice * 100) : 0;
+            
+            // Apply decimal adjustment based on szDecimals
+            const decimals = baseToken.szDecimals || 0;
+            const price = rawPrice * Math.pow(10, decimals);
+            const adjustedPrevPrice = prevPrice * Math.pow(10, decimals);
+            
+            const change24h = adjustedPrevPrice > 0 ? ((price - adjustedPrevPrice) / adjustedPrevPrice * 100) : 0;
             
             // Use the mapped display name (e.g., UBTC -> BTC)
             const displaySymbol = tokenMappings[baseToken.name];
