@@ -580,6 +580,22 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Critical for both perpetual and spot trading orders
 - **Impact**: Resolves signature verification failures that prevented order placement
 
+### Client Order ID Implementation (January 17, 2025)
+- **Added Client Order ID (cloid) Support**: Implemented unique order tracking system for better order management
+  - Generated unique 128-bit hex strings using timestamp + random bytes for each order
+  - Added generateCloid() function that creates IDs like "0x000001945ab12345789abcdef0123456"
+  - Updated SignedOrder interface to include cloid field for tracking
+- **Complete Integration Across Order Types**:
+  - Regular perpetual orders: cloid generated in signOrder()
+  - Spot trading orders: cloid included in order structure
+  - Trigger orders (TP/SL): cloid generated in signTriggerOrder()
+  - All cloids automatically included in API submissions via order object
+- **Benefits**: 
+  - Enables order cancellation by cloid instead of needing order ID
+  - Better tracking of orders across different trading sessions
+  - Unique identifiers for audit trails and debugging
+  - Future support for cancelByCloid endpoint
+
 ### Automatic Verification Code Rotation (January 16, 2025)
 - **Enhanced Security Implementation**: Added automatic 24-hour verification code rotation for all trading platforms
   - New scheduler job runs every 24 hours to automatically regenerate all verification codes

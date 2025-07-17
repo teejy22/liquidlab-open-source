@@ -1,5 +1,15 @@
 import { ethers } from 'ethers';
 
+// Generate a unique client order ID (128-bit hex string)
+function generateCloid(): string {
+  // Use timestamp (8 bytes) + random data (8 bytes) = 16 bytes = 128 bits
+  const timestamp = Date.now().toString(16).padStart(16, '0');
+  const randomBytes = Array.from(crypto.getRandomValues(new Uint8Array(8)))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+  return '0x' + timestamp + randomBytes;
+}
+
 // Hyperliquid EIP-712 Domain
 const HYPERLIQUID_DOMAIN = {
   name: 'Exchange',
@@ -164,6 +174,7 @@ export interface SignedOrder {
   order: any;
   signature: string;
   nonce: number;
+  cloid: string;
 }
 
 export async function signOrder(
@@ -172,6 +183,7 @@ export async function signOrder(
 ): Promise<SignedOrder> {
   const nonce = Date.now();
   const assetIndex = getAssetIndex(order.symbol);
+  const cloid = generateCloid(); // Generate unique client order ID
   
   // Determine time in force
   let tif = TimeInForce.GTC;
@@ -233,13 +245,16 @@ export async function signOrder(
     c: {
       b: (process.env.VITE_BUILDER_WALLET_ADDRESS || '0x0000000000000000000000000000000000000000').toLowerCase(),
       f: 100 // 10 basis points = 0.1% fee
-    }
+    },
+    // Client order ID for tracking
+    cloid: cloid
   };
   
   return {
     order: hyperliquidOrder,
     signature,
-    nonce
+    nonce,
+    cloid
   };
 }
 
@@ -296,6 +311,7 @@ async function signTriggerOrder(
 ): Promise<SignedOrder> {
   const nonce = Date.now();
   const assetIndex = getAssetIndex(order.symbol);
+  const cloid = generateCloid(); // Generate unique client order ID
   
   // Convert to wire format
   const wireLimitPx = floatToWire(order.price, 8);
@@ -346,13 +362,16 @@ async function signTriggerOrder(
     c: {
       b: (process.env.VITE_BUILDER_WALLET_ADDRESS || '0x0000000000000000000000000000000000000000').toLowerCase(),
       f: 10 // 1 basis point = 0.01% fee
-    }
+    },
+    // Client order ID for tracking
+    cloid: cloid
   };
   
   return {
     order: hyperliquidOrder,
     signature,
-    nonce
+    nonce,
+    cloid
   };
 }
 
