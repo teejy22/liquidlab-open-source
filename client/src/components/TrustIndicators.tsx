@@ -79,7 +79,7 @@ export function TrustIndicators({
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 overflow-visible">
                     <div className="relative">
                       <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
                       <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -87,7 +87,7 @@ export function TrustIndicators({
                     <img 
                       src="/powered-by-hyperliquid.png" 
                       alt="Connected to Hyperliquid" 
-                      className="h-8"
+                      className="h-20 -my-6"
                     />
                   </div>
                 </TooltipTrigger>
