@@ -275,6 +275,19 @@ export function HyperliquidDeposit() {
           </div>
         </div>
 
+        {/* Security Notice */}
+        <Alert className="mb-4 bg-blue-950/20 border-blue-800/50">
+          <AlertCircle className="h-4 w-4 text-blue-400" />
+          <AlertDescription className="text-sm text-blue-200">
+            <strong className="text-white">Important:</strong> Your funds are deposited directly to Hyperliquid DEX, not to this trading platform. 
+            You maintain full control and can always access your funds at{' '}
+            <a href="https://app.hyperliquid.xyz" target="_blank" rel="noopener noreferrer" className="underline">
+              hyperliquid.xyz
+            </a>
+            . This platform only facilitates the deposit process.
+          </AlertDescription>
+        </Alert>
+
         <Tabs defaultValue="deposit" className="w-full">
           <TabsList className="grid w-full grid-cols-2 bg-[#1a1a1a]">
             <TabsTrigger value="deposit" className="data-[state=active]:bg-[#0d0d0d]">
@@ -287,9 +300,10 @@ export function HyperliquidDeposit() {
           
           <TabsContent value="deposit" className="space-y-4">
             <Alert>
-              <AlertCircle className="h-4 w-4" />
+              <CheckCircle2 className="h-4 w-4 text-green-400" />
               <AlertDescription>
-                Deposits from Arbitrum to Hyperliquid take ~1 minute. Minimum deposit is 5 USDC.
+                <strong>Non-Custodial:</strong> Funds go directly to your Hyperliquid account via official bridge contract.
+                Processing time: ~1 minute. Minimum: 5 USDC.
               </AlertDescription>
             </Alert>
             
@@ -327,41 +341,31 @@ export function HyperliquidDeposit() {
           </TabsContent>
           
           <TabsContent value="withdraw" className="space-y-4">
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                Withdrawals to Arbitrum take 3-4 minutes. 1 USDC fee is deducted.
+            <Alert className="bg-yellow-950/20 border-yellow-800/50">
+              <AlertCircle className="h-4 w-4 text-yellow-400" />
+              <AlertDescription className="text-yellow-200">
+                <strong className="text-white">Withdrawals:</strong> To withdraw your funds, please visit{' '}
+                <a href="https://app.hyperliquid.xyz" target="_blank" rel="noopener noreferrer" className="underline">
+                  hyperliquid.xyz
+                </a>
+                {' '}directly. Your funds are always under your control on the Hyperliquid DEX.
               </AlertDescription>
             </Alert>
             
-            <div>
-              <Label htmlFor="withdraw-amount" className="text-white">Amount (USDC)</Label>
-              <Input
-                id="withdraw-amount"
-                type="number"
-                step="0.01"
-                min="2"
-                placeholder="Enter amount"
-                value={withdrawAmount}
-                onChange={(e) => setWithdrawAmount(e.target.value)}
-                className="bg-[#1a1a1a] border-gray-800 text-white"
-              />
+            <div className="bg-[#1a1a1a] p-6 rounded-lg text-center">
+              <Wallet className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+              <h4 className="text-lg font-semibold text-white mb-2">Direct Control</h4>
+              <p className="text-sm text-gray-400 mb-4">
+                Since your funds are on Hyperliquid DEX, you can withdraw them directly from their platform.
+                This ensures you always have full control over your assets.
+              </p>
+              <Button 
+                onClick={() => window.open('https://app.hyperliquid.xyz', '_blank')}
+                className="bg-[#1dd1a1] hover:bg-[#17a882] text-black"
+              >
+                Go to Hyperliquid
+              </Button>
             </div>
-            
-            <Button
-              onClick={handleWithdraw}
-              disabled={isProcessing || withdrawMutation.isPending}
-              className="w-full bg-red-600 hover:bg-red-700 text-white"
-            >
-              {isProcessing || withdrawMutation.isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                'Withdraw to Arbitrum'
-              )}
-            </Button>
           </TabsContent>
         </Tabs>
       </CardContent>
