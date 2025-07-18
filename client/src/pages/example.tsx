@@ -49,6 +49,7 @@ export default function ExampleTradingPage() {
   const [hyperliquidPrices, setHyperliquidPrices] = useState<{[key: string]: string}>({});
   const [platformError, setPlatformError] = useState<string | null>(null);
   const [marketError, setMarketError] = useState<string | null>(null);
+  const [marketDataError, setMarketDataError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
 
   // Check for preview mode parameters
@@ -232,6 +233,11 @@ export default function ExampleTradingPage() {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     }).format(price);
+  };
+  
+  // Handle retry
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
   };
 
 
