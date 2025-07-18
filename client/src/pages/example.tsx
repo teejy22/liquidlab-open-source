@@ -17,6 +17,7 @@ import { HyperliquidTradingInterface } from "@/components/trading/HyperliquidTra
 import { MoonPayButton } from "@/components/MoonPayButton";
 import { PWAInstaller } from "@/components/PWAInstaller";
 import { validateImageUrl } from "@/lib/urlValidator";
+import { usePrivy } from "@privy-io/react-auth";
 
 interface MarketData {
   price: string;
@@ -237,7 +238,42 @@ export default function ExampleTradingPage() {
 
   return (
     <PrivyProvider>
-      <div className="min-h-screen bg-[#0a0a0a] text-gray-100 flex flex-col">
+      <TradingPlatform 
+        platformData={platformData}
+        selectedMarket={selectedMarket}
+        setSelectedMarket={setSelectedMarket}
+        marketStats={marketStats}
+        marketDataError={marketDataError}
+        handleRetry={handleRetry}
+        retryCount={retryCount}
+        verificationCode={verificationCode}
+      />
+    </PrivyProvider>
+  );
+}
+
+function TradingPlatform({ 
+  platformData, 
+  selectedMarket, 
+  setSelectedMarket, 
+  marketStats, 
+  marketDataError, 
+  handleRetry, 
+  retryCount,
+  verificationCode 
+}: any) {
+  const { ready } = usePrivy();
+  
+  if (!ready) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <div className="text-gray-400">Initializing wallet connection...</div>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] text-gray-100 flex flex-col">
       {/* Header */}
       <header className="bg-[#0f0f0f] border-b border-gray-800">
         <div className="flex items-center justify-between h-36 lg:h-24 px-4 py-1 lg:py-0">
@@ -307,7 +343,6 @@ export default function ExampleTradingPage() {
       
       {/* PWA Installer */}
       <PWAInstaller platformName={platformData?.name || "Trading Platform"} />
-      </div>
-    </PrivyProvider>
+    </div>
   );
 }
