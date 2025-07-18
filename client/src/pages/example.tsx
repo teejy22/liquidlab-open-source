@@ -57,6 +57,7 @@ export default function ExampleTradingPage() {
   const isPreview = urlParams.get('preview') === 'true';
   const previewName = urlParams.get('name');
   const previewLogo = urlParams.get('logo');
+  const previewPlatformId = urlParams.get('platformId');
 
   // Helper function for exponential backoff
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -90,13 +91,26 @@ export default function ExampleTradingPage() {
         setPlatformError(null);
         
         // If in preview mode, use preview data
-        if (isPreview && (previewName || previewLogo)) {
+        if (isPreview && (previewName || previewLogo || previewPlatformId)) {
           console.log('Preview mode - Logo URL:', previewLogo);
           console.log('Validated Logo URL:', validateImageUrl(previewLogo));
           setPlatformData({
+            id: previewPlatformId ? parseInt(previewPlatformId) : undefined,
             name: previewName || 'Preview Platform',
             logoUrl: previewLogo || null  // Don't validate in preview mode since it's a relative URL
           });
+          
+          // If we have a platform ID, fetch its verification code
+          if (previewPlatformId) {
+            const verifyResponse = await retryFetch(() => 
+              fetch(`/api/platforms/${previewPlatformId}/verification-code`)
+            );
+            if (verifyResponse.ok) {
+              const { code } = await verifyResponse.json();
+              setVerificationCode(code);
+            }
+          }
+          
           return;
         }
 
@@ -150,7 +164,7 @@ export default function ExampleTradingPage() {
     };
     
     fetchPlatformData();
-  }, [retryCount]);
+  }, [retryCount, isPreview, previewName, previewLogo, previewPlatformId]);
 
   // Cache for market data to reduce API calls
   const marketDataCache = useMemo(() => {

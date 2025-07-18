@@ -637,7 +637,7 @@ export default function Builder() {
                         variant="ghost"
                         size="sm"
                         className="gap-2"
-                        onClick={() => window.open(`/example?preview=true&name=${encodeURIComponent(platformName || '')}&logo=${encodeURIComponent(logoUrl || '')}`, '_blank')}
+                        onClick={() => window.open(`/example?preview=true&name=${encodeURIComponent(platformName || '')}&logo=${encodeURIComponent(logoUrl || '')}&platformId=${savedPlatformId || ''}`, '_blank')}
                       >
                         <ExternalLink className="w-4 h-4" />
                         View Full Demo
@@ -662,7 +662,7 @@ export default function Builder() {
                     
                     <iframe
                       key={`${platformName}-${logoUrl}`} // Force iframe refresh when name or logo changes
-                      src={`/example?preview=true&name=${encodeURIComponent(platformName || '')}&logo=${encodeURIComponent(logoUrl || '')}`}
+                      src={`/example?preview=true&name=${encodeURIComponent(platformName || '')}&logo=${encodeURIComponent(logoUrl || '')}&platformId=${savedPlatformId || ''}`}
                       title="Trading Platform Preview"
                       className={`w-full shadow-xl ${(platformName || logoUrl) ? 'rounded-b-lg' : 'rounded-lg'}`}
                       style={{ 
