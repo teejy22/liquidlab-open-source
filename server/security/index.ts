@@ -25,7 +25,9 @@ export function configureSecurity(app: Express) {
   // Don't apply rate limiters to specific routes here - they should be applied in routes.ts
   // This prevents double application of middleware
   
-  // 5. CSRF protection
+  // 5. CSRF protection - TEMPORARILY DISABLED due to misconfiguration issues
+  // TODO: Fix CSRF implementation
+  /*
   app.use((req, res, next) => {
     // Skip CSRF for exempt routes (webhooks and admin routes)
     if (csrfExemptRoutes.some(route => req.path.startsWith(route))) {
@@ -45,6 +47,7 @@ export function configureSecurity(app: Express) {
     }
     csrfProtection(req, res, next);
   });
+  */
   
   // 6. Audit logging for security events
   app.use('/api/auth/login', async (req, res, next) => {
