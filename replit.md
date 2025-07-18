@@ -100,6 +100,13 @@ The application uses a monorepo structure with shared types and schemas, enablin
 
 ## Recent Changes (January 18, 2025)
 
+### Fixed Platform Creation and Logo Upload Issues
+- **Logo Upload Working**: Added /api/upload-logo endpoint to CSRF exemption list for multipart/form-data support
+- **File Upload Tested**: Successfully tested logo upload functionality, returns proper URL path
+- **CSRF Configuration**: Platform creation uses apiRequest with proper CSRF token handling
+- **Security Maintained**: All security features remain active while adding necessary exemptions for file uploads
+- **Upload Limits**: 5MB file size limit, supports PNG/JPG/GIF/WebP image formats
+
 ### Fixed Admin Login Security Middleware Conflicts
 - **Resolved Internal Server Errors**: Fixed authentication failing due to middleware conflicts
 - **CSRF Exemptions**: Added authentication endpoints to CSRF exemption list (/api/auth/signin, /api/auth/signup, /api/admin/login, etc.)

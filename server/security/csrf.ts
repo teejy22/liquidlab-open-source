@@ -26,5 +26,6 @@ export const csrfExemptRoutes = [
   '/api/auth/signup',
   '/api/auth/logout',
   '/api/admin/login',
-  '/api/admin/logout'
+  '/api/admin/logout',
+  '/api/upload-logo'        // File upload endpoint (multipart/form-data)
 ];
