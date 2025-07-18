@@ -80,10 +80,11 @@ export function configureSecurityHeaders(app: Express) {
         '/api/platforms/verify',
         '/api/auth/signin',
         '/api/auth/signup',
-        '/api/admin/login'
+        '/api/admin/login',
+        '/api/platforms'  // Platform creation endpoint
       ];
       
-      if (skipPaths.includes(req.path)) {
+      if (skipPaths.some(path => req.path.startsWith(path))) {
         // Set minimal security headers manually for these endpoints
         res.setHeader('X-Content-Type-Options', 'nosniff');
         res.setHeader('X-Frame-Options', 'DENY');
