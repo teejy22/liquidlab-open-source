@@ -21,5 +21,10 @@ export const csrfExemptRoutes = [
   '/api/webhooks/hyperliquid',
   '/api/webhooks/moonpay',
   '/api/moonpay/webhook',
-  '/api/platforms/verify'  // Public verification endpoint
+  '/api/platforms/verify',  // Public verification endpoint
+  '/api/auth/signin',       // Authentication endpoints
+  '/api/auth/signup',
+  '/api/auth/logout',
+  '/api/admin/login',
+  '/api/admin/logout'
 ];

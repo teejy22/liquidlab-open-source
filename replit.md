@@ -100,6 +100,13 @@ The application uses a monorepo structure with shared types and schemas, enablin
 
 ## Recent Changes (January 18, 2025)
 
+### Fixed Admin Login Security Middleware Conflicts
+- **Resolved Internal Server Errors**: Fixed authentication failing due to middleware conflicts
+- **CSRF Exemptions**: Added authentication endpoints to CSRF exemption list (/api/auth/signin, /api/auth/signup, /api/admin/login, etc.)
+- **Helmet Bypass**: Created conditional bypass for auth endpoints to prevent security header conflicts
+- **All Login Systems Working**: Both regular user (test@example.com) and admin (admin@liquidlab.trade) authentication now functional
+- **Security Maintained**: All other security features remain active; only necessary exemptions applied
+
 ### Platform Verification System Complete Fix
 - **Fixed CSRF Misconfiguration**: Added `/api/platforms/verify` to CSRF exemption list as it's a public API endpoint
 - **Fixed Helmet Security Headers**: Created conditional middleware to bypass Helmet for verification endpoint

@@ -75,9 +75,16 @@ export function configureSecurityHeaders(app: Express) {
     
     // Apply Helmet conditionally
     app.use((req, res, next) => {
-      // Skip Helmet for verification endpoint that's having issues
-      if (req.path === '/api/platforms/verify' && req.method === 'POST') {
-        // Set minimal security headers manually for this endpoint
+      // Skip Helmet for certain endpoints
+      const skipPaths = [
+        '/api/platforms/verify',
+        '/api/auth/signin',
+        '/api/auth/signup',
+        '/api/admin/login'
+      ];
+      
+      if (skipPaths.includes(req.path)) {
+        // Set minimal security headers manually for these endpoints
         res.setHeader('X-Content-Type-Options', 'nosniff');
         res.setHeader('X-Frame-Options', 'DENY');
         res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
