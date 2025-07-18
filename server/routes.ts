@@ -603,6 +603,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get verification code for a platform
+  app.get("/api/platforms/:id/verification-code", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { VerificationService } = await import("./services/verification");
+      
+      const code = await VerificationService.getActiveCode(id);
+      
+      res.json({ code });
+    } catch (error) {
+      console.error("Error fetching verification code:", error);
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
   // Get current platform based on domain (for centralized SaaS)
   app.get("/api/platform/current", async (req, res) => {
     try {
@@ -2561,6 +2576,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { SecurityService } = await import("./services/security");
       const { suspiciousActivity, platformSecurity, tradingPlatforms } = await import("@shared/schema");
+      const { desc } = await import("drizzle-orm");
       
       // Get all suspicious platforms
       const suspiciousReports = await db
@@ -2572,7 +2588,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .from(suspiciousActivity)
         .leftJoin(platformSecurity, eq(suspiciousActivity.platformId, platformSecurity.platformId))
         .leftJoin(tradingPlatforms, eq(suspiciousActivity.platformId, tradingPlatforms.id))
-        .orderBy(desc(suspiciousActivity.reportedAt))
+        .orderBy(desc(suspiciousActivity.createdAt))
         .limit(50);
       
       res.json({ reports: suspiciousReports });
