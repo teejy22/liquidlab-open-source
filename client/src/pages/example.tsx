@@ -257,6 +257,7 @@ export default function ExampleTradingPage() {
         handleRetry={handleRetry}
         retryCount={retryCount}
         verificationCode={verificationCode}
+        isPreview={isPreview}
       />
     </PrivyProvider>
   );
@@ -270,7 +271,8 @@ function TradingPlatform({
   marketDataError, 
   handleRetry, 
   retryCount,
-  verificationCode 
+  verificationCode,
+  isPreview 
 }: any) {
   const { ready } = usePrivy();
   
