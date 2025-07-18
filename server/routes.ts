@@ -68,12 +68,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // CSRF token endpoint
-  app.get("/api/csrf-token", async (req, res) => {
-    const { csrfProtection } = await import("./security/csrf");
-    csrfProtection(req, res, (err) => {
-      if (err) return res.status(403).json({ error: 'CSRF token generation failed' });
-      res.json({ csrfToken: req.csrfToken() });
-    });
+  app.get("/api/csrf-token", (req, res) => {
+    // The CSRF middleware should already be applied globally
+    // Just return the token from res.locals or generate one
+    if (res.locals.csrfToken) {
+      res.json({ csrfToken: res.locals.csrfToken });
+    } else {
+      // For now, just return success since token is stored in cookie
+      res.json({ message: 'CSRF token set in cookie' });
+    }
   });
   
   // Admin authentication

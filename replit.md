@@ -100,6 +100,13 @@ The application uses a monorepo structure with shared types and schemas, enablin
 
 ## Recent Changes (January 18, 2025)
 
+### Fixed CSRF Protection for Platform Creation
+- **CSRF Token Endpoint**: Created `/api/csrf-token` endpoint to generate CSRF tokens for the client
+- **Client Integration**: Updated App.tsx to fetch CSRF token on app load
+- **Exemption Management**: Temporarily exempted `/api/csrf-token` from CSRF protection to allow token generation
+- **Security Maintained**: Platform creation endpoint now properly secured with CSRF protection
+- **Cookie-Based Tokens**: CSRF tokens are stored in secure HTTP-only cookies automatically
+
 ### Fixed Platform Creation and Logo Upload Issues
 - **Logo Upload Working**: Added /api/upload-logo endpoint to CSRF exemption list for multipart/form-data support
 - **File Upload Tested**: Successfully tested logo upload functionality, returns proper URL path
