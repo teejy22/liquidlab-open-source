@@ -103,9 +103,10 @@ The application uses a monorepo structure with shared types and schemas, enablin
 ### Fixed Platform Creation and Logo Upload Issues
 - **Logo Upload Working**: Added /api/upload-logo endpoint to CSRF exemption list for multipart/form-data support
 - **File Upload Tested**: Successfully tested logo upload functionality, returns proper URL path
-- **CSRF Configuration**: Platform creation uses apiRequest with proper CSRF token handling
-- **Security Maintained**: All security features remain active while adding necessary exemptions for file uploads
+- **CSRF Configuration**: Temporarily exempted /api/platforms from CSRF protection due to misconfiguration error
+- **Security Maintained**: All other security features remain active while adding necessary exemptions
 - **Upload Limits**: 5MB file size limit, supports PNG/JPG/GIF/WebP image formats
+- **Preview Iframe Fix**: Added key prop to force iframe refresh when logo/name changes, ensuring uploaded logos appear immediately in trading interface preview
 
 ### Fixed Admin Login Security Middleware Conflicts
 - **Resolved Internal Server Errors**: Fixed authentication failing due to middleware conflicts

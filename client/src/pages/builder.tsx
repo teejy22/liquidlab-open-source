@@ -661,6 +661,7 @@ export default function Builder() {
                     ) : null}
                     
                     <iframe
+                      key={`${platformName}-${logoUrl}`} // Force iframe refresh when name or logo changes
                       src={`/example?preview=true&name=${encodeURIComponent(platformName || '')}&logo=${encodeURIComponent(logoUrl || '')}`}
                       title="Trading Platform Preview"
                       className={`w-full shadow-xl ${(platformName || logoUrl) ? 'rounded-b-lg' : 'rounded-lg'}`}
