@@ -25,14 +25,18 @@ export function configureSecurity(app: Express) {
   app.use('/api/trade/', tradingLimiter);
   app.use('/api/hyperliquid/trade', tradingLimiter);
   
-  // 5. CSRF protection (temporarily disabled due to configuration issues)
-  // TODO: Re-enable CSRF after fixing configuration
-  // app.use((req, res, next) => {
-  //   if (csrfExemptRoutes.some(route => req.path.startsWith(route))) {
-  //     return next();
-  //   }
-  //   csrfProtection(req, res, next);
-  // });
+  // 5. CSRF protection
+  app.use((req, res, next) => {
+    // Skip CSRF for exempt routes (webhooks)
+    if (csrfExemptRoutes.some(route => req.path.startsWith(route))) {
+      return next();
+    }
+    // Skip CSRF for GET requests (they should be safe/idempotent)
+    if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
+      return next();
+    }
+    csrfProtection(req, res, next);
+  });
   
   // 6. Audit logging for security events
   app.use('/api/auth/login', async (req, res, next) => {

@@ -100,12 +100,17 @@ The application uses a monorepo structure with shared types and schemas, enablin
 
 ## Recent Changes (January 18, 2025)
 
-### Critical XSS Vulnerability Fix
+### Critical Security Vulnerabilities Fixed
 - **Fixed Reflected XSS in Hyperliquid Webhook**: Resolved security vulnerability where challenge parameter was returned without sanitization
   - Added HTML entity encoding for all special characters (&, <, >, ", ', /)
   - Set response type to 'text/plain' to prevent HTML interpretation
   - Prevents attackers from injecting malicious scripts via webhook verification endpoint
   - Identified by automated security scanning and fixed immediately
+- **Fixed Missing CSRF Protection**: Re-enabled CSRF protection that was temporarily disabled
+  - CSRF tokens now required for all state-changing requests (POST, PUT, DELETE)
+  - Client-side automatically includes X-CSRF-Token header from cookie
+  - Webhooks and GET requests exempt from CSRF protection
+  - Prevents attackers from submitting forged requests on behalf of authenticated users
 
 ## Recent Changes (January 14, 2025)
 
