@@ -16,6 +16,7 @@ import { HyperliquidTradingInterface } from "@/components/trading/HyperliquidTra
 
 import { MoonPayButton } from "@/components/MoonPayButton";
 import { PWAInstaller } from "@/components/PWAInstaller";
+import { validateImageUrl } from "@/lib/urlValidator";
 
 interface MarketData {
   price: string;
@@ -90,7 +91,7 @@ export default function ExampleTradingPage() {
         if (isPreview && (previewName || previewLogo)) {
           setPlatformData({
             name: previewName || 'Preview Platform',
-            logoUrl: previewLogo || null
+            logoUrl: validateImageUrl(previewLogo) || null
           });
           return;
         }
@@ -260,9 +261,9 @@ export default function ExampleTradingPage() {
                 <ArrowLeft className="w-4 h-4" />
               </Button>
             </Link>
-            {platformData?.logoUrl ? (
+            {validateImageUrl(platformData?.logoUrl) ? (
               <img 
-                src={platformData.logoUrl} 
+                src={validateImageUrl(platformData.logoUrl)!} 
                 alt={platformData.name || "Trading Platform"} 
                 className="h-24 lg:h-36 w-auto"
               />

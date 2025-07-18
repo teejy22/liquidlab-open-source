@@ -928,7 +928,7 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - SECURITY_CHANGELOG.md documents all security fixes
   - SECURITY_BEST_PRACTICES.md provides secure development guidelines
   - Updated open source repository README with security references
-- **Progress**: Fixed 7 of 14 security vulnerabilities identified by GitHub security scan
+- **Progress**: Fixed 8 of 14 security vulnerabilities identified by GitHub security scan
 
 ### Helmet Security Configuration Fix (January 17, 2025)
 - **Fixed Critical Clickjacking Vulnerability**: Resolved insecure Helmet configuration that disabled frameguard
@@ -958,6 +958,14 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Malformed requests caused unhandled exceptions leading to process crashes
   - Affected versions: >= 1.4.4-lts.1, < 2.0.2
   - Fix prevents attackers from crashing the server through file upload endpoints
+
+### Client-Side URL Redirect Fix (January 17, 2025)
+- **Fixed Client-Side URL Redirect Vulnerability**: Added URL validation to prevent XSS and redirect attacks
+  - Created urlValidator utility with validateImageUrl and validateRedirectUrl functions
+  - Validates URLs against allowed protocols (http/https only)
+  - Blocks dangerous schemes like javascript:, data:, vbscript:
+  - Applied validation to platformData.logoUrl and preview logo URLs in example.tsx
+  - Prevents attackers from injecting malicious URLs that could redirect users or execute scripts
 
 ### Deposit Security Infrastructure Implementation (January 17, 2025)
 - **Database Schema**: Added depositTransactions table to track all deposit operations
