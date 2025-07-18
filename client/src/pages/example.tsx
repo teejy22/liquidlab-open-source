@@ -282,8 +282,8 @@ function TradingPlatform({
     <div className="min-h-screen bg-[#0a0a0a] text-gray-100 flex flex-col">
       {/* Header */}
       <header className="bg-[#0f0f0f] border-b border-gray-800">
-        <div className="flex items-center justify-between h-36 lg:h-24 px-4 py-1 lg:py-0">
-          <div className="flex items-center space-x-2 lg:space-x-6">
+        <div className="flex items-center justify-between h-20 sm:h-24 lg:h-24 px-2 sm:px-4 py-1 lg:py-0">
+          <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-6">
             <Link href="/" className="hidden lg:block">
               <Button 
                 variant="outline" 
@@ -307,28 +307,30 @@ function TradingPlatform({
               <img 
                 src={validateImageUrl(platformData.logoUrl)!} 
                 alt={platformData.name || "Trading Platform"} 
-                className="h-24 lg:h-36 w-auto"
+                className="h-14 sm:h-20 lg:h-36 w-auto"
               />
             ) : (
               <img 
                 src={liquidLabLogo} 
                 alt="LiquidLab" 
-                className="h-24 lg:h-36 w-auto"
+                className="h-14 sm:h-20 lg:h-36 w-auto"
               />
             )}
           </div>
-          <div className="flex items-center space-x-2 lg:space-x-4">
-            <PlatformVerificationBadge
-              platformId={platformData?.id || 1}
-              platformName={platformData?.name || "Example Trading Platform"}
-              isVerified={true}
-              compactMode={true}
-              verificationCode={verificationCode}
-            />
+          <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-4">
+            <div className="hidden sm:block">
+              <PlatformVerificationBadge
+                platformId={platformData?.id || 1}
+                platformName={platformData?.name || "Example Trading Platform"}
+                isVerified={true}
+                compactMode={true}
+                verificationCode={verificationCode}
+              />
+            </div>
             <WalletConnect />
             <MoonPayButton 
               platformId={platformData?.id}
-              className="h-8 lg:h-9"
+              className="h-7 sm:h-8 lg:h-9 text-xs sm:text-sm px-2 sm:px-4"
             />
           </div>
         </div>
