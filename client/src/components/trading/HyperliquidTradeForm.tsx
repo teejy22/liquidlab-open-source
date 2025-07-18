@@ -19,11 +19,11 @@ interface HyperliquidTradeFormProps {
 
 export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage = 100 }: HyperliquidTradeFormProps) {
   const [side, setSide] = useState<"buy" | "sell">("buy");
-  const [orderType, setOrderType] = useState<"limit" | "market">("limit");
+  const [orderType, setOrderType] = useState<"limit" | "market" | "pro">("limit");
   const [price, setPrice] = useState("");
   const [size, setSize] = useState("");
-  const [sizeMode, setSizeMode] = useState<"asset" | "usd">("asset");
-  const [leverage, setLeverage] = useState(1);
+  const [sizeMode, setSizeMode] = useState<"asset" | "usd">("usd");
+  const [collateralPercentage, setCollateralPercentage] = useState(0);
   const [reduceOnly, setReduceOnly] = useState(false);
   const [postOnly, setPostOnly] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -54,12 +54,20 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
     }
   }, [currentPrice, orderType]);
 
-  // Update leverage when maxLeverage changes
+  // Calculate available collateral from account summary
+  const availableCollateral = accountSummary?.freeCollateral || 0;
+  
+  // Update size based on collateral percentage
   useEffect(() => {
-    if (leverage > maxLeverage) {
-      setLeverage(maxLeverage);
+    if (collateralPercentage > 0 && availableCollateral > 0) {
+      const collateralToUse = (availableCollateral * collateralPercentage) / 100;
+      const notionalSize = collateralToUse * maxLeverage;
+      setSize(notionalSize.toFixed(2));
+      setSizeMode("usd");
+    } else if (collateralPercentage === 0) {
+      setSize("");
     }
-  }, [maxLeverage, leverage]);
+  }, [collateralPercentage, availableCollateral, maxLeverage]);
 
   // Calculate TP/SL prices based on percentage
   useEffect(() => {
@@ -156,8 +164,7 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
 
   const calculateMarginRequired = () => {
     const orderValue = parseFloat(calculateOrderValue());
-    const leverageNum = parseFloat(leverage);
-    return leverageNum > 0 ? (orderValue / leverageNum).toFixed(2) : "0.00";
+    return maxLeverage > 0 ? (orderValue / maxLeverage).toFixed(2) : "0.00";
   };
 
   const calculateLiquidationPrice = () => {
@@ -172,9 +179,9 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
     const maintenanceMargin = 0.005; // 0.5% maintenance margin
     
     if (side === "buy") {
-      return orderPrice * (1 - 1/leverage + maintenanceMargin);
+      return orderPrice * (1 - 1/maxLeverage + maintenanceMargin);
     } else {
-      return orderPrice * (1 + 1/leverage - maintenanceMargin);
+      return orderPrice * (1 + 1/maxLeverage - maintenanceMargin);
     }
   };
 
@@ -203,6 +210,28 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
 
   return (
     <div className="p-4 space-y-3">
+      {/* Leverage Header */}
+      <div className="flex items-center justify-between bg-gray-900 rounded px-3 py-2">
+        <span className="text-xs text-gray-400">Cross</span>
+        <span className="text-xs font-medium text-white">{maxLeverage}x</span>
+        <span className="text-xs text-gray-400">One-Way</span>
+      </div>
+      
+      {/* Order Type */}
+      <Tabs value={orderType} onValueChange={(v) => setOrderType(v as "limit" | "market" | "pro")}>
+        <TabsList className="grid w-full grid-cols-3 h-8 bg-gray-900 p-0.5">
+          <TabsTrigger value="market" className="text-xs data-[state=active]:bg-gray-800 data-[state=active]:text-white">
+            Market
+          </TabsTrigger>
+          <TabsTrigger value="limit" className="text-xs data-[state=active]:bg-gray-800 data-[state=active]:text-white">
+            Limit
+          </TabsTrigger>
+          <TabsTrigger value="pro" className="text-xs data-[state=active]:bg-gray-800 data-[state=active]:text-white">
+            Pro
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+
       {/* Buy/Sell Toggle */}
       <Tabs value={side} onValueChange={(v) => setSide(v as "buy" | "sell")}>
         <TabsList className="grid w-full grid-cols-2 h-8 bg-gray-900 p-0.5">
@@ -214,40 +243,23 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
           </TabsTrigger>
         </TabsList>
       </Tabs>
-      {/* Order Type */}
-      <div className="flex items-center space-x-2">
-        <Select value={orderType} onValueChange={(v) => setOrderType(v as "limit" | "market")}>
-          <SelectTrigger className="w-24 h-8 text-xs bg-gray-900 border-gray-700">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="bg-gray-900 border-gray-700">
-            <SelectItem value="limit" className="text-gray-200 focus:bg-gray-800 focus:text-white">Limit</SelectItem>
-            <SelectItem value="market" className="text-gray-200 focus:bg-gray-800 focus:text-white">Market</SelectItem>
-          </SelectContent>
-        </Select>
-        
-        {orderType === "limit" && (
-          <label className="flex items-center space-x-1 text-xs">
-            <input
-              type="checkbox"
-              checked={postOnly}
-              onChange={(e) => setPostOnly(e.target.checked)}
-              className="w-3 h-3"
-            />
-            <span>Post Only</span>
-          </label>
+
+      {/* Available to Trade & Current Position */}
+      <div className="space-y-2 bg-gray-900/50 p-2 rounded">
+        <div className="flex justify-between text-xs">
+          <span className="text-gray-400">Available to Trade</span>
+          <span className="text-white">${availableCollateral.toFixed(2)}</span>
+        </div>
+        {accountSummary?.positions && accountSummary.positions.length > 0 && (
+          <div className="flex justify-between text-xs">
+            <span className="text-gray-400">Current Position</span>
+            <span className="text-white">
+              {accountSummary.positions.find(p => p.coin === selectedMarket)?.szi || "0"} {selectedMarket}
+            </span>
+          </div>
         )}
-        
-        <label className="flex items-center space-x-1 text-xs ml-auto">
-          <input
-            type="checkbox"
-            checked={reduceOnly}
-            onChange={(e) => setReduceOnly(e.target.checked)}
-            className="w-3 h-3"
-          />
-          <span>Reduce Only</span>
-        </label>
       </div>
+
       {/* Price Input (for limit orders) */}
       {orderType === "limit" && (
         <div>
@@ -261,194 +273,87 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
           />
         </div>
       )}
-      {/* Size Input with Mode Toggle */}
+
+      {/* Size Input and Percentage Slider */}
       <div>
-        <div className="flex items-center justify-between mb-1">
-          <Label className="text-xs text-gray-400">
-            Size {sizeMode === "asset" ? `(${selectedMarket})` : "(USD)"}
-          </Label>
-          <div className="flex items-center space-x-1">
-            <button
-              type="button"
-              onClick={() => setSizeMode("asset")}
-              className={`px-2 py-0.5 text-xs rounded ${
-                sizeMode === "asset" 
-                  ? "bg-[#1dd1a1] text-black" 
-                  : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-              }`}
-            >
-              {selectedMarket}
-            </button>
-            <button
-              type="button"
-              onClick={() => setSizeMode("usd")}
-              className={`px-2 py-0.5 text-xs rounded ${
-                sizeMode === "usd" 
-                  ? "bg-[#1dd1a1] text-black" 
-                  : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-              }`}
-            >
-              USD
-            </button>
-          </div>
+        <div className="flex items-center justify-between mb-2">
+          <Label className="text-xs text-gray-400">Size</Label>
+          <button
+            type="button"
+            onClick={() => setSizeMode(sizeMode === "usd" ? "asset" : "usd")}
+            className="text-xs font-medium text-[#1dd1a1] hover:text-[#1ab894]"
+          >
+            USD
+          </button>
         </div>
         <Input
           type="number"
           value={size}
-          onChange={(e) => setSize(e.target.value)}
-          placeholder={sizeMode === "asset" ? "0.00" : "$0.00"}
-          className="bg-gray-900 border-gray-700 h-8 text-sm"
+          onChange={(e) => {
+            setSize(e.target.value);
+            // Update percentage based on manual size input
+            if (availableCollateral > 0 && e.target.value) {
+              const orderValue = parseFloat(e.target.value);
+              const requiredCollateral = orderValue / maxLeverage;
+              const percentage = (requiredCollateral / availableCollateral) * 100;
+              setCollateralPercentage(Math.min(100, Math.max(0, percentage)));
+            }
+          }}
+          placeholder={sizeMode === "usd" ? "$0.00" : "0.00"}
+          className="bg-gray-900 border-gray-700 h-8 text-sm mb-2"
         />
-      </div>
-      {/* Leverage Selector */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <Label className="text-xs text-gray-400">Leverage</Label>
-          <span className="text-sm font-medium text-white">{leverage}x</span>
-        </div>
         <Slider
-          value={[leverage]}
-          onValueChange={(value) => setLeverage(value[0])}
-          max={maxLeverage}
-          min={1}
+          value={[collateralPercentage]}
+          onValueChange={(value) => setCollateralPercentage(value[0])}
+          max={100}
+          min={0}
           step={1}
           className="w-full"
         />
-        <div className="flex justify-between text-[10px] text-gray-500 mt-1">
-          <span>1x</span>
-          {maxLeverage >= 25 && <span>{Math.round(maxLeverage * 0.25)}x</span>}
-          {maxLeverage >= 50 && <span>{Math.round(maxLeverage * 0.5)}x</span>}
-          {maxLeverage >= 75 && <span>{Math.round(maxLeverage * 0.75)}x</span>}
-          <span>{maxLeverage}x</span>
+        <div className="flex justify-between items-center mt-1">
+          <div className="flex justify-between w-full text-[10px] text-gray-500">
+            <span>0</span>
+            <span>25</span>
+            <span>50</span>
+            <span>75</span>
+            <span>100 %</span>
+          </div>
         </div>
       </div>
       
-      {/* Take Profit / Stop Loss */}
-      <div className="border-t border-gray-800 pt-3 mt-3">
-        <h4 className="text-[10px] font-semibold text-gray-400 uppercase mb-2">Risk Management</h4>
-        <div className="grid grid-cols-2 gap-2">
-          {/* Take Profit */}
-          <div className="bg-gray-900/50 p-2 rounded">
-            <div className="flex items-center justify-between mb-1">
-              <label className="flex items-center space-x-1">
-                <input
-                  type="checkbox"
-                  checked={enableTP}
-                  onChange={(e) => setEnableTP(e.target.checked)}
-                  className="w-3 h-3 rounded border-gray-600 bg-gray-800 text-[#1dd1a1] focus:ring-[#1dd1a1] focus:ring-offset-0"
-                />
-                <span className="text-[10px] font-medium text-gray-300">TP</span>
-              </label>
-              {enableTP && (
-                <div className="flex items-center space-x-0.5">
-                  <button
-                    type="button"
-                    onClick={() => setTpMode("price")}
-                    className={`px-1.5 py-0.5 text-[9px] rounded ${
-                      tpMode === "price" 
-                        ? "bg-[#1dd1a1] text-black" 
-                        : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                    }`}
-                  >
-                    $
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setTpMode("percentage")}
-                    className={`px-1.5 py-0.5 text-[9px] rounded ${
-                      tpMode === "percentage" 
-                        ? "bg-[#1dd1a1] text-black" 
-                        : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                    }`}
-                  >
-                    %
-                  </button>
-                </div>
-              )}
-            </div>
-            {enableTP && (
-              <Input
-                type="number"
-                value={tpMode === "price" ? tpPrice : tpPercentage}
-                onChange={(e) => tpMode === "price" ? setTpPrice(e.target.value) : setTpPercentage(e.target.value)}
-                placeholder={tpMode === "price" ? "Price" : "%"}
-                disabled={!enableTP}
-                className="bg-gray-900 border-gray-700 h-6 text-[10px] px-2"
-              />
-            )}
-          </div>
-
-          {/* Stop Loss */}
-          <div className="bg-gray-900/50 p-2 rounded">
-            <div className="flex items-center justify-between mb-1">
-              <label className="flex items-center space-x-1">
-                <input
-                  type="checkbox"
-                  checked={enableSL}
-                  onChange={(e) => setEnableSL(e.target.checked)}
-                  className="w-3 h-3 rounded border-gray-600 bg-gray-800 text-[#f56565] focus:ring-[#f56565] focus:ring-offset-0"
-                />
-                <span className="text-[10px] font-medium text-gray-300">SL</span>
-              </label>
-              {enableSL && (
-                <div className="flex items-center space-x-0.5">
-                  <button
-                    type="button"
-                    onClick={() => setSlMode("price")}
-                    className={`px-1.5 py-0.5 text-[9px] rounded ${
-                      slMode === "price" 
-                        ? "bg-[#f56565] text-white" 
-                        : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                    }`}
-                  >
-                    $
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSlMode("percentage")}
-                    className={`px-1.5 py-0.5 text-[9px] rounded ${
-                      slMode === "percentage" 
-                        ? "bg-[#f56565] text-white" 
-                        : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                    }`}
-                  >
-                    %
-                  </button>
-                </div>
-              )}
-            </div>
-            {enableSL && (
-              <Input
-                type="number"
-                value={slMode === "price" ? slPrice : slPercentage}
-                onChange={(e) => slMode === "price" ? setSlPrice(e.target.value) : setSlPercentage(e.target.value)}
-                placeholder={slMode === "price" ? "Price" : "%"}
-                disabled={!enableSL}
-                className="bg-gray-900 border-gray-700 h-6 text-[10px] px-2"
-              />
-            )}
-          </div>
-        </div>
+      {/* Reduce Only and TP/SL */}
+      <div className="space-y-2">
+        <label className="flex items-center space-x-2 text-xs">
+          <input
+            type="checkbox"
+            checked={reduceOnly}
+            onChange={(e) => setReduceOnly(e.target.checked)}
+            className="w-3 h-3"
+          />
+          <span>Reduce Only</span>
+        </label>
+        <label className="flex items-center space-x-2 text-xs">
+          <input
+            type="checkbox"
+            checked={enableTP || enableSL}
+            onChange={(e) => {
+              setEnableTP(e.target.checked);
+              setEnableSL(e.target.checked);
+            }}
+            className="w-3 h-3"
+          />
+          <span>Take Profit / Stop Loss</span>
+        </label>
       </div>
+      
+
       
       {/* Order Summary */}
-      <div className="border-t border-gray-800 pt-3 space-y-2 text-xs">
+      <div className="space-y-2 text-xs">
         <div className="flex justify-between">
-          <span className="text-gray-400">Order Value:</span>
+          <span className="text-gray-400">Total:</span>
           <span className="font-mono">${calculateOrderValue()}</span>
         </div>
-        <div className="flex justify-between">
-          <span className="text-gray-400">Margin Required:</span>
-          <span className="font-mono">${calculateMarginRequired()}</span>
-        </div>
-        {accountSummary && (
-          <div className="flex justify-between">
-            <span className="text-gray-400">Available:</span>
-            <span className="font-mono">
-              ${parseFloat(accountSummary.withdrawable).toFixed(2)}
-            </span>
-          </div>
-        )}
       </div>
       {/* Submit Button */}
       <Button
@@ -482,7 +387,7 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
         side={side}
         size={parseFloat(size || "0")}
         price={getTradeDetails().orderPrice}
-        leverage={leverage}
+        leverage={maxLeverage}
         isMarketOrder={orderType === "market"}
         markPrice={currentPrice}
         liquidationPrice={getTradeDetails().liquidationPrice}
