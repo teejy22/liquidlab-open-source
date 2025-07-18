@@ -39,6 +39,10 @@ export function configureSecurity(app: Express) {
     if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
       return next();
     }
+    // Ensure session exists before applying CSRF
+    if (!req.session) {
+      return res.status(500).json({ error: 'Session not initialized' });
+    }
     csrfProtection(req, res, next);
   });
   
