@@ -77,6 +77,19 @@ function AppContent() {
   const [location] = useLocation();
   const hideHeaderFooter = location === '/example' || location === '/login' || location === '/signup' || location.startsWith('/admin');
 
+  // Fetch CSRF token on app load
+  useEffect(() => {
+    fetch('/api/csrf-token', { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => {
+        // The token is stored in the cookie automatically by the server
+        console.log('CSRF token fetched');
+      })
+      .catch(err => {
+        console.error('Failed to fetch CSRF token:', err);
+      });
+  }, []);
+
   return (
     <TooltipProvider>
       <div className="min-h-screen flex flex-col">

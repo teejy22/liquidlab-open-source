@@ -67,6 +67,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ message: "Server is working", timestamp: new Date().toISOString() });
   });
   
+  // CSRF token endpoint
+  app.get("/api/csrf-token", async (req, res) => {
+    const { csrfProtection } = await import("./security/csrf");
+    csrfProtection(req, res, (err) => {
+      if (err) return res.status(403).json({ error: 'CSRF token generation failed' });
+      res.json({ csrfToken: req.csrfToken() });
+    });
+  });
+  
   // Admin authentication
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@liquidlab.trade";
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD; // Required environment variable
