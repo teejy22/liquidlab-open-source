@@ -40,7 +40,9 @@ export function configureSecurityHeaders(app: Express) {
           "https://api.moonpay.com",
           "wss://api.hyperliquid.xyz",
           "https://*.tradingview.com",
-          "https://api.coingecko.com"
+          "https://api.coingecko.com",
+          "https://auth.privy.io",
+          "https://*.privy.io"
         ],
         frameSrc: [
           "'self'",

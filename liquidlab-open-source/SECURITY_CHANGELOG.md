@@ -31,6 +31,11 @@
   - Sanitized security event logging to exclude sensitive details
   - Applied fixes to both main codebase and open source repository
 
+- **Privy Wallet Connection CSP Issue**
+  - Added Privy's API domains to Content Security Policy `connectSrc` directive
+  - Allows connections to `https://auth.privy.io` and `https://*.privy.io`
+  - Fixes wallet authentication being blocked by security headers
+
 ## [1.0.1] - 2025-01-17
 
 ### Fixed

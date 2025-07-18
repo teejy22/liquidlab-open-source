@@ -909,6 +909,12 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Trade batch runs every 10 minutes to check for new trades
   - Real-time revenue tracking and distribution enabled
 
+### Privy Wallet Connection Fix (January 17, 2025)
+- **Content Security Policy Update**: Fixed wallet connection issues by adding Privy's API domains to CSP
+  - Added `https://auth.privy.io` and `https://*.privy.io` to connectSrc directive
+  - Resolves "Refused to connect" errors when initializing Privy authentication
+  - Applied fix to both main repository and open source repository
+
 ### Security Vulnerabilities Fixed (January 16, 2025)
 - **CVE-2023-42282 SSRF Vulnerability**: Replaced express-rate-limit with custom rate limiting solution to avoid vulnerable dependency
 - **ReDoS Vulnerability**: Fixed polynomial time complexity regex patterns in security scanner
