@@ -91,9 +91,11 @@ export default function ExampleTradingPage() {
         
         // If in preview mode, use preview data
         if (isPreview && (previewName || previewLogo)) {
+          console.log('Preview mode - Logo URL:', previewLogo);
+          console.log('Validated Logo URL:', validateImageUrl(previewLogo));
           setPlatformData({
             name: previewName || 'Preview Platform',
-            logoUrl: validateImageUrl(previewLogo) || null
+            logoUrl: previewLogo || null  // Don't validate in preview mode since it's a relative URL
           });
           return;
         }
@@ -306,12 +308,13 @@ function TradingPlatform({
               </Button>
             </Link>
             {(() => {
-              const validatedLogoUrl = validateImageUrl(platformData?.logoUrl);
-              if (validatedLogoUrl) {
+              // In preview mode, use logoUrl directly (it's already a relative path)
+              const logoUrl = isPreview ? platformData?.logoUrl : validateImageUrl(platformData?.logoUrl);
+              if (logoUrl) {
                 return (
                   <img 
-                    src={validatedLogoUrl} 
-                    alt={platformData.name || "Trading Platform"} 
+                    src={logoUrl} 
+                    alt={platformData?.name || "Trading Platform"} 
                     className="h-20 sm:h-24 lg:h-36 w-auto"
                   />
                 );

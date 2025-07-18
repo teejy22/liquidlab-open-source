@@ -107,6 +107,7 @@ The application uses a monorepo structure with shared types and schemas, enablin
 - **Security Maintained**: All other security features remain active while adding necessary exemptions
 - **Upload Limits**: 5MB file size limit, supports PNG/JPG/GIF/WebP image formats
 - **Preview Iframe Fix**: Added key prop to force iframe refresh when logo/name changes, ensuring uploaded logos appear immediately in trading interface preview
+- **Preview Logo Display Fix**: Bypassed URL validation for preview mode logos since they use relative paths (/uploads/xxx.png), allowing uploaded logos to display properly in the trading interface header
 
 ### Fixed Admin Login Security Middleware Conflicts
 - **Resolved Internal Server Errors**: Fixed authentication failing due to middleware conflicts
