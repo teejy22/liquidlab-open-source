@@ -103,13 +103,26 @@ export default function ExampleTradingPage() {
         if (response.ok) {
           const platform = await response.json();
           
-          if (platform) {
+          let platformId = platform?.id;
+          
+          // In development, use a fallback platform ID if no platform is resolved
+          if (!platform && (window.location.hostname === 'localhost' || window.location.hostname.includes('.replit.dev'))) {
+            // Use platform ID 14 (Marketbeat Trading) as the development example
+            const devPlatformResponse = await retryFetch(() => fetch('/api/platforms/14'));
+            if (devPlatformResponse.ok) {
+              const devPlatform = await devPlatformResponse.json();
+              setPlatformData(devPlatform);
+              platformId = devPlatform.id;
+            }
+          } else if (platform) {
             setPlatformData(platform);
-            
+          }
+          
+          if (platformId) {
             // Fetch verification code for this platform with retry
-            console.log('Fetching verification code for platform:', platform.id);
+            console.log('Fetching verification code for platform:', platformId);
             const verifyResponse = await retryFetch(() => 
-              fetch(`/api/platforms/${platform.id}/verification-code`)
+              fetch(`/api/platforms/${platformId}/verification-code`)
             );
             if (verifyResponse.ok) {
               const verifyData = await verifyResponse.json();
