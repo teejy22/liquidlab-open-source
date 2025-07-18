@@ -928,7 +928,7 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - SECURITY_CHANGELOG.md documents all security fixes
   - SECURITY_BEST_PRACTICES.md provides secure development guidelines
   - Updated open source repository README with security references
-- **Progress**: Fixed 8 of 14 security vulnerabilities identified by GitHub security scan
+- **Progress**: Fixed 9 of 14 security vulnerabilities identified by GitHub security scan
 
 ### Helmet Security Configuration Fix (January 17, 2025)
 - **Fixed Critical Clickjacking Vulnerability**: Resolved insecure Helmet configuration that disabled frameguard
@@ -951,6 +951,10 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Only allows HTTPS origins in production when Access-Control-Allow-Credentials is true
   - Maintains whitelist validation for all origins before allowing credentialed requests
   - Prevents attackers from stealing user credentials through malicious origins
+- **Development Mode Fix (January 17, 2025)**: Enhanced CORS security in development mode
+  - Added origin validation even in development to prevent credential leaks
+  - Only allows http/https protocols when credentials are enabled
+  - Prevents malicious origins from accessing credentials in development environments
 
 ### Multer Security Fix (January 17, 2025)
 - **Fixed DoS Vulnerability in Multer**: Upgraded multer from 2.0.1 to 2.0.2 to fix critical security vulnerability

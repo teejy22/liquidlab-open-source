@@ -90,12 +90,22 @@ export async function platformCors(
     return next();
   }
 
-  // In development, allow all origins except "null"
+  // In development, validate origin before allowing credentials
   if (process.env.NODE_ENV === 'development') {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-API-Key, X-API-Secret');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    // Validate origin is a proper URL even in development
+    try {
+      const parsedUrl = new URL(origin);
+      // Only allow http/https protocols
+      if (parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:') {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-API-Key, X-API-Secret');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+      }
+    } catch (error) {
+      // Invalid origin URL, don't set CORS headers
+      console.warn('Invalid origin in development:', origin);
+    }
     
     if (req.method === 'OPTIONS') {
       return res.sendStatus(204);
