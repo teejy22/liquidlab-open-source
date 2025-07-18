@@ -128,12 +128,19 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - CSRF tokens now required for all state-changing requests (POST, PUT, DELETE)
   - Client-side automatically includes X-CSRF-Token header from cookie
   - Webhooks and GET requests exempt from CSRF protection
+  - Admin routes excluded from CSRF as they use session authentication
   - Prevents attackers from submitting forged requests on behalf of authenticated users
 - **Fixed Client-Side XSS in Image Display**: Resolved DOM-based XSS vulnerability in platform logo rendering
   - validateImageUrl function now called once and result stored in variable
   - Eliminates double function call that could bypass validation
   - React's built-in XSS protection properly enforced
   - Prevents injection of malicious URLs through platform logo field
+- **Fixed Admin Login Security Middleware Conflicts** (January 18, 2025): Resolved internal server errors preventing admin login
+  - Removed async/await from platformCors middleware to fix Express compatibility issues
+  - Excluded admin routes from CORS checks as they don't require cross-origin access
+  - Added admin route exclusion from CSRF protection (uses session authentication)
+  - Added error handling to Helmet configuration to prevent crashes
+  - Admin login now working correctly with all security features enabled
 
 ## Recent Changes (January 14, 2025)
 

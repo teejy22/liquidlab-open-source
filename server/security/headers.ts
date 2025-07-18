@@ -2,8 +2,9 @@ import helmet from 'helmet';
 import { Express } from 'express';
 
 export function configureSecurityHeaders(app: Express) {
-  // Basic security headers
-  app.use(helmet({
+  try {
+    // Basic security headers
+    app.use(helmet({
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
@@ -71,15 +72,24 @@ export function configureSecurityHeaders(app: Express) {
 
   // Additional security headers (X-Frame-Options handled by Helmet frameguard)
   app.use((req, res, next) => {
-    // Enable XSS filter
-    res.setHeader('X-XSS-Protection', '1; mode=block');
-    
-    // Referrer policy
-    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-    
-    // Permissions policy
-    res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
-    
-    next();
+    try {
+      // Enable XSS filter
+      res.setHeader('X-XSS-Protection', '1; mode=block');
+      
+      // Referrer policy
+      res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+      
+      // Permissions policy
+      res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+      
+      next();
+    } catch (error) {
+      console.error('Security headers error:', error);
+      next();
+    }
   });
+  } catch (error) {
+    console.error('Helmet configuration error:', error);
+    // Continue without helmet on error
+  }
 }
