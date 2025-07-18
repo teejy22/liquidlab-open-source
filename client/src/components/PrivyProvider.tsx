@@ -30,9 +30,22 @@ export function PrivyProvider({ children }: PrivyProviderProps) {
       });
   }, []);
 
-  if (loading || !appId) {
-    console.log('Privy not ready - loading:', loading, 'appId:', appId);
-    return <>{children}</>;
+  if (loading) {
+    console.log('Privy loading...');
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <div className="text-gray-400">Initializing wallet connection...</div>
+      </div>
+    );
+  }
+  
+  if (!appId) {
+    console.error('Privy App ID not found');
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <div className="text-red-400">Error: Wallet configuration not found</div>
+      </div>
+    );
   }
 
   console.log('Initializing Privy with appId:', appId);
@@ -47,11 +60,56 @@ export function PrivyProvider({ children }: PrivyProviderProps) {
           logo: '/liquidlab-logo.png',
         },
         loginMethods: ['wallet', 'email', 'sms'],
-        walletConnectCloudProjectId: 'YOUR_WALLET_CONNECT_PROJECT_ID', // Optional
         embeddedWallets: {
           createOnLogin: 'all-users',
         },
-
+        defaultChain: {
+          id: 42161,
+          name: 'Arbitrum One',
+          network: 'arbitrum',
+          nativeCurrency: {
+            decimals: 18,
+            name: 'Ether',
+            symbol: 'ETH',
+          },
+          rpcUrls: {
+            default: {
+              http: ['https://arb1.arbitrum.io/rpc'],
+            },
+          },
+        },
+        supportedChains: [
+          {
+            id: 42161,
+            name: 'Arbitrum One',
+            network: 'arbitrum',
+            nativeCurrency: {
+              decimals: 18,
+              name: 'Ether',
+              symbol: 'ETH',
+            },
+            rpcUrls: {
+              default: {
+                http: ['https://arb1.arbitrum.io/rpc'],
+              },
+            },
+          },
+          {
+            id: 137,
+            name: 'Polygon',
+            network: 'polygon',
+            nativeCurrency: {
+              decimals: 18,
+              name: 'MATIC',
+              symbol: 'MATIC',
+            },
+            rpcUrls: {
+              default: {
+                http: ['https://polygon-rpc.com'],
+              },
+            },
+          },
+        ],
       }}
     >
       {children}
