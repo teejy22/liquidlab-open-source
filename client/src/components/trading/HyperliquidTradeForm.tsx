@@ -25,7 +25,7 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
   const [size, setSize] = useState("");
   const [sizeMode, setSizeMode] = useState<"asset" | "usd">("usd");
   const [collateralPercentage, setCollateralPercentage] = useState(0);
-  const [leverage, setLeverage] = useState(maxLeverage);
+  const [leverage, setLeverage] = useState(Math.min(5, maxLeverage));
   const [showLeverageModal, setShowLeverageModal] = useState(false);
   const [reduceOnly, setReduceOnly] = useState(false);
   const [postOnly, setPostOnly] = useState(false);
