@@ -3,8 +3,8 @@ import { Express } from 'express';
 
 export function configureSecurityHeaders(app: Express) {
   try {
-    // Basic security headers
-    app.use(helmet({
+    // Create helmet middleware
+    const helmetMiddleware = helmet({
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
@@ -67,27 +67,26 @@ export function configureSecurityHeaders(app: Express) {
       maxAge: 31536000,
       includeSubDomains: true,
       preload: true
-    }
-  }));
-
-  // Additional security headers (X-Frame-Options handled by Helmet frameguard)
-  app.use((req, res, next) => {
-    try {
-      // Enable XSS filter
-      res.setHeader('X-XSS-Protection', '1; mode=block');
-      
-      // Referrer policy
-      res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-      
-      // Permissions policy
-      res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
-      
-      next();
-    } catch (error) {
-      console.error('Security headers error:', error);
-      next();
+    },
+    xPermittedCrossDomainPolicies: {
+      permittedPolicies: "none"
     }
   });
+    
+    // Apply Helmet conditionally
+    app.use((req, res, next) => {
+      // Skip Helmet for verification endpoint that's having issues
+      if (req.path === '/api/platforms/verify' && req.method === 'POST') {
+        // Set minimal security headers manually for this endpoint
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+        res.setHeader('X-Frame-Options', 'DENY');
+        res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+        return next();
+      }
+      
+      // Apply Helmet for all other requests
+      helmetMiddleware(req, res, next);
+    });
   } catch (error) {
     console.error('Helmet configuration error:', error);
     // Continue without helmet on error

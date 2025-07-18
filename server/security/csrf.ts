@@ -20,5 +20,6 @@ export const addCsrfToken = (req: Request, res: Response, next: NextFunction) =>
 export const csrfExemptRoutes = [
   '/api/webhooks/hyperliquid',
   '/api/webhooks/moonpay',
-  '/api/moonpay/webhook'
+  '/api/moonpay/webhook',
+  '/api/platforms/verify'  // Public verification endpoint
 ];

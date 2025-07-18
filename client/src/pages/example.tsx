@@ -107,8 +107,8 @@ export default function ExampleTradingPage() {
           
           // In development, use a fallback platform ID if no platform is resolved
           if (!platform && (window.location.hostname === 'localhost' || window.location.hostname.includes('.replit.dev'))) {
-            // Use platform ID 14 (Marketbeat Trading) as the development example
-            const devPlatformResponse = await retryFetch(() => fetch('/api/platforms/14'));
+            // Use platform ID 13 (liquidL) as the development example
+            const devPlatformResponse = await retryFetch(() => fetch('/api/platforms/13'));
             if (devPlatformResponse.ok) {
               const devPlatform = await devPlatformResponse.json();
               setPlatformData(devPlatform);
