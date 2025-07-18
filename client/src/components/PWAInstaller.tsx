@@ -154,7 +154,7 @@ export function PWAInstaller({ platformName = "LiquidLab" }: PWAInstallerProps) 
         <Button
           onClick={handleDismiss}
           variant="outline"
-          className="flex-1 border-gray-700 hover:bg-gray-800 text-white hover:text-white"
+          className="flex-1 border-gray-700 hover:bg-gray-800 text-gray-900 dark:text-gray-200 hover:text-white"
         >
           Not Now
         </Button>
