@@ -13,7 +13,6 @@ import { desc, sql, eq } from "drizzle-orm";
 // Removed webhook imports - using batch processing instead
 import ConfigurationService from "./services/configService";
 import DepositService from "./services/depositService";
-import { authLimiter } from "./security/customRateLimiter";
 
 // Extend Express session types
 declare module "express-session" {
@@ -116,7 +115,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error("Admin login error:", error);
-      res.status(500).json({ message: "Login failed" });
+      res.status(500).json({ error: "Internal server error" });
     }
   });
   

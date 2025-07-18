@@ -19,11 +19,9 @@ export function configureSecurity(app: Express) {
   // 3. Input sanitization
   app.use(sanitizeMiddleware);
   
-  // 4. Rate limiting
-  app.use('/api/', apiLimiter);
-  app.use('/api/auth/', authLimiter);
-  app.use('/api/trade/', tradingLimiter);
-  app.use('/api/hyperliquid/trade', tradingLimiter);
+  // 4. Rate limiting - Apply only to base paths to avoid recursion
+  // Don't apply rate limiters to specific routes here - they should be applied in routes.ts
+  // This prevents double application of middleware
   
   // 5. CSRF protection
   app.use((req, res, next) => {
