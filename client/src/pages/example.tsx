@@ -98,29 +98,18 @@ export default function ExampleTradingPage() {
           return;
         }
 
-        const response = await retryFetch(() => fetch('/api/platforms'));
+        // For centralized SaaS, fetch platform based on current domain
+        const response = await retryFetch(() => fetch('/api/platform/current'));
         if (response.ok) {
-          const platforms = await response.json();
+          const platform = await response.json();
           
-          // Check for platformId parameter first
-          const platformId = urlParams.get('platformId');
-          let selectedPlatform = null;
-          
-          if (platformId) {
-            // If platformId is in URL, use that specific platform
-            selectedPlatform = platforms.find((p: any) => p.id === parseInt(platformId));
-          } else {
-            // Otherwise, use LiquidL platform (ID 13)
-            selectedPlatform = platforms.find((p: any) => p.id === 13) || platforms[0];
-          }
-          
-          if (selectedPlatform) {
-            setPlatformData(selectedPlatform);
+          if (platform) {
+            setPlatformData(platform);
             
             // Fetch verification code for this platform with retry
-            console.log('Fetching verification code for platform:', selectedPlatform.id);
+            console.log('Fetching verification code for platform:', platform.id);
             const verifyResponse = await retryFetch(() => 
-              fetch(`/api/platforms/${selectedPlatform.id}/verification-code`)
+              fetch(`/api/platforms/${platform.id}/verification-code`)
             );
             if (verifyResponse.ok) {
               const verifyData = await verifyResponse.json();

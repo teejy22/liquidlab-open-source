@@ -5,6 +5,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import { scheduler } from "./services/scheduler";
 import { configureSecurity } from "./security";
 import { configureSecureSession } from "./security/auth";
+import { resolvePlatform } from "./middleware/platformResolver";
 
 const app = express();
 
@@ -29,6 +30,9 @@ app.use(session(sessionConfig));
 
 // Apply security configuration after body parsers and session
 configureSecurity(app);
+
+// Apply platform resolver middleware for multi-tenant SaaS
+app.use(resolvePlatform);
 
 // Serve uploaded files statically
 app.use('/uploads', express.static('uploads'));

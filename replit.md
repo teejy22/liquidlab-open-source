@@ -100,6 +100,24 @@ The application uses a monorepo structure with shared types and schemas, enablin
 
 ## Recent Changes (January 18, 2025)
 
+### Centralized SaaS Architecture Implementation
+- **Platform Architecture Transformation**: Migrated from "platform builder" to "trading platform network" model
+  - Single codebase serves all trading platforms (Shopify-style architecture)
+  - Platforms accessed via subdomains: platform-name.liquidlab.trade
+  - Custom domains supported via CNAME pointing to app.liquidlab.trade
+  - Automatic updates: All platforms instantly receive new features and security patches
+- **Technical Implementation**: 
+  - Added platformResolver middleware to identify platforms by domain
+  - Added subdomain field to tradingPlatforms table with automatic generation
+  - Created /api/platform/current endpoint for platform data resolution
+  - Updated App.tsx to detect platform subdomains and render trading interface
+  - Storage layer automatically generates subdomains during platform creation
+- **Benefits**: 
+  - Zero deployment complexity for platform owners
+  - Instant security updates across all platforms
+  - Centralized monitoring and management
+  - Reduced infrastructure costs
+
 ### Critical Security Vulnerabilities Fixed
 - **Fixed Reflected XSS in Hyperliquid Webhook**: Resolved security vulnerability where challenge parameter was returned without sanitization
   - Added HTML entity encoding for all special characters (&, <, >, ", ', /)

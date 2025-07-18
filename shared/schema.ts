@@ -23,6 +23,7 @@ export const tradingPlatforms = pgTable("trading_platforms", {
   userId: integer("user_id").notNull(),
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
+  subdomain: text("subdomain").unique(), // For centralized SaaS model: platform1.liquidlab.trade
   templateId: integer("template_id"),
   config: jsonb("config").notNull(),
   isPublished: boolean("is_published").default(false),

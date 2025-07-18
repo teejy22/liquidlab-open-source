@@ -22,8 +22,33 @@ import AdminDashboard from "@/pages/admin-dashboard";
 import Security from "@/pages/security";
 import Verify from "@/pages/verify";
 import Enterprise from "@/pages/enterprise";
+import { useEffect, useState } from "react";
+
+// Check if we're on a platform subdomain
+function isPlatformDomain() {
+  const hostname = window.location.hostname;
+  // Check if it's a subdomain of liquidlab.trade or app.liquidlab.trade
+  // But not the main liquidlab.trade domain
+  return (hostname.endsWith('.liquidlab.trade') || hostname.endsWith('.app.liquidlab.trade')) && 
+         hostname !== 'liquidlab.trade' && 
+         hostname !== 'app.liquidlab.trade' &&
+         hostname !== 'www.liquidlab.trade';
+}
 
 function Router() {
+  const [isPlatform, setIsPlatform] = useState(false);
+
+  useEffect(() => {
+    // Check if we're on a platform subdomain
+    setIsPlatform(isPlatformDomain());
+  }, []);
+
+  // If we're on a platform subdomain, show the trading interface
+  if (isPlatform) {
+    return <Example />;
+  }
+
+  // Otherwise show the main LiquidLab routes
   return (
     <Switch>
       <Route path="/" component={Home} />

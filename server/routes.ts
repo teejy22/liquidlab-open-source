@@ -592,6 +592,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get current platform based on domain (for centralized SaaS)
+  app.get("/api/platform/current", async (req, res) => {
+    try {
+      // Platform data is attached by the platformResolver middleware
+      if (req.platform) {
+        res.json(req.platform);
+      } else {
+        // No platform for this domain - return null
+        res.json(null);
+      }
+    } catch (error) {
+      res.status(500).json({ error: handleError(error) });
+    }
+  });
+
   app.put("/api/platforms/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);

@@ -33,7 +33,7 @@ import {
   type InsertIncentiveTier
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
+import { eq, desc, and, gte, lte, sql, or } from "drizzle-orm";
 
 export interface IStorage {
   // User management
@@ -208,15 +208,22 @@ export class DatabaseStorage implements IStorage {
   async createTradingPlatform(platform: InsertTradingPlatform): Promise<TradingPlatform> {
     let baseSlug = this.generateSlug(platform.name);
     let slug = baseSlug;
+    let subdomain = baseSlug; // Use same logic for subdomain
     let counter = 1;
     
-    // Check if slug already exists and append number if needed
+    // Check if slug/subdomain already exists and append number if needed
     while (true) {
-      const existing = await db.select().from(tradingPlatforms).where(eq(tradingPlatforms.slug, slug));
+      const existing = await db.select().from(tradingPlatforms).where(
+        or(
+          eq(tradingPlatforms.slug, slug),
+          eq(tradingPlatforms.subdomain, subdomain)
+        )
+      );
       if (existing.length === 0) {
         break;
       }
       slug = `${baseSlug}-${counter}`;
+      subdomain = `${baseSlug}-${counter}`;
       counter++;
     }
     
@@ -225,6 +232,7 @@ export class DatabaseStorage implements IStorage {
       .values({
         ...platform,
         slug,
+        subdomain, // Add subdomain for centralized SaaS
         // Auto-approve in development for easier testing
         approvalStatus: process.env.NODE_ENV === 'development' ? 'approved' : 'pending'
       })
