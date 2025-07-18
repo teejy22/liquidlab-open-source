@@ -363,12 +363,28 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
       <Button
         size="sm"
         disabled={isPlacingOrder || (!authenticated ? false : !size)}
-        onClick={!authenticated ? () => {
-          console.log('Connect wallet clicked, calling Privy login');
-          if (ready) {
-            login();
-          } else {
-            console.log('Privy not ready yet');
+        onClick={!authenticated ? async () => {
+          console.log('Connect wallet clicked, Privy ready:', ready);
+          try {
+            if (ready) {
+              console.log('Calling login...');
+              await login();
+              console.log('Login called successfully');
+            } else {
+              console.error('Privy not ready yet');
+              toast({
+                title: "Error",
+                description: "Wallet connection is not ready. Please refresh and try again.",
+                variant: "destructive"
+              });
+            }
+          } catch (error) {
+            console.error('Login error:', error);
+            toast({
+              title: "Connection Error",
+              description: "Failed to open wallet connection. Please try again.",
+              variant: "destructive"
+            });
           }
         } : handleSubmit}
         className={`w-full h-9 text-sm font-medium rounded transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
