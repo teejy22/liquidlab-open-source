@@ -303,19 +303,25 @@ function TradingPlatform({
                 <ArrowLeft className="w-4 h-4" />
               </Button>
             </Link>
-            {validateImageUrl(platformData?.logoUrl) ? (
-              <img 
-                src={validateImageUrl(platformData.logoUrl)!} 
-                alt={platformData.name || "Trading Platform"} 
-                className="h-20 sm:h-24 lg:h-36 w-auto"
-              />
-            ) : (
-              <img 
-                src={liquidLabLogo} 
-                alt="LiquidLab" 
-                className="h-20 sm:h-24 lg:h-36 w-auto"
-              />
-            )}
+            {(() => {
+              const validatedLogoUrl = validateImageUrl(platformData?.logoUrl);
+              if (validatedLogoUrl) {
+                return (
+                  <img 
+                    src={validatedLogoUrl} 
+                    alt={platformData.name || "Trading Platform"} 
+                    className="h-20 sm:h-24 lg:h-36 w-auto"
+                  />
+                );
+              }
+              return (
+                <img 
+                  src={liquidLabLogo} 
+                  alt="LiquidLab" 
+                  className="h-20 sm:h-24 lg:h-36 w-auto"
+                />
+              );
+            })()}
           </div>
           <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-4">
             <div className="hidden sm:block">

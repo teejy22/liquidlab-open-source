@@ -111,6 +111,11 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Client-side automatically includes X-CSRF-Token header from cookie
   - Webhooks and GET requests exempt from CSRF protection
   - Prevents attackers from submitting forged requests on behalf of authenticated users
+- **Fixed Client-Side XSS in Image Display**: Resolved DOM-based XSS vulnerability in platform logo rendering
+  - validateImageUrl function now called once and result stored in variable
+  - Eliminates double function call that could bypass validation
+  - React's built-in XSS protection properly enforced
+  - Prevents injection of malicious URLs through platform logo field
 
 ## Recent Changes (January 14, 2025)
 
