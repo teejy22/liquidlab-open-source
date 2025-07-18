@@ -379,6 +379,24 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
         )}
       </Button>
 
+      {/* Order Information */}
+      {size && parseFloat(size) > 0 && (
+        <div className="mt-2 p-2 bg-gray-900/50 rounded text-xs space-y-1">
+          <div className="flex justify-between">
+            <span className="text-gray-400">Liquidation Price</span>
+            <span className="text-white">${getTradeDetails().liquidationPrice.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400">Order Value</span>
+            <span className="text-white">${getTradeDetails().notionalValue.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400">Margin Required</span>
+            <span className="text-white">${getTradeDetails().requiredMargin.toFixed(2)}</span>
+          </div>
+        </div>
+      )}
+
       {/* Trade Confirmation Dialog */}
       <TradeConfirmationDialog
         open={showConfirmDialog}
