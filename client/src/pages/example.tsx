@@ -269,29 +269,8 @@ function TradingPlatform({
   verificationCode 
 }: any) {
   const { ready } = usePrivy();
-  const [showInterface, setShowInterface] = useState(false);
   
-  // Log Privy state for debugging
-  useEffect(() => {
-    console.log('Privy ready state:', ready);
-  }, [ready]);
-  
-  // Allow a grace period for Privy to initialize
-  useEffect(() => {
-    // After 2 seconds, show the interface regardless of ready state
-    const timer = setTimeout(() => {
-      setShowInterface(true);
-    }, 2000);
-    
-    // If ready becomes true, show immediately
-    if (ready) {
-      setShowInterface(true);
-    }
-    
-    return () => clearTimeout(timer);
-  }, [ready]);
-  
-  if (!showInterface) {
+  if (!ready) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <div className="text-gray-400">Initializing wallet connection...</div>
