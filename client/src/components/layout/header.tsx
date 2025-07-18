@@ -71,11 +71,7 @@ export default function Header() {
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
-            <Link href="/templates" className={`font-medium transition-colors ${
-              isActive('/templates') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
-            }`}>
-              Templates
-            </Link>
+
             <Link href="/pricing" className={`font-medium transition-colors ${
               isActive('/pricing') ? 'text-liquid-green' : 'text-gray-600 hover:text-liquid-green'
             }`}>
