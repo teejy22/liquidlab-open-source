@@ -108,7 +108,18 @@ export async function verifyWebhookEndpoint(req: Request, res: Response) {
   const challenge = req.query.challenge as string;
   if (challenge) {
     // Hyperliquid sends a challenge during webhook setup
-    return res.send(challenge);
+    // Sanitize the challenge to prevent XSS attacks
+    const sanitizedChallenge = challenge
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#x27;')
+      .replace(/\//g, '&#x2F;');
+    
+    // Return as plain text to prevent any HTML interpretation
+    res.type('text/plain');
+    return res.send(sanitizedChallenge);
   }
   res.json({ status: 'ready' });
 }

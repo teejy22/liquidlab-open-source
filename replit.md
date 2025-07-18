@@ -98,6 +98,15 @@ Preferred communication style: Simple, everyday language.
 
 The application uses a monorepo structure with shared types and schemas, enabling type safety between frontend and backend while maintaining clear separation of concerns.
 
+## Recent Changes (January 18, 2025)
+
+### Critical XSS Vulnerability Fix
+- **Fixed Reflected XSS in Hyperliquid Webhook**: Resolved security vulnerability where challenge parameter was returned without sanitization
+  - Added HTML entity encoding for all special characters (&, <, >, ", ', /)
+  - Set response type to 'text/plain' to prevent HTML interpretation
+  - Prevents attackers from injecting malicious scripts via webhook verification endpoint
+  - Identified by automated security scanning and fixed immediately
+
 ## Recent Changes (January 14, 2025)
 
 ### Admin Dashboard Implementation
