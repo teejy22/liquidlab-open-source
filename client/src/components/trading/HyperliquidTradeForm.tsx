@@ -309,7 +309,7 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
           max={100}
           min={0}
           step={1}
-          className="w-full"
+          className="w-full force-small-slider"
         />
         <div className="flex justify-between items-center mt-1">
           <div className="flex justify-between w-full text-[10px] text-gray-500">
@@ -420,7 +420,7 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
                   max={maxLeverage}
                   min={1}
                   step={1}
-                  className="w-full"
+                  className="w-full force-small-slider"
                 />
                 <div className="flex justify-between text-[10px] text-gray-500 mt-1">
                   <span>1x</span>

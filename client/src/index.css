@@ -199,6 +199,26 @@
   height: 20px;
 }
 
+/* Force smaller slider thumb - override all styles */
+.force-small-slider [data-radix-slider-thumb],
+[data-radix-slider-root] [data-radix-slider-thumb],
+[role="slider"][data-radix-slider-thumb] {
+  width: 6px !important;
+  height: 6px !important;
+  min-width: 6px !important;
+  min-height: 6px !important;
+  max-width: 6px !important;
+  max-height: 6px !important;
+  transform: translateX(-3px) !important;
+}
+
+/* Also update the focus states to match smaller size */
+.force-small-slider [data-radix-slider-thumb]:focus-visible,
+[data-radix-slider-root] [data-radix-slider-thumb]:focus-visible {
+  outline: 1px solid #1dd1a1;
+  outline-offset: 1px;
+}
+
 [data-radix-slider-track] {
   background-color: #0d0d0d !important;
   position: relative;
