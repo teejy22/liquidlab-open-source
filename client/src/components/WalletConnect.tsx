@@ -22,7 +22,9 @@ export function WalletConnect() {
   // Listen for custom login event from other components
   useEffect(() => {
     const handlePrivyLogin = () => {
+      console.log('Privy login event received', { ready, hasTimedOut, authenticated });
       if ((ready || hasTimedOut) && !authenticated) {
+        console.log('Calling login...');
         login();
       }
     };

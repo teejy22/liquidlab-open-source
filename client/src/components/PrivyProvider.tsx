@@ -11,9 +11,11 @@ export function PrivyProvider({ children }: PrivyProviderProps) {
 
   useEffect(() => {
     // Fetch Privy config from backend
+    console.log('Fetching Privy config...');
     fetch('/api/privy/config')
       .then(res => res.json())
       .then(data => {
+        console.log('Privy config received:', data);
         if (data.appId) {
           setAppId(data.appId);
         } else {
