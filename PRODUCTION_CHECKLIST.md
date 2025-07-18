@@ -27,6 +27,30 @@
 
 ## 🚧 Required for Production
 
+### ⚠️ CRITICAL SECURITY FIX REQUIRED ⚠️
+### 0. CSRF Protection is Currently DISABLED (MUST FIX FIRST)
+**SECURITY VULNERABILITY**: Cross-Site Request Forgery (CSRF) protection is completely disabled!
+
+**Problem**: 
+- CSRF middleware is commented out in `server/security/index.ts` (lines 31-51)
+- Error: "misconfigured csrf" occurs due to session/CSRF middleware ordering issue
+- Without CSRF protection, malicious websites can perform actions on behalf of logged-in users
+
+**Impact**: 
+- Attackers can create/modify/delete platforms
+- Unauthorized transactions possible
+- User accounts can be compromised
+- Platform settings can be changed without user consent
+
+**Fix Required**:
+1. Fix the middleware ordering issue (session must be initialized before CSRF)
+2. Uncomment the CSRF protection code in `server/security/index.ts`
+3. Ensure `/api/csrf-token` endpoint works properly
+4. Test that all POST/PUT/DELETE requests include CSRF tokens
+5. Verify that the client properly sends X-CSRF-Token headers
+
+**Testing**: After fix, verify no "misconfigured csrf" errors and platform operations work normally
+
 ### 1. Hyperliquid Integration (Critical)
 - [ ] Register webhook endpoint with Hyperliquid
 - [ ] Set `HYPERLIQUID_WEBHOOK_SECRET` environment variable
