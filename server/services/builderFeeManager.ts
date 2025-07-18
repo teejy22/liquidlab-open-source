@@ -57,64 +57,82 @@ export class BuilderFeeManager {
    * Get unclaimed fees from database
    */
   async getUnclaimedFees(): Promise<{ total: string; byPlatform: Map<number, string> }> {
-    const unclaimed = await db
-      .select({
-        platformId: feeTransactions.platformId,
-        totalFees: sql<string>`SUM(${feeTransactions.totalFee})`,
-      })
-      .from(feeTransactions)
-      .where(
-        and(
-          eq(feeTransactions.status, 'pending'),
-          isNull(feeTransactions.claimedAt)
+    try {
+      const unclaimed = await db
+        .select({
+          platformId: feeTransactions.platformId,
+          totalFees: sql<string>`COALESCE(SUM(${feeTransactions.totalFee}), 0)`,
+        })
+        .from(feeTransactions)
+        .where(
+          and(
+            eq(feeTransactions.status, 'pending'),
+            isNull(feeTransactions.claimedAt)
+          )
         )
-      )
-      .groupBy(feeTransactions.platformId);
-    
-    const byPlatform = new Map<number, string>();
-    let total = 0;
-    
-    for (const fee of unclaimed) {
-      byPlatform.set(fee.platformId, fee.totalFees);
-      total += parseFloat(fee.totalFees);
+        .groupBy(feeTransactions.platformId);
+      
+      const byPlatform = new Map<number, string>();
+      let total = 0;
+      
+      for (const fee of unclaimed) {
+        const feeAmount = fee.totalFees || '0';
+        byPlatform.set(fee.platformId, feeAmount);
+        total += parseFloat(feeAmount);
+      }
+      
+      return {
+        total: total.toFixed(4),
+        byPlatform,
+      };
+    } catch (error) {
+      console.error('Error getting unclaimed fees:', error);
+      return {
+        total: '0.0000',
+        byPlatform: new Map(),
+      };
     }
-    
-    return {
-      total: total.toFixed(4),
-      byPlatform,
-    };
   }
 
   /**
    * Get claimed but not yet distributed fees
    */
   async getClaimedNotDistributed(): Promise<{ total: string; byPlatform: Map<number, string> }> {
-    const claimed = await db
-      .select({
-        platformId: feeTransactions.platformId,
-        totalFees: sql<string>`SUM(${feeTransactions.totalFee})`,
-      })
-      .from(feeTransactions)
-      .where(
-        and(
-          eq(feeTransactions.status, 'claimed'),
-          isNull(feeTransactions.distributedAt)
+    try {
+      const claimed = await db
+        .select({
+          platformId: feeTransactions.platformId,
+          totalFees: sql<string>`COALESCE(SUM(${feeTransactions.totalFee}), 0)`,
+        })
+        .from(feeTransactions)
+        .where(
+          and(
+            eq(feeTransactions.status, 'claimed'),
+            isNull(feeTransactions.distributedAt)
+          )
         )
-      )
-      .groupBy(feeTransactions.platformId);
-    
-    const byPlatform = new Map<number, string>();
-    let total = 0;
-    
-    for (const fee of claimed) {
-      byPlatform.set(fee.platformId, fee.totalFees);
-      total += parseFloat(fee.totalFees);
+        .groupBy(feeTransactions.platformId);
+      
+      const byPlatform = new Map<number, string>();
+      let total = 0;
+      
+      for (const fee of claimed) {
+        const feeAmount = fee.totalFees || '0';
+        byPlatform.set(fee.platformId, feeAmount);
+        total += parseFloat(feeAmount);
+      }
+      
+      return {
+        total: total.toFixed(4),
+        byPlatform,
+      };
+    } catch (error) {
+      console.error('Error getting claimed not distributed fees:', error);
+      return {
+        total: '0.0000',
+        byPlatform: new Map(),
+      };
     }
-    
-    return {
-      total: total.toFixed(4),
-      byPlatform,
-    };
   }
 
   /**
@@ -139,42 +157,48 @@ export class BuilderFeeManager {
    * Calculate required payouts for a given period
    */
   async getRequiredPayouts(period: 'weekly' | 'monthly' = 'weekly'): Promise<string> {
-    // Get date range based on period
-    const now = new Date();
-    const startDate = new Date();
-    
-    if (period === 'weekly') {
-      startDate.setDate(now.getDate() - 7);
-    } else {
-      startDate.setMonth(now.getMonth() - 1);
-    }
-    
-    // Get all platform revenue summaries for the period
-    const summaries = await db
-      .select({
-        platformId: platformRevenueSummary.platformId,
-        totalRevenue: platformRevenueSummary.totalRevenue,
-      })
-      .from(platformRevenueSummary)
-      .where(
-        and(
-          eq(platformRevenueSummary.period, period),
-          gte(platformRevenueSummary.periodEnd, startDate)
-        )
-      );
-    
-    let totalRequired = 0;
-    
-    for (const summary of summaries) {
-      // Platform gets 70% of trading fees
-      const tradingShare = parseFloat(summary.totalRevenue) * 0.7;
+    try {
+      // Get date range based on period
+      const now = new Date();
+      const startDate = new Date();
       
-      // Add MoonPay earnings (would need to fetch separately)
-      // For now, just using trading fees
-      totalRequired += tradingShare;
+      if (period === 'weekly') {
+        startDate.setDate(now.getDate() - 7);
+      } else {
+        startDate.setMonth(now.getMonth() - 1);
+      }
+      
+      // Get all platform revenue summaries for the period
+      const summaries = await db
+        .select({
+          platformId: platformRevenueSummary.platformId,
+          totalRevenue: platformRevenueSummary.totalRevenue,
+        })
+        .from(platformRevenueSummary)
+        .where(
+          and(
+            eq(platformRevenueSummary.period, period),
+            gte(platformRevenueSummary.periodEnd, startDate)
+          )
+        );
+      
+      let totalRequired = 0;
+      
+      for (const summary of summaries) {
+        // Platform gets 70% of trading fees
+        const revenue = parseFloat(summary.totalRevenue || '0');
+        const tradingShare = revenue * 0.7;
+        
+        // Add MoonPay earnings (would need to fetch separately)
+        // For now, just using trading fees
+        totalRequired += tradingShare;
+      }
+      
+      return totalRequired.toFixed(2);
+    } catch (error) {
+      console.error('Error calculating required payouts:', error);
+      return '0.00';
     }
-    
-    return totalRequired.toFixed(2);
   }
 
   /**

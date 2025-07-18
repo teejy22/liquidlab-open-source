@@ -2560,7 +2560,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/platforms/suspicious", requireAdmin, async (req, res) => {
     try {
       const { SecurityService } = await import("./services/security");
-      const { suspiciousActivity, platformSecurity } = await import("@shared/schema");
+      const { suspiciousActivity, platformSecurity, tradingPlatforms } = await import("@shared/schema");
       
       // Get all suspicious platforms
       const suspiciousReports = await db
