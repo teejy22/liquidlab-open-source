@@ -31,9 +31,12 @@ export function PrivyProvider({ children }: PrivyProviderProps) {
   }, []);
 
   if (loading || !appId) {
+    console.log('Privy not ready - loading:', loading, 'appId:', appId);
     return <>{children}</>;
   }
 
+  console.log('Initializing Privy with appId:', appId);
+  
   return (
     <Privy
       appId={appId}

@@ -360,7 +360,10 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
       <Button
         size="sm"
         disabled={isPlacingOrder || (!authenticated ? false : !size)}
-        onClick={!authenticated ? () => window.dispatchEvent(new CustomEvent('privy:login')) : handleSubmit}
+        onClick={!authenticated ? () => {
+          console.log('Connect wallet clicked, dispatching privy:login event');
+          window.dispatchEvent(new CustomEvent('privy:login'));
+        } : handleSubmit}
         className={`w-full h-9 text-sm font-medium rounded transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
           side === "buy" 
             ? "text-black bg-[#1dd1a1] hover:bg-[#19b894]" 
