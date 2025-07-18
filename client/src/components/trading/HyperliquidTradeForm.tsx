@@ -11,6 +11,7 @@ import { TradeConfirmationDialog } from "./TradeConfirmationDialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { usePrivy } from "@privy-io/react-auth";
 
 interface HyperliquidTradeFormProps {
   selectedMarket: string;
@@ -47,6 +48,8 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
     isPlacingOrder,
     accountSummary 
   } = useHyperliquidTrading();
+  
+  const { login, ready } = usePrivy();
   
   const { toast } = useToast();
 
@@ -361,8 +364,12 @@ export function HyperliquidTradeForm({ selectedMarket, currentPrice, maxLeverage
         size="sm"
         disabled={isPlacingOrder || (!authenticated ? false : !size)}
         onClick={!authenticated ? () => {
-          console.log('Connect wallet clicked, dispatching privy:login event');
-          window.dispatchEvent(new CustomEvent('privy:login'));
+          console.log('Connect wallet clicked, calling Privy login');
+          if (ready) {
+            login();
+          } else {
+            console.log('Privy not ready yet');
+          }
         } : handleSubmit}
         className={`w-full h-9 text-sm font-medium rounded transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
           side === "buy" 
