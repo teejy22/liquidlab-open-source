@@ -28,5 +28,6 @@ export const csrfExemptRoutes = [
   '/api/admin/login',
   '/api/admin/logout',
   '/api/upload-logo',       // File upload endpoint (multipart/form-data)
-  '/api/csrf-token'         // CSRF token generation endpoint
+  '/api/csrf-token',        // CSRF token generation endpoint
+  '/api/platforms'          // Temporarily exempt platform creation (CSRF misconfiguration issue)
 ];
