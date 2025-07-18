@@ -1,5 +1,15 @@
 # Security Changelog
 
+## [January 18, 2025] - XSS Vulnerability Fix (Main Repository Only)
+
+### Fixed
+- **Reflected XSS in Webhook Verification** (CVE pending)
+  - Severity: High
+  - Description: Hyperliquid webhook verification endpoint returned unsanitized challenge parameter
+  - Fix: Added HTML entity encoding and text/plain response type
+  - Impact: This vulnerability only existed in the main repository, not in this open source version
+  - Commit: Added proper input sanitization to prevent script injection
+
 ## [1.0.2] - 2025-01-17
 
 ### Fixed
