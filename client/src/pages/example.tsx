@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, BarChart3, Volume2, Activity, X, AlertCircle, Shield, Copy } from "lucide-react";
+import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, BarChart3, Volume2, Activity, X, AlertCircle } from "lucide-react";
 import liquidLabLogo from "@assets/Trade (6)_1752434284086.png";
 import { TrustIndicators } from "@/components/TrustIndicators";
 import { PlatformVerificationBadge } from "@/components/PlatformVerificationBadge";
@@ -384,61 +384,7 @@ function TradingPlatform({
         verificationCode={verificationCode || undefined}
       />
 
-      {/* Verification Code Display */}
-      {(verificationCode || verificationCodeLoading) && (
-        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-md px-4 py-3 mb-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Shield className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-              <div>
-                <div className="text-sm font-medium text-blue-900 dark:text-blue-100">Platform Verification Code</div>
-                <div className="flex items-center gap-3 mt-1">
-                  {verificationCodeLoading ? (
-                    <div className="flex items-center gap-2">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 dark:border-blue-400"></div>
-                      <span className="text-sm text-blue-700 dark:text-blue-300">Loading...</span>
-                    </div>
-                  ) : (
-                    <>
-                      <span className="text-2xl font-bold font-mono text-blue-800 dark:text-blue-200">{verificationCode}</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          if (verificationCode) {
-                            navigator.clipboard.writeText(verificationCode);
-                            const toast = (window as any).toast;
-                            if (toast) {
-                              toast({
-                                title: "Copied!",
-                                description: "Verification code copied to clipboard",
-                              });
-                            }
-                          }
-                        }}
-                        className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                      >
-                        <Copy className="w-4 h-4" />
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-xs text-blue-700 dark:text-blue-300">Verify at</div>
-              <a 
-                href="https://liquidlab.trade/verify" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
-              >
-                liquidlab.trade/verify
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
+
 
       {/* Main Trading Area */}
       <div className="flex-1 overflow-hidden">
