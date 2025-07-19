@@ -331,7 +331,7 @@ function TradingPlatform({
                   <img 
                     src={logoUrl} 
                     alt={platformData?.name || "Trading Platform"} 
-                    className="h-20 sm:h-24 lg:h-36 w-auto"
+                    className="h-32 sm:h-24 lg:h-36 w-auto"
                   />
                 );
               }
@@ -339,7 +339,7 @@ function TradingPlatform({
                 <img 
                   src={liquidLabLogo} 
                   alt="LiquidLab" 
-                  className="h-20 sm:h-24 lg:h-36 w-auto"
+                  className="h-32 sm:h-24 lg:h-36 w-auto"
                 />
               );
             })()}
