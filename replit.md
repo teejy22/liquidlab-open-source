@@ -723,6 +723,16 @@ The application uses a monorepo structure with shared types and schemas, enablin
 - **Known Limitation**: Charts show Binance prices instead of Hyperliquid's actual DEX prices
 - **Reason for Checkpoint**: Before implementing toggle system for Hyperliquid charts
 
+### TradingView Chart Configuration Update (January 19, 2025)
+- **Chart Tools Restoration**: Fixed missing charting tools by updating iframe parameters
+  - Added hide_side_toolbar=false to show drawing tools
+  - Added withdateranges, details, hotlist, calendar parameters
+- **Clean Chart Layout**: Removed all right-side data panels per user request
+  - Set details=false, hotlist=false, calendar=false
+  - allow_symbol_change=false to prevent symbol search panel
+  - Multiple parameter configurations tested to achieve cleanest possible chart
+- **Current Configuration**: Ultra-clean layout with only chart canvas and left-side drawing tools
+
 ### Platform Verification System Fix (January 17, 2025)
 - **Mobile UX Improvements**: Fixed critical mobile display issues
   - Reduced logo size from h-40 to h-24 on mobile screens for better fit

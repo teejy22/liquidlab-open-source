@@ -13,10 +13,10 @@ export const TradingViewChart = memo(({ symbol = 'BTCUSDT', theme = 'dark' }: Tr
   // Ensure we have a valid symbol
   const validSymbol = symbol && symbol.length > 0 ? symbol : 'BTCUSDT';
   
-  // Full TradingView URL with charting tools but no right-side data panel
+  // Ultra-clean TradingView URL with only chart and drawing tools
   const embedUrl = useMemo(() => {
-    // Include drawing tools but remove right-side data panels
-    return `https://www.tradingview.com/widgetembed/?symbol=BINANCE:${validSymbol}&interval=D&theme=${theme}&style=1&locale=en&toolbar_bg=%23f1f3f6&enable_publishing=false&allow_symbol_change=true&details=false&hotlist=false&calendar=false&hide_side_toolbar=false&withdateranges=true&show_popup_button=true&popup_width=1000&popup_height=650&container_id=tradingview_${Date.now()}`;
+    // Forced clean layout - no watchlists, no news, no data panels
+    return `https://www.tradingview.com/widgetembed/?symbol=BINANCE:${validSymbol}&interval=D&theme=${theme}&style=1&locale=en&toolbar_bg=%23131313&enable_publishing=false&allow_symbol_change=false&save_image=false&hide_legend=false&hide_side_toolbar=false&hide_top_toolbar=false&studies=&show_popup_button=false&popup_width=1000&popup_height=650&no_referral_id=true&utm_source=&utm_medium=widget&utm_campaign=chart&utm_term=BINANCE:${validSymbol}`;
   }, [validSymbol, theme]);
 
   // Reset loading state when symbol changes
