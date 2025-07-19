@@ -1,8 +1,8 @@
 # Security Updates and Improvements - January 19, 2025
 
-## Critical Security Fix
+## Critical Security Fixes
 
-### Custom Rate Limiter Implementation
+### 1. Custom Rate Limiter Implementation
 **Vulnerability Fixed**: CVE-2023-42282 - SSRF vulnerability in express-rate-limit package
 
 **Files Changed**:
@@ -17,6 +17,25 @@
   - Authentication: 20 attempts per 15 minutes (with skipSuccessfulRequests)
   - Trading endpoints: 30 requests per minute
 - Zero vulnerability dependencies implementation
+
+### 2. Applied Rate Limiting to Critical Endpoints
+**Vulnerability Fixed**: Missing rate limiting on authentication and sensitive endpoints (CodeQL findings)
+
+**Files Changed**:
+- `/server/routes.ts` - Applied rate limiting to multiple endpoints
+
+**Endpoints Now Protected**:
+- `/api/admin/login` - Admin authentication (authLimiter)
+- `/api/auth/signin` - User authentication (authLimiter)
+- `/api/auth/2fa/enable` - 2FA activation (authLimiter)
+- `/api/platforms/:id/domains/verify` - Domain verification (apiLimiter)
+- `/api/platforms/verify` - Platform verification (authLimiter - already had it)
+
+**Details**:
+- Applied appropriate rate limiters to prevent brute force attacks
+- Authentication endpoints use stricter `authLimiter` (20 attempts/15 min)
+- General API endpoints use `apiLimiter` (500 requests/15 min)
+- Prevents denial-of-service and brute force attacks on critical endpoints
 
 ## Reliability Improvements
 

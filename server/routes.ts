@@ -83,7 +83,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@liquidlab.trade";
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD; // Required environment variable
   
-  app.post("/api/admin/login", async (req, res) => {
+  // Import rate limiters
+  const { authLimiter, apiLimiter } = await import("./security/customRateLimiter");
+  
+  app.post("/api/admin/login", authLimiter, async (req, res) => {
     try {
       console.log("Admin login attempt:", { email: req.body.email });
       const { email, password, totp } = req.body;
@@ -324,7 +327,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/auth/signin", async (req, res) => {
+  app.post("/api/auth/signin", authLimiter, async (req, res) => {
     try {
       const { email, password, totp } = req.body;
       
@@ -451,7 +454,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/auth/2fa/enable", async (req, res) => {
+  app.post("/api/auth/2fa/enable", authLimiter, async (req, res) => {
     try {
       if (!req.session.userId) {
         return res.status(401).json({ error: "Unauthorized" });
@@ -732,7 +735,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.post("/api/platforms/:id/domains/verify", async (req, res) => {
+  app.post("/api/platforms/:id/domains/verify", apiLimiter, async (req, res) => {
     try {
       const platformId = parseInt(req.params.id);
       const { domain } = req.body;
@@ -1694,9 +1697,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: handleError(error) });
     }
   });
-
-  // Import rate limiter for verification endpoint
-  const { authLimiter } = await import("./security/customRateLimiter");
 
   // Verify platform by code (new rotating token system)
   // Apply rate limiting middleware BEFORE any expensive operations

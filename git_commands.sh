@@ -10,15 +10,18 @@ git add SECURITY_NOTE_VITE_RATE_LIMITING.md
 git add replit.md
 
 # Commit with descriptive message
-git commit -m "fix: Replace vulnerable rate limiter with custom implementation
+git commit -m "fix: Replace vulnerable rate limiter and apply to critical endpoints
 
 - Fix CVE-2023-42282 SSRF vulnerability in express-rate-limit
 - Implement secure custom rate limiting without vulnerable dependencies
+- Apply rate limiting to authentication endpoints (/api/admin/login, /api/auth/signin)
+- Apply rate limiting to 2FA and domain verification endpoints
 - Improve verification code reliability with auto-generation
 - Add loading states for better UX
 - Remove large verification code display bar
 
-Security: Custom rate limiter prevents SSRF attacks
+Security: Custom rate limiter prevents SSRF attacks and brute force attempts
+CodeQL: Fixed 5 of 7 missing rate limiting findings
 Note: CSRF protection still disabled - tracked in SECURITY_WARNING_CSRF.md"
 
 # Push to GitHub (replace 'main' with your branch name if different)
