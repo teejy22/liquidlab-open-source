@@ -46,7 +46,7 @@ export default function ExampleTradingPage() {
   const [allMarketData, setAllMarketData] = useState<{[key: string]: any}>({});
   const [platformData, setPlatformData] = useState<any>(null);
   const [verificationCode, setVerificationCode] = useState<string | null>(null);
-  const [verificationCodeLoading, setVerificationCodeLoading] = useState(false);
+  const [verificationCodeLoading, setVerificationCodeLoading] = useState<boolean>(false);
   const [hyperliquidPrices, setHyperliquidPrices] = useState<{[key: string]: string}>({});
   const [platformError, setPlatformError] = useState<string | null>(null);
   const [marketError, setMarketError] = useState<string | null>(null);
