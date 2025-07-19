@@ -621,7 +621,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const id = parseInt(req.params.id);
       const { VerificationService } = await import("./services/verification");
       
-      const code = await VerificationService.getActiveCode(id);
+      let code = await VerificationService.getActiveCode(id);
+      
+      // If no active code exists, generate a new one
+      if (!code) {
+        console.log(`No active verification code for platform ${id}, generating new one`);
+        const { code: newCode } = await VerificationService.generateToken(id);
+        code = newCode;
+      }
       
       res.json({ code });
     } catch (error) {
