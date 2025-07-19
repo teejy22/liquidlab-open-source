@@ -1,0 +1,76 @@
+ });
+
+  app.use(vite.middlewares);
+  app.use("*", async (req, res, next) => {
+    const url = req.originalUrl;
+
+    try {
+      const clientTemplate = path.resolve(
+        import.meta.dirname,
+        "..",
+        "client",
+        "index.html",
+      );
+
+      // always reload the index.html file from disk incase it changes
+      let template = await fs.promises.readFile(clientTemplate, "utf-8");
+      template = template.replace(
+        `src="/src/main.tsx"`,
+        `src="/src/main.tsx?v=${nanoid()}"`,
+      );
+      const page = await vite.transformIndexHtml(url, template);
+      res.status(200).set({ "Content-Type": "text/html" }).end(page);
+    } catch (e) {
+      vite.ssrFixStacktrace(e as Error);
+      next(e);
+    }
+  });
+This route handler performs , but is not rate-limited.
+CodeQL
+}
+
+export function serveStatic(app: Express) {
+Rule
+Tool
+CodeQL
+Rule ID
+js/missing-rate-limiting
+Query
+View source
+Description
+HTTP request handlers should not perform expensive operations such as accessing the file system, executing an operating system command or interacting with a database without limiting the rate at which requests are accepted. Otherwise, the application becomes vulnerable to denial-of-service attacks where an attacker can cause the application to crash or become unresponsive by issuing a large number of requests at the same time.
+
+Recommendation
+A rate-limiting middleware should be used to prevent such attacks.
+
+Example
+The following example shows an Express application that serves static files without rate limiting:
+
+var express = require('express');
+var app = express();
+
+app.get('/:path', function(req, res) {
+  let path = req.params.path;
+  if (isValidPath(path))
+    res.sendFile(path);
+});
+To prevent denial-of-service attacks, the express-rate-limit package can be used:
+
+var express = require('express');
+var app = express();
+
+// set up rate limiter: maximum of five requests per minute
+var RateLimit = require('express-rate-limit');
+var limiter = RateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // max 100 requests per windowMs
+});
+
+// apply rate limiter to all requests
+app.use(limiter);
+
+app.get('/:path', function(req, res) {
+  let path = req.params.path;
+  if (isValidPath(path))
+    res.sendFile(path);
+});

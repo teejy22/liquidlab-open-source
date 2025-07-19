@@ -733,6 +733,20 @@ The application uses a monorepo structure with shared types and schemas, enablin
   - Multiple parameter configurations tested to achieve cleanest possible chart
 - **Current Configuration**: Ultra-clean layout with only chart canvas and left-side drawing tools
 
+### Mobile Logo Size Update (January 19, 2025)
+- **Increased Mobile Logo Size**: Made logo 60% larger on mobile devices
+  - Changed from h-20 (80px) to h-32 (128px) on mobile screens
+  - Desktop sizes remain unchanged (sm: h-24, lg: h-36)
+  - Improves brand visibility and recognition on mobile trading interface
+
+### Security Vulnerability Documentation (January 19, 2025)
+- **Vite Development Server Rate Limiting**: Documented missing rate limiting in development server
+  - CodeQL identified file system operations without rate limiting in server/vite.ts
+  - Created SECURITY_NOTE_VITE_RATE_LIMITING.md documenting the finding
+  - Low severity - only affects development environment, not production
+  - Production uses express.static() with proper rate limiting already applied
+  - Vite.ts is a protected configuration file that cannot be modified
+
 ### Platform Verification System Fix (January 17, 2025)
 - **Mobile UX Improvements**: Fixed critical mobile display issues
   - Reduced logo size from h-40 to h-24 on mobile screens for better fit
