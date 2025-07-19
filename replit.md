@@ -99,6 +99,27 @@ Preferred communication style: Simple, everyday language.
 
 The application uses a monorepo structure with shared types and schemas, enabling type safety between frontend and backend while maintaining clear separation of concerns.
 
+## Recent Changes (January 19, 2025)
+
+### Critical Security Fix - Custom Rate Limiter Implementation
+- **Fixed CVE-2023-42282**: Replaced vulnerable express-rate-limit package with custom implementation
+- **Security Impact**: Prevents SSRF attacks through the rate limiting dependency
+- **Implementation**: Created `/server/security/customRateLimiter.ts` with secure, dependency-free rate limiting
+- **Rate Limits Maintained**: 
+  - General API: 500 requests/15 minutes
+  - Authentication: 20 attempts/15 minutes
+  - Trading: 30 requests/minute
+
+### Verification Code Reliability Improvements
+- **Auto-Generation**: Server now automatically generates new codes when expired (24-hour expiry)
+- **Loading States**: Added spinner while fetching verification codes
+- **Error Handling**: Improved to prevent UI breaking on fetch failures
+- **State Management**: Changed from empty string to null initial state
+
+### UI Cleanup
+- **Removed Large Verification Bar**: Deleted the prominent blue verification code display
+- **Maintained Access**: Code still available via header badge and TrustIndicators hover
+
 ## Recent Changes (January 18, 2025)
 
 ### Simplified to Single Trading Interface Focus
